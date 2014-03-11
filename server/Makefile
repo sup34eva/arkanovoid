@@ -14,7 +14,7 @@
 #
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../../nacl_sdk/pepper_33/)
-#NACL_SDK_ROOT ?= $(abspath nacl_sdk/pepper_33/)
+#NACL_SDK_ROOT ?= $(abspath ~/nacl_sdk/pepper_33/)
 
 #echo $(NACL_SDK_ROOT)
 
