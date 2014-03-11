@@ -2,7 +2,7 @@
   "name": "arkanoid",
   "version": "0.0.2",
   "authors": [
-    "TdJ"
+    "HdT"
   ],
   "description": "Arkanoid in HTML5 and NaCl",
   "main": "main.js",

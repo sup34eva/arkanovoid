@@ -8,13 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/leops/arkanoid/"
+    "url": "https://github.com/hunsdetroyes/arkanoid/"
   },
   "keywords": [
     "arkanoid",
     "breakout"
   ],
-  "author": "TdJ",
+  "author": "HdT",
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
