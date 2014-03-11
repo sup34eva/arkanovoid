@@ -1,0 +1,14 @@
+coffeescript:
+  - 'coffee'
+  - 'uglify'
+
+server:
+  - 'express'
+  - 'open'
+  - 'watch'
+
+default:
+  - 'coffeescript'
+  - 'stylus'
+  - 'server'
+

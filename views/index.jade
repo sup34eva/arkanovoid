@@ -1,0 +1,29 @@
+extends layout
+
+block styles
+	link(href="http://getbootstrap.com/examples/cover/cover.css", rel="stylesheet")
+
+block content
+	.site-wrapper
+		.site-wrapper-inner
+			.cover-container
+				.masthead.clearfix
+					.inner
+						h3.masthead-brand Arkanoid
+						ul.nav.masthead-nav
+							li.active
+								a(href='/') Accueil
+							li
+								a(href='/game') Jeu
+							li
+								a(href='/about') A propos
+			.inner.cover
+				h1.cover-heading Arkanoid
+				p.lead
+					| Achtéémel sinque et Hénaséhel
+				p.lead
+					a.btn.btn-lg.btn-default(href='#') Lancer le jeu
+			.mastfoot
+				.inner
+					p Asc1 Troyes
+

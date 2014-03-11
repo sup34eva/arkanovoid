@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    #viewport
+    #listener
+        embed(width="0" height="0" src="/server/server.nmf" type="application/x-pnacl")
+
+block scripts
+    script(src="//cdnjs.cloudflare.com/ajax/libs/two.js/0.3.0/two.min.js")
+    script(src="/js/client.js")

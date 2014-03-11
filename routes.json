@@ -1,0 +1,10 @@
+{
+	"/": {
+		"template": "index",
+		"args": {"title": "Accueil"}
+	},
+	"/game": {
+		"template": "game",
+		"args": {"title": "Jeu"}
+	}
+}
