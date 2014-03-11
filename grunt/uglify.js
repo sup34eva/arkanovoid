@@ -1,10 +1,10 @@
 module.exports = {
-    options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-    },
-    dist: {
-        files: {
-            'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js'
-        }
+  options: {
+    banner: '/*! <%= package.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+  },
+  dist: {
+    files: {
+      'dist/<%= package.name %>.min.js': 'dist/<%= package.name %>.js'
     }
+  }
 };

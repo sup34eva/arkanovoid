@@ -3,7 +3,7 @@ module.exports = {
     },
     dist: {
         src: ['coffee/**/*.coffee'],
-        dest: 'dist/<%= pkg.name %>.js'
+        dest: 'dist/<%= package.name %>.js'
     }
 };
 
