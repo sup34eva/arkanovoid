@@ -28,7 +28,8 @@
     "load-grunt-tasks": "~0.4.0",
     "load-grunt-config": "~0.7.1",
     "grunt-open": "~0.2.3",
-    "grunt-express-server": "~0.4.13"
+    "grunt-express-server": "~0.4.13",
+    "grunt-forever": "~0.4.2"
   },
   "dependencies": {
     "express": "~3.5.0",
