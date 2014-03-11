@@ -1,7 +1,6 @@
 var express = require('express'),
 	app = express(),
-	routes = require('./routes.json'),
-	git = require('gift');
+	routes = require('./routes.json');
 
 app.use(express.compress());
 app.use(express.logger('tiny'));
@@ -23,26 +22,10 @@ function handler(req, res) {
 for(var i in routes)
 	app.get(i, handler);
 
-/*app.get('/livereload.js', function(req, res) {
+app.get('/livereload.js', function(req, res) {
 	require('http').get('http://localhost:35729/livereload.js').on('response', function (pres) {
 		pres.pipe(res);
 		res.writeHead(pres.statusCode, pres.headers);
-	});
-});*/
-
-app.all('/push', function (req, res) {
-	var repo = git(__dirname);
-
-	console.log('Push request');
-
-	repo.sync(function(err){
-		if(err) {
-			res.send(500);
-			console.error(err);
-		} else {
-			res.send(200);
-			console.log('Push finished');
-		}
 	});
 });
 
