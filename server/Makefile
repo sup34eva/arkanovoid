@@ -13,7 +13,7 @@
 # If NACL_SDK_ROOT is not set, then assume it can be found three directories up.
 #
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../../nacl_sdk/pepper_33/)
+NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../bower_components/nacl_sdk/pepper_33/)
 #NACL_SDK_ROOT ?= $(abspath ~/nacl_sdk/pepper_33/)
 
 #echo $(NACL_SDK_ROOT)

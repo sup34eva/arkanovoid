@@ -15,6 +15,10 @@ test:
   - 'coffeelint'
   - 'jsonlint'
 
+precommit:
+  - 'test'
+  - 'shell:make'
+
 default:
   - 'build'
   - 'server'
