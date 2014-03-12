@@ -15,8 +15,6 @@ velocity = [1, 1]
 00000000
 ###
 
-importScripts '%PATH%js/util.js'
-
 calc = ->
   now = Date.now()
   timeDelta = now - lastUpdate
