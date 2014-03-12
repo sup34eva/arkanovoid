@@ -5,6 +5,7 @@
 	"main": "main.js",
 	"scripts": {
 		"test": "grunt test",
+		"start": "node main.js",
 		"postinstall": "./node_modules/bower/bin/bower install"
 	},
 	"repository": {
