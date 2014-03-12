@@ -5,7 +5,7 @@
 	"main": "main.js",
 	"scripts": {
 		"test": "grunt test",
-		"postinstall": "./node_modules/bower/bin/bower install && ./bower_components/nacl_sdk/naclsdk update"
+		"postinstall": "./node_modules/bower/bin/bower install && chmod +x ./bower_components/nacl_sdk/naclsdk && ./bower_components/nacl_sdk/naclsdk update"
 	},
 	"repository": {
 		"type": "git",
