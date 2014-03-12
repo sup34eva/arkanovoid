@@ -11,6 +11,10 @@ build:
   - 'coffeescript'
   - 'stylus'
 
+test:
+  - 'coffeelint'
+  - 'jsonlint'
+
 default:
   - 'build'
   - 'server'
