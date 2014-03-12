@@ -12,8 +12,33 @@ app.use('/img', express.static('img'));
 app.use('/server', express.static('server'));
 app.use('/bower', express.static('bower_components'));
 app.use('/lvledit', express.static('lvledit'));
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
 
 app.set('view engine', 'jade');
+
+function logErrors(err, req, res, next) {
+	console.error(err.stack);
+	next(err);
+}
+
+function clientErrorHandler(err, req, res, next) {
+	if (req.xhr) {
+		res.send(500, {
+			error: 'Server Error'
+		});
+	} else {
+		next(err);
+	}
+}
+
+function errorHandler(err, req, res, next) {
+	res.status(500);
+	res.render('error', {
+		error: err
+	});
+}
 
 function handler(req, res) {
 	res.render(routes[req.route.path].template, routes[req.route.path].args);
