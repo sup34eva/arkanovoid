@@ -11,3 +11,6 @@ build:
   - 'coffeescript'
   - 'stylus'
 
+default:
+  - 'build'
+  - 'server'
