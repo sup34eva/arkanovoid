@@ -1,7 +1,7 @@
 var express = require('express'),
 	app = express(),
 	routes = require('./routes.json'),
-	port = process.env.port || 3000;
+	port = rocess.env.PORT || 3000;
 
 app.use(express.compress());
 app.use(express.logger('tiny'));
