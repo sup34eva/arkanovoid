@@ -5,7 +5,7 @@
 	"main": "main.js",
 	"scripts": {
 		"test": "grunt test",
-		"postinstall": "./node_modules/bower/bin/bower install && ./node_modules/grunt-cli/bin/grunt shell:naclUpdate"
+		"postinstall": "./node_modules/bower/bin/bower install && ./bower_components/nacl_sdk/naclsdk update"
 	},
 	"repository": {
 		"type": "git",
