@@ -9,12 +9,12 @@ server:
 
 make:
  - 'shell:make'
- - 'copy'
+ - 'copy:server'
 
 build:
   - 'make'
   - 'coffeescript'
-  - 'imagemin'
+  - 'copy:img'
   - 'stylus'
 
 test:
