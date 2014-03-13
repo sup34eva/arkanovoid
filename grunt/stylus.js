@@ -4,7 +4,8 @@ module.exports = {
 			urlfunc: 'embedurl'
 		},
 		files: {
-			'dist/css/style.css': ['styles/**/*.styl', 'styles/**/*.stylus']
+			'dist/css/client.css': 'styles/client.styl',
+			'dist/css/cover.css': 'styles/cover.styl'
 		}
 	}
 }
