@@ -14,7 +14,7 @@ make:
 build:
   - 'make'
   - 'coffeescript'
-  - 'copy:img'
+  - 'imagemin'
   - 'stylus'
 
 test:
