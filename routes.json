@@ -1,10 +1,21 @@
 {
 	"/": {
 		"template": "index",
-		"args": {"title": "Accueil"}
+		"args": {
+			"title": "Accueil"
+		}
 	},
 	"/game": {
 		"template": "game",
-		"args": {"title": "Jeu"}
+		"args": {
+			"title": "Jeu"
+		}
+	},
+	"/error": {
+		"template": "error",
+		"args": {
+			"title": "500 Server Error",
+			"message": "Le serveur a rencontré une erreur"
+		}
 	}
 }

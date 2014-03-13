@@ -1,44 +1,25 @@
 var express = require('express'),
 	app = express(),
 	routes = require('./routes.json'),
+	errors = require('./error.js'),
 	port = process.env.PORT || 3000;
+
+app.set('view engine', 'jade');
 
 app.use(express.compress());
 app.use(express.logger('tiny'));
 app.use(require('connect-livereload')());
 app.use(app.router);
 app.use(express.static('dist'));
-app.use('/img', express.static('img'));
-app.use('/server', express.static('server'));
-app.use('/bower', express.static('bower_components'));
+app.use('/bootstrap', express.static('bower_components/bootstrap/dist'));
+app.use('/jquery', express.static('bower_components/jquery/dist'));
+app.use('/two', express.static('bower_components/two/build'));
 app.use('/lvledit', express.static('lvledit'));
-app.use(logErrors);
-app.use(clientErrorHandler);
-app.use(errorHandler);
-
-app.set('view engine', 'jade');
-
-function logErrors(err, req, res, next) {
-	console.error(err.stack);
-	next(err);
-}
-
-function clientErrorHandler(err, req, res, next) {
-	if (req.xhr) {
-		res.send(500, {
-			error: 'Server Error'
-		});
-	} else {
-		next(err);
-	}
-}
-
-function errorHandler(err, req, res, next) {
-	res.status(500);
-	res.render('error', {
-		error: err
-	});
-}
+app.use(errors.send404);
+app.use(errors.log);
+app.use(errors.format);
+app.use(errors.xhr);
+app.use(errors.show);
 
 function handler(req, res) {
 	res.render(routes[req.route.path].template, routes[req.route.path].args);

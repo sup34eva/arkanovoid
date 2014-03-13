@@ -1,7 +1,20 @@
 extends layout
 
+block styles
+	style .error-template {padding: 40px 15px;text-align: center;}.error-actions {margin-top:15px;margin-bottom:15px;}.error-actions .btn { margin-right:10px; }
+
 block content
-	.jumbotron
-		h1 Erreur !
-		p= error
+	.row
+		.col-md-12
+			.error-template
+				h1 Fail!
+				h2= title
+				.error-details= message
+				.error-actions
+					a.btn.btn-primary.btn-lg(href="/")
+						span.glyphicon.glyphicon-home
+						|  Retour à l'accueil
+					a.btn.btn-default.btn-lg(href="https://github.com/hunsdetroyes/arkanoid/issues/new?title=Erreur #{code}&body=Erreur `#{title}` rencontree a l'addresse [#{path}](http://arkanoid.herokuapp.com#{path})")
+						span.glyphicon.glyphicon-envelope
+						|  Rapporter l'erreur
 
