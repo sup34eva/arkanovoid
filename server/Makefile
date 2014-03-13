@@ -7,24 +7,12 @@
 # http://www.gnu.org/software/make/manual/make.html
 #
 
-#
-# Get pepper directory for toolchain and includes.
-#
-# If NACL_SDK_ROOT is not set, then assume it can be found three directories up.
-#
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../bower_components/nacl_sdk/pepper_33/)
-#NACL_SDK_ROOT ?= $(abspath ~/nacl_sdk/pepper_33/)
 
-#echo $(NACL_SDK_ROOT)
-
-# Project Build flags
 WARNINGS := -Wno-long-long -Wall -Wswitch-enum -pedantic -Werror
 CXXFLAGS := -pthread -std=gnu++98 $(WARNINGS)
 
-#
-# Compute tool paths
-#
 GETOS := python $(NACL_SDK_ROOT)/tools/getos.py
 OSHELPERS = python $(NACL_SDK_ROOT)/tools/oshelpers.py
 OSNAME := $(shell $(GETOS))

@@ -1,20 +1,32 @@
 module.exports = {
-    coffee: {
-        options: {
-            title: 'Coffee built',
-            message: 'Coffeescript build finished successfully.'
-        }
-    },
-    stylus: {
-        options: {
-            title: 'Stylus built',
-            message: 'Stylus build finished successfully.'
-        }
-    },
-    server: {
-        options: {
-            title: 'Server restarted',
-            message: 'Express script restarted after changes.'
-        }
-    }
+	coffee: {
+		options: {
+			title: 'Coffee compilé',
+			message: 'Le Coffeescript a été compilé avec succès.'
+		}
+	},
+	stylus: {
+		options: {
+			title: 'Stylus compilé',
+			message: 'la compilation de Stylus s\'est éxécutée avec succès.'
+		}
+	},
+	express: {
+		options: {
+			title: 'Serveur redémarré',
+			message: 'Le serveur a redémarré suite a des changements.'
+		}
+	},
+	img: {
+		options: {
+			title: 'Images minifiées',
+			message: 'Les images on été minifiées.'
+		}
+	},
+	server: {
+		options: {
+			title: 'NaCl compilé',
+			message: 'Le serveur a été compilé avec succès.'
+		}
+	}
 }

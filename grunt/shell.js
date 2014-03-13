@@ -1,5 +1,5 @@
 module.exports = {
-	naclUpdate: {
+	update: {
 		command: 'chmod +x naclsdk && ./naclsdk update',
 		options: {
 			stdout: true,
@@ -10,10 +10,13 @@ module.exports = {
 		}
 	},
 	make: {
-		command: 'make -f server/Makefile',
+		command: 'make',
 		options: {
 			stdout: true,
-			stderr: true
+			stderr: true,
+			execOptions: {
+				cwd: 'server/'
+			}
 		}
-	}
+	},
 };

@@ -1,7 +1,7 @@
 module.exports = {
 	express: {
-		files: ['main.js', 'routes.json'],
-		tasks: ['express:server', 'notify:server'],
+		files: ['*.{js,json}'],
+		tasks: ['express:server', 'notify:express'],
 		options: {
 			spawn: false,
 			livereload: true
@@ -16,8 +16,24 @@ module.exports = {
 		}
 	},
 	style: {
-		files: ['stylus/**/*.styl', 'stylus/**/*.stylus'],
+		files: ['stylus/**/*.{styl,stylus}'],
 		tasks: ['stylus', 'notify:stylus'],
+		options: {
+			spawn: false,
+			livereload: true
+		}
+	},
+	img: {
+		files: ['img/**/*.{png,jpg,gif}'],
+		tasks: ['imagemin', 'notify:img'],
+		options: {
+			spawn: false,
+			livereload: true
+		}
+	},
+	server: {
+		files: ['server/**/*.{c,cc,cpp}'],
+		tasks: ['make', 'notify:server'],
 		options: {
 			spawn: false,
 			livereload: true

@@ -7,8 +7,14 @@ server:
   - 'open'
   - 'watch'
 
+make:
+ - 'shell:make'
+ - 'copy'
+
 build:
+  - 'make'
   - 'coffeescript'
+  - 'imagemin'
   - 'stylus'
 
 test:
