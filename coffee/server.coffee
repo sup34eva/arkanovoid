@@ -20,4 +20,6 @@ if server is null
 else
 	server.addEventListener "message", ((e) ->
 		game = e.data.split ":"
+		#console.log e.data
 	), false
+	window.server = server

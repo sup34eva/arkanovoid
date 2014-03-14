@@ -9,5 +9,7 @@ two.bind "update", (frameCount) ->
         bricks[i][j].visible game[4]
         j++
       i++
+  server.postMessage two.timeDelta/1000
+  #console.log two.timeDelta
   return
 
