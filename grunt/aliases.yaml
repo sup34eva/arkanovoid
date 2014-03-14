@@ -12,18 +12,15 @@ make:
  - 'copy:server'
 
 build:
-  - 'make'
-  - 'coffeescript'
-  - 'imagemin'
-  - 'stylus'
+  - 'concurrent:build'
 
 test:
-  - 'coffeelint'
-  - 'jsonlint'
+  - 'concurrent:test'
 
-precommit:
+commit:
   - 'test'
   - 'shell:make'
+  - 'bump'
 
 default:
   - 'build'
