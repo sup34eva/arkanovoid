@@ -1,16 +1,21 @@
 module.exports = {
-	app: ['coffee/*.coffee'],
-	options: {
-		'no_tabs': {
-			'level': 'ignore'
+	dist: {
+		files: {
+			src: ['coffee/*.coffee']
 		},
-		'max_line_length': {
-			'level': 'warn',
-			'value': 130
-		},
-		indentation: {
-			'level': 'warn',
-			'value': 1
+		reporter: require('coffeelint-stylish').reporter,
+		options: {
+			'no_tabs': {
+				'level': 'ignore'
+			},
+			'max_line_length': {
+				'level': 'warn',
+				'value': 130
+			},
+			indentation: {
+				'level': 'warn',
+				'value': 1
+			}
 		}
 	}
 };
