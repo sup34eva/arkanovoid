@@ -16,7 +16,7 @@ module.exports = {
 		}
 	},
 	style: {
-		files: ['stylus/**/*.{styl,stylus}'],
+		files: ['styles/**/*.{styl,stylus}'],
 		tasks: ['stylus', 'notify:stylus'],
 		options: {
 			spawn: false,
