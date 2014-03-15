@@ -15,18 +15,11 @@ $(document).keydown((e) ->
 	server.postMessage "-#{input}"
 	return
 ).on "mousemove", (e) ->
-	bgDr =
-		x : e.screenX - window.innerWidth
-		y : e.screenY - window.innerHeight
-		h: window.innerHeight
-		w: window.innerWidth
+	x = Math.abs(e.clientX - window.innerWidth)/window.innerWidth
+	y = Math.abs(e.clientY - window.innerHeight)/window.innerHeight
 	movement = (e.originalEvent.movementX or e.originalEvent.webkitMovementX or 0)/(two.width/100)
 	server.postMessage "m#{movement}"
 	requestAnimationFrame ->
-		layers.forEach (img, i) ->
-			i =(i + 1) * 3
-			ctx.drawImage img, (bgDr.x/bgDr.w) * i, (bgDr.y/bgDr.h) * i, (bgDr.w/2) + i, (bgDr.h/2) + i
-			return
-		return
+		$('#viewport').css 'background-position', (x * 15) + '% ' + (y * 15) + '%, ' + (x * 10) + '% ' + (y * 10) + '%, ' + (x * 5) + '% ' + (y * 5) + '%'
 	return
 
