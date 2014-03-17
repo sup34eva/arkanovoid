@@ -1,8 +1,11 @@
 class Paddle
-  constructor: (two) ->
-    @rectangle = two.makeRectangle 0, two.height-1, two.width/10, two.height/100
-    @rectangle.fill = "#fff"
-  move: (pos, size) ->
-    @rectangle.translation.set pos, two.height - 1
-    #@rectangle.width = size
-
+	constructor: (two) ->
+		@height = percent(1, window.innerHeight)
+		@y = window.innerHeight - @height
+		@rectangle = two.makeRectangle 0, @y, window.innerWidth/100, @height
+		@rectangle.fill = "#fff"
+	move: (pos, size) ->
+		x = percent(size, window.innerWidth)/2
+		@rectangle.translation.set percent(pos, window.innerWidth) + x, @y
+		@rectangle.vertices[0].x = @rectangle.vertices[3].x = x
+		@rectangle.vertices[1].x = @rectangle.vertices[2].x = -x

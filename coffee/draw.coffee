@@ -10,7 +10,5 @@ two.bind "update", (frameCount) ->
 				j++
 			i++
 	server.postMessage two.timeDelta/1000
-	if frameCount % 60 is 0
-		console.log game
 	return
 
