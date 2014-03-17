@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "./node_modules/.bin/grunt test",
 		"start": "./node_modules/.bin/grunt",
-		"postinstall": "./node_modules/.bin/bower install && chmod +x bower_components/nacl_sdk/naclsdk && bower_components/nacl_sdk/naclsdk update"
+		"postinstall": "./node_modules/.bin/bower install && chmod +x bower_components/nacl_sdk/naclsdk"
 	},
 	"repository": {
 		"type": "git",

@@ -1,6 +1,6 @@
 module.exports =
 	update:
-		command: 'chmod +x naclsdk && ./naclsdk update'
+		command: './naclsdk update'
 		options:
 			stdout: true
 			stderr: true
