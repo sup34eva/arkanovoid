@@ -1,10 +1,3 @@
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/var.h"
-#include <sys/time.h>
-#include <time.h>
-#include <math.h>
-#include <string.h>
 #include "jeu.h"
 
 class ServerInstance : public pp::Instance {
@@ -17,60 +10,77 @@ class ServerInstance : public pp::Instance {
 		virtual void HandleMessage(const pp::Var& var_message) {
 			if(var_message.is_number())
 				loop(var_message.AsDouble());
-			if(var_message.is_string())
-				message(var_message.AsString());
+			if(var_message.is_dictionary())
+				message(var_message);
 		}
 
 		virtual bool Init ( uint32_t argc, const char * argn[], const char * argv[]) {
 			srand(time(NULL));
 
-			for(int i = 0; i < 10; i++)
-					state.niveau |= 1 << rand() % sizeof(int);
+			pp::VarArray briques;
+			for(int x = 0; x < BRICKH; x++) {
+				pp::VarArray array;
+				for(int y = 0; y < BRICKW; y++)
+					array.Set(y, pp::Var(rand() % 3));
+				briques.Set(x, array);
+			}
 
-			state.balle.Velocity.X = BALLSPEED;
-			state.balle.Velocity.Y = BALLSPEED;
-			state.balle.Position.X = 0;
-			state.balle.Position.Y = 0;
-			state.paddle.Position = 0;
-			state.paddle.Taille = 5;
+			state.Set(pp::Var("x"), pp::Var(0));
+			state.Set(pp::Var("y"), pp::Var(0));
+			state.Set(pp::Var("pos"), pp::Var(0));
+			state.Set(pp::Var("size"), pp::Var(5));
+			state.Set(pp::Var("brick"), briques);
+
+			velocity.X = BALLSPEED;
+			velocity.Y = BALLSPEED;
 
 			return true;
 		}
 
 	protected:
-		struct Game state;
+		pp::VarDictionary state;
+		struct Vector velocity;
+		int inputs[222];
 
 		void loop (double dt) {
 			calc(dt);
-			PostMessage(getState());
+			PostMessage(state);
 		}
 
 		void calc (double deltaTime) {
-		        state.balle.Position.X += state.balle.Velocity.X * deltaTime;
-		        state.balle.Position.Y += state.balle.Velocity.Y * deltaTime;
-		        // TODO: A remplacer par une position calculée par rapport aux events clavier/souris
-		        state.paddle.Position = state.balle.Position.Y - state.paddle.Taille/2;
-		        state.paddle.Position = fmin(fmax(state.paddle.Position, 0), SCREENSIZE - state.paddle.Taille);
+		        // Déplacement de la balle
+				state.Set(pp::Var("x"), pp::Var(state.Get(pp::Var("x")).AsDouble() + (velocity.X * deltaTime)));
+		        state.Set(pp::Var("y"), pp::Var(state.Get(pp::Var("y")).AsDouble() + (velocity.Y * deltaTime)));
+
+		        // Gestion de la paddle
+				if(inputs[37] == 1)
+					state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() - (BALLSPEED * deltaTime)));
+				if(inputs[39] == 1)
+					state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() + (BALLSPEED * deltaTime)));
+				state.Set(pp::Var("pos"), pp::Var(fmin(fmax(state.Get(pp::Var("pos")).AsDouble(), 0), SCREENSIZE - state.Get(pp::Var("size")).AsDouble())));
 
 		        // Gestion des collisions basique
-		        if(state.balle.Position.X >= SCREENSIZE)
-		                state.balle.Velocity.X = -abs(state.balle.Velocity.X);
-		        if(state.balle.Position.X <= 0)
-		                state.balle.Velocity.X = abs(state.balle.Velocity.X);
-		        if(state.balle.Position.Y >= SCREENSIZE)
-		                state.balle.Velocity.Y = -abs(state.balle.Velocity.Y);
-		        if(state.balle.Position.Y <= 0)
-		                state.balle.Velocity.Y = abs(state.balle.Velocity.Y);
+		        if(state.Get(pp::Var("x")).AsDouble() >= SCREENSIZE)
+		                velocity.X = -abs(velocity.X);
+		        if(state.Get(pp::Var("x")).AsDouble() <= 0)
+		                velocity.X = abs(velocity.X);
+		        if(state.Get(pp::Var("y")).AsDouble() >= SCREENSIZE)
+		                velocity.Y = -abs(velocity.Y);
+		        if(state.Get(pp::Var("y")).AsDouble() <= 0)
+		                velocity.Y = abs(velocity.Y);
 		}
 
-		void message (std::string message) {
-			// TODO: Gestion des messages
-		}
-
-		std::string getState() {
-			char result[(3*4) + (4) + (8 * 8)];
-			sprintf(result, "%f:%f:%f:%d:%d", state.balle.Position.X, state.balle.Position.Y, state.paddle.Position, state.paddle.Taille, state.niveau);
-			return std::string(result);
+		void message (pp::Var message) {
+			pp::VarDictionary msg(message);
+			// Deplacement de la souris
+			if(msg.Get(pp::Var("name")).AsString() == "m")
+				state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() + msg.Get(pp::Var("data")).AsDouble()));
+			// Touche enfoncée
+			if(msg.Get(pp::Var("name")).AsString() == "+")
+				inputs[msg.Get(pp::Var("data")).AsInt()] = 1;
+			// Touche relachée
+			if(msg.Get(pp::Var("name")).AsString() == "-")
+				inputs[msg.Get(pp::Var("data")).AsInt()] = 0;
 		}
 };
 
