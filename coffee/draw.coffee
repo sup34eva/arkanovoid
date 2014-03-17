@@ -1,15 +1,16 @@
 two.bind "update", (frameCount) ->
-  if game instanceof Array
-    ball.move percent(game[0], two.width), percent(game[1], two.height)
-    paddle.move percent(game[2], two.width), two.width/(100/game[3])
-    i = 0
-    while i < 8
-      j = 0
-      while j < 8
-        bricks[i][j].visible game[4]
-        j++
-      i++
-  server.postMessage two.timeDelta/1000
-  #console.log two.timeDelta
-  return
+	if not (game is null)
+		ball.move game.x, game.y
+		paddle.move game.pos, game.size
+		i = 0
+		while i < 8
+			j = 0
+			while j < 8
+				bricks[i][j].type game.brick[i][j]
+				j++
+			i++
+	server.postMessage two.timeDelta/1000
+	if frameCount % 60 is 0
+		console.log game
+	return
 
