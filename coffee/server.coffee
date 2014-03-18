@@ -17,7 +17,7 @@ server.addEventListener "message", ((e) ->
 						j++
 				i++
 		if(game.win)
-			alert('You win !');
+			alert 'You win !'
 	lastState = game
 	serverStats.update()
 	#console.log game
