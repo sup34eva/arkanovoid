@@ -3,7 +3,7 @@
 class ServerInstance : public pp::Instance {
 	public:
 		explicit ServerInstance(PP_Instance instance) : pp::Instance(instance) {
-			// TODO: Contructor
+			remaining = 0;
 		}
 		virtual ~ServerInstance() {}
 
@@ -17,19 +17,26 @@ class ServerInstance : public pp::Instance {
 		virtual bool Init ( uint32_t argc, const char * argn[], const char * argv[]) {
 			srand(time(NULL));
 
-			pp::VarArray briques;
+			#ifdef BRICKS
+			// Génération de niveau random
 			for(int x = 0; x < BRICKH; x++) {
 				pp::VarArray array;
-				for(int y = 0; y < BRICKW; y++)
-					array.Set(y, pp::Var(rand() % 3));
+				for(int y = 0, val; y < BRICKW; y++) {
+					val = rand() % 5;
+					array.Set(y, val);
+					if(val > 0 && val < 4)
+						remaining++;
+				}
 				briques.Set(x, array);
 			}
+			#endif
 
-			state.Set(pp::Var("x"), pp::Var(0));
-			state.Set(pp::Var("y"), pp::Var(0));
-			state.Set(pp::Var("pos"), pp::Var(0));
-			state.Set(pp::Var("size"), pp::Var(5));
-			state.Set(pp::Var("brick"), briques);
+			x = 0;
+			y = 0;
+			pos = 0;
+			size = 5;
+			prevX = 0;
+			prevY = 0;
 
 			velocity.X = BALLSPEED;
 			velocity.Y = BALLSPEED;
@@ -39,42 +46,84 @@ class ServerInstance : public pp::Instance {
 
 	protected:
 		pp::VarDictionary state;
+		double x, y, pos, size;
+		pp::VarArray briques, row;
 		struct Vector velocity;
-		int inputs[222];
+		int inputs[222], prevX, prevY, brickX, brickY, brick, remaining, breakable, exists;
 
 		void loop (double dt) {
-			calc(dt);
+			Calc(dt);
+
+			state.Set(pp::Var("x"), x);
+			state.Set(pp::Var("y"), y);
+			state.Set(pp::Var("pos"), pos);
+			state.Set(pp::Var("size"), size);
+			#ifdef BRICKS
+			briques.Set(brickY, row);
+			state.Set(pp::Var("brick"), briques);
+			state.Set(pp::Var("win"), remaining == 0);
+			#endif
+
 			PostMessage(state);
+
+			PostCalc();
 		}
 
-		void calc (double deltaTime) {
-		        // Déplacement de la balle
-				state.Set(pp::Var("x"), pp::Var(state.Get(pp::Var("x")).AsDouble() + (velocity.X * deltaTime)));
-		        state.Set(pp::Var("y"), pp::Var(state.Get(pp::Var("y")).AsDouble() + (velocity.Y * deltaTime)));
+		void Calc (double deltaTime) {
+			// Déplacement de la balle
+			x += velocity.X * deltaTime;
+			y += velocity.Y * deltaTime;
 
-		        // Gestion de la paddle
-				if(inputs[37] == 1)
-					state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() - (BALLSPEED * deltaTime)));
-				if(inputs[39] == 1)
-					state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() + (BALLSPEED * deltaTime)));
-				state.Set(pp::Var("pos"), pp::Var(fmin(fmax(state.Get(pp::Var("pos")).AsDouble(), 0), SCREENSIZE - state.Get(pp::Var("size")).AsDouble())));
+			// Gestion de la paddle
+			if(inputs[37] == 1)
+				pos -= BALLSPEED * deltaTime;
+			if(inputs[39] == 1)
+				pos += BALLSPEED * deltaTime;
+			pos = fmin(fmax(pos, 0), SCREENSIZE - size);
 
-		        // Gestion des collisions basique
-		        if(state.Get(pp::Var("x")).AsDouble() >= SCREENSIZE)
-		                velocity.X = -abs(velocity.X);
-		        if(state.Get(pp::Var("x")).AsDouble() <= 0)
-		                velocity.X = abs(velocity.X);
-		        if(state.Get(pp::Var("y")).AsDouble() >= SCREENSIZE)
-		                velocity.Y = -abs(velocity.Y);
-		        if(state.Get(pp::Var("y")).AsDouble() <= 0)
-		                velocity.Y = abs(velocity.Y);
+			// Gestion des collisions basique
+			#ifdef BRICKS
+			brickX = x / (100/BRICKW);
+			brickY = y / (100/BRICKH);
+			if(brickY != prevY)
+				row = briques.Get(brickY);
+			brick = row.Get(brickX).AsInt();
+			exists = brick > 0;
+			breakable = brick < 4;
+
+			if(exists && breakable) {
+				row.Set(brickX, brick - 1);
+				if(brick == 1)
+					remaining--;
+			}
+			#endif
+		}
+
+		void PostCalc() {
+			if(x >= SCREENSIZE || (exists && prevX < brickX))
+				velocity.X = -abs(velocity.X);
+			if(x <= 0 || (exists && prevX > brickX))
+				velocity.X = abs(velocity.X);
+			if(exists && prevY < brickY)
+				velocity.Y = -abs(velocity.Y);
+			if(y <= 0 || (exists && prevY > brickY))
+				velocity.Y = abs(velocity.Y);
+
+			if(y >= SCREENSIZE - 1 && y <= SCREENSIZE && x >= pos && x <= pos + size) {
+				int angle = 45 + (((x - pos)/size) * 90);
+				velocity.Y = sin(angle) * BALLSPEED;
+				velocity.X = cos(angle) * BALLSPEED;
+			}
+
+			prevX = brickX;
+			prevY = brickY;
 		}
 
 		void message (pp::Var message) {
 			pp::VarDictionary msg(message);
 			// Deplacement de la souris
 			if(msg.Get(pp::Var("name")).AsString() == "m")
-				state.Set(pp::Var("pos"), pp::Var(state.Get(pp::Var("pos")).AsDouble() + msg.Get(pp::Var("data")).AsDouble()));
+				pos += msg.Get(pp::Var("data")).AsDouble();
 			// Touche enfoncée
 			if(msg.Get(pp::Var("name")).AsString() == "+")
 				inputs[msg.Get(pp::Var("data")).AsInt()] = 1;
