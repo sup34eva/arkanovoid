@@ -10,10 +10,6 @@ ServerInstance::~ServerInstance() {}
 void ServerInstance::HandleMessage(const pp::Var& var_message) {
 	if(var_message.is_dictionary())
 		message(var_message);
-	#ifndef MSGLOOP
-	if(var_message.is_number())
-		Loop(var_message.AsDouble());
-	#endif
 }
 
 bool ServerInstance::Init ( uint32_t argc, const char * argn[], const char * argv[]) {
@@ -43,44 +39,13 @@ bool ServerInstance::Init ( uint32_t argc, const char * argn[], const char * arg
 	velocity.X = BALLSPEED;
 	velocity.Y = BALLSPEED;
 
-	#ifdef MSGLOOP
 	Loop(0, clock());
-	#endif
 
 	return true;
 }
 
-#ifdef MSGLOOP
 void ServerInstance::Loop (int32_t result, clock_t lt) {
-	double dt = ((double)(clock() - lt))/CLOCKS_PER_SEC;
-	pp::CompletionCallback cc;
-
-	if(dt >= 1/60) {
-		Calc(dt);
-
-		state.Set(pp::Var("x"), x);
-		state.Set(pp::Var("y"), y);
-		state.Set(pp::Var("pos"), pos);
-		state.Set(pp::Var("size"), size);
-		#ifdef BRICKS
-		briques.Set(brickY, row);
-		state.Set(pp::Var("brick"), briques);
-		state.Set(pp::Var("win"), remaining == 0);
-		#endif
-
-		PostMessage(state);
-
-		PostCalc();
-
-		cc = factory_.NewCallback(&ServerInstance::Loop, clock());
-	} else
-		cc = factory_.NewCallback(&ServerInstance::Loop, lt);
-
-	msgLoop.PostWork(cc);
-}
-#else
-void ServerInstance::Loop (double dt) {
-	Calc(dt);
+	Calc(((double)(clock() - lt))/CLOCKS_PER_SEC);
 
 	state.Set(pp::Var("x"), x);
 	state.Set(pp::Var("y"), y);
@@ -95,8 +60,10 @@ void ServerInstance::Loop (double dt) {
 	PostMessage(state);
 
 	PostCalc();
+
+	pp::CompletionCallback cc = factory_.NewCallback(&ServerInstance::Loop, lt);
+	msgLoop.PostWork(cc, 1000/60);
 }
-#endif
 
 void ServerInstance::Calc (double deltaTime) {
 	// Déplacement de la balle

@@ -29,11 +29,7 @@ class ServerInstance : public pp::Instance {
 		virtual ~ServerInstance();
 		virtual void HandleMessage(const pp::Var& var_message);
 		virtual bool Init ( uint32_t argc, const char * argn[], const char * argv[]);
-		#ifdef MSGLOOP
 		void Loop (int32_t result, clock_t lt);
-		#else
-		void Loop (double lt);
-		#endif
 
 	protected:
 		pp::VarDictionary state;
