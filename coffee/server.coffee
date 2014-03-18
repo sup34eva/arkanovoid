@@ -19,5 +19,6 @@ server.addEventListener "message", ((e) ->
 		if(game.win)
 			alert('You win !');
 	lastState = game
+	#console.log game
 	return
 ), false
