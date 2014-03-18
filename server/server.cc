@@ -1,8 +1,13 @@
+// Copyright 2013 <Huns de Troyes>
+
 #include "jeu.h"
 
-ServerInstance::ServerInstance(PP_Instance instance) : pp::Instance(instance), factory_(this) {
+ServerInstance::ServerInstance(PP_Instance instance)
+	: pp::Instance(instance), factory_(this) {
 	remaining = 0;
 	msgLoop = pp::MessageLoop::GetForMainThread();
+	rmTime = 1;
+	rmLoop = 60;
 }
 
 ServerInstance::~ServerInstance() {}
@@ -12,22 +17,22 @@ void ServerInstance::HandleMessage(const pp::Var& var_message) {
 		message(var_message);
 }
 
-bool ServerInstance::Init ( uint32_t argc, const char * argn[], const char * argv[]) {
+bool ServerInstance::Init(uint32_t argc,
+						  const char * argn[],
+						  const char * argv[]) {
 	srand(time(NULL));
 
-	#ifdef BRICKS
 	// Génération de niveau random
-	for(int x = 0; x < BRICKH; x++) {
-		pp::VarArray array;
-		for(int y = 0, val; y < BRICKW; y++) {
-			val = rand() % 5;
-			array.Set(y, val);
+	for(int x = 0; x < BRICKW; x++) {
+		for(int y = 0, val; y < BRICKH; y++) {
+			val = rand_r() % 5;
+			briques.Set((x * BRICKW) + y, val);
 			if(val > 0 && val < 4)
 				remaining++;
 		}
-		briques.Set(x, array);
 	}
-	#endif
+
+	// brickChanged = 1;
 
 	x = 0;
 	y = 0;
@@ -39,34 +44,43 @@ bool ServerInstance::Init ( uint32_t argc, const char * argn[], const char * arg
 	velocity.X = BALLSPEED;
 	velocity.Y = BALLSPEED;
 
-	Loop(0, clock());
+	Loop(PP_OK, clock());
 
 	return true;
 }
 
-void ServerInstance::Loop (int32_t result, clock_t lt) {
+void ServerInstance::Loop(int32_t result, clock_t lt) {
 	clock_t now = clock();
-	Calc(((double)(now - lt))/CLOCKS_PER_SEC);
+	Calc(static_cast<float>(now - lt)/CLOCKS_PER_SEC);
 
-	state.Set(pp::Var("x"), x);
-	state.Set(pp::Var("y"), y);
-	state.Set(pp::Var("pos"), pos);
-	state.Set(pp::Var("size"), size);
-	#ifdef BRICKS
-	briques.Set(brickY, row);
-	state.Set(pp::Var("brick"), briques);
-	state.Set(pp::Var("win"), remaining == 0);
-	#endif
+	state.Set("x", x);
+	state.Set("y", y);
+	state.Set("pos", pos);
+	state.Set("size", size);
+	if(brickChanged == 1) {
+		state.Set("brick", briques);
+		brickChanged = 0;
+	}
+	state.Set("win", remaining == 0);
 
 	PostMessage(state);
 
 	PostCalc();
 
+	/*rmLoop--;
+	if(rmLoop == 0)
+		rmLoop = 60;
+	rmTime -= double(clock() - lt)/CLOCKS_PER_SEC;
+	if(rmTime <= 0.0)
+		rmTime = 1;*/
+
 	pp::CompletionCallback cc = factory_.NewCallback(&ServerInstance::Loop, now);
+	// TODO: Temps d'attente dynamique en fonction du deltatime courant
+	// msgLoop.PostWork(cc, (rmTime * 1000)/rmLoop);
 	msgLoop.PostWork(cc, 1000/60);
 }
 
-void ServerInstance::Calc (double deltaTime) {
+void ServerInstance::Calc(double deltaTime) {
 	// Déplacement de la balle
 	x += velocity.X * deltaTime;
 	y += velocity.Y * deltaTime;
@@ -79,21 +93,20 @@ void ServerInstance::Calc (double deltaTime) {
 	pos = fmin(fmax(pos, 0), SCREENSIZE - size);
 
 	// Gestion des collisions basique
-	#ifdef BRICKS
 	brickX = x / (100/BRICKW);
 	brickY = y / (100/BRICKH);
-	if(brickY != prevY)
-		row = briques.Get(brickY);
-	brick = row.Get(brickX).AsInt();
+	brick = briques.Get((brickX * BRICKW) + brickY).AsInt();
 	exists = brick > 0;
 	breakable = brick < 4;
 
 	if(exists && breakable) {
-		row.Set(brickX, brick - 1);
+		briques.Set((brickX * BRICKW) + brickY, brick - 1);
 		if(brick == 1)
 			remaining--;
+		// brickChanged = 1;
 	}
-	#endif
+
+	// TODO: Ajouter des drops
 }
 
 void ServerInstance::PostCalc() {
@@ -116,7 +129,7 @@ void ServerInstance::PostCalc() {
 	prevY = brickY;
 }
 
-void ServerInstance::message (pp::Var message) {
+void ServerInstance::message(pp::Var message) {
 	pp::VarDictionary msg(message);
 	// Deplacement de la souris
 	if(msg.Get(pp::Var("name")).AsString() == "m")

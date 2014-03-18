@@ -16,7 +16,7 @@ i = 0
 while i < 8
 	bricks[i] = []
 	j = 0
-	while j < 8
+	while j < 10
 		bricks[i][j] = new Brick(two, j, i)
 		j++
 	i++

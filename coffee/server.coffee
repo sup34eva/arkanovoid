@@ -7,19 +7,19 @@ server.addEventListener "message", ((e) ->
 			ball.move game.x, game.y
 		if game.pos isnt lastState.pos or game.size isnt lastState.size
 			paddle.move game.pos, game.size
-		if game.brick isnt lastState.brick
+		if game.brick
 			i = 0
 			while i < 8
-				if game.brick[i] isnt lastState.brick[i]
 					j = 0
-					while j < 8
-						bricks[i][j].type game.brick[i][j]
+					while j < 10
+						bricks[i][j].type game.brick[(i * 8) + j]
 						j++
 				i++
 		if(game.win)
 			alert 'You win !'
 	lastState = game
 	serverStats.update()
-	#console.log game
+	if typeof game is 'number'
+		console.log game
 	return
 ), false

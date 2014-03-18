@@ -25,18 +25,32 @@ struct Vector {
 
 class ServerInstance : public pp::Instance {
 	public:
-		explicit ServerInstance(PP_Instance instance);
-		virtual ~ServerInstance();
-		virtual void HandleMessage(const pp::Var& var_message);
+		explicit ServerInstance (PP_Instance instance);
+		virtual ~ServerInstance ();
+		virtual void HandleMessage (const pp::Var& var_message);
 		virtual bool Init ( uint32_t argc, const char * argn[], const char * argv[]);
 		void Loop (int32_t result, clock_t lt);
 
 	protected:
 		pp::VarDictionary state;
-		double x, y, pos, size;
-		pp::VarArray briques, row;
+		double x,
+			y,
+			pos,
+			size,
+			rmTime;
+		pp::VarArray briques;
 		struct Vector velocity;
-		int inputs[222], prevX, prevY, brickX, brickY, brick, remaining, breakable, exists;
+		int inputs[222],
+			prevX,
+			prevY,
+			brickX,
+			brickY,
+			brick,
+			remaining,
+			breakable,
+			exists,
+			brickChanged,
+			rmLoop;
 		pp::MessageLoop msgLoop;
 		pp::CompletionCallbackFactory<ServerInstance> factory_;
 
@@ -47,11 +61,11 @@ class ServerInstance : public pp::Instance {
 
 class ServerModule : public pp::Module {
 	public:
-		ServerModule() : pp::Module() {}
-		virtual ~ServerModule() {}
+		ServerModule () : pp::Module() {}
+		virtual ~ServerModule () {}
 
-		virtual pp::Instance* CreateInstance(PP_Instance instance) {
-			return new ServerInstance(instance);
+		virtual pp::Instance* CreateInstance (PP_Instance instance) {
+			return new ServerInstance (instance);
 		}
 };
 
