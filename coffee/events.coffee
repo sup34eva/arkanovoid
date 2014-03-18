@@ -11,5 +11,5 @@ $(document).keydown((e) ->
 	y = Math.abs(e.clientY - window.innerHeight)/window.innerHeight
 	requestAnimationFrame ->
 		$('#viewport').css 'background-position', (x * 15) + '% ' + (y * 15) + '%, ' + (x * 10) + '% ' + (y * 10) + '%, ' + (x * 5) + '% ' + (y * 5) + '%'
+		return
 	return
-

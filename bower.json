@@ -27,6 +27,7 @@
     "bootstrap": "~3.1.1",
     "jquery": "~2.1.0",
     "two": "~0.3.0",
-    "nacl_sdk": "http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip"
+    "nacl_sdk": "http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip",
+    "stats.js": "*"
   }
 }

@@ -4,4 +4,3 @@ class Ball
     @circle.fill = "#fff"
   move: (x, y) ->
     @circle.translation.set percent(x, window.innerWidth), percent(y, window.innerHeight)
-
