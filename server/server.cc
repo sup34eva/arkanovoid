@@ -45,7 +45,8 @@ bool ServerInstance::Init ( uint32_t argc, const char * argn[], const char * arg
 }
 
 void ServerInstance::Loop (int32_t result, clock_t lt) {
-	Calc(((double)(clock() - lt))/CLOCKS_PER_SEC);
+	clock_t now = clock();
+	Calc(((double)(now - lt))/CLOCKS_PER_SEC);
 
 	state.Set(pp::Var("x"), x);
 	state.Set(pp::Var("y"), y);
@@ -61,7 +62,7 @@ void ServerInstance::Loop (int32_t result, clock_t lt) {
 
 	PostCalc();
 
-	pp::CompletionCallback cc = factory_.NewCallback(&ServerInstance::Loop, lt);
+	pp::CompletionCallback cc = factory_.NewCallback(&ServerInstance::Loop, now);
 	msgLoop.PostWork(cc, 1000/60);
 }
 
@@ -105,7 +106,7 @@ void ServerInstance::PostCalc() {
 	if(y <= 0 || (exists && prevY > brickY))
 		velocity.Y = abs(velocity.Y);
 
-	if(y >= SCREENSIZE - 1 && y <= SCREENSIZE && x >= pos && x <= pos + size) {
+	if(y >= SCREENSIZE - 2 && x >= pos && x <= pos + size) {
 		int angle = 45 + (((x - pos)/size) * 90);
 		velocity.Y = sin(angle) * BALLSPEED;
 		velocity.X = cos(angle) * BALLSPEED;

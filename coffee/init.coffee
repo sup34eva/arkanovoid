@@ -21,8 +21,15 @@ while i < 8
 		j++
 	i++
 
-stats = new Stats()
-stats.domElement.style.position = 'absolute'
-stats.domElement.style.left = '0px'
-stats.domElement.style.top = '0px'
-$(document.body).append stats.domElement
+clientStats = new Stats()
+clientStats.domElement.style.position = 'absolute'
+clientStats.domElement.style.left = '0px'
+clientStats.domElement.style.top = '0px'
+$(document.body).append clientStats.domElement
+
+serverStats = new Stats()
+serverStats.setMode 1
+serverStats.domElement.style.position = 'absolute'
+serverStats.domElement.style.left = '80px'
+serverStats.domElement.style.top = '0px'
+$(document.body).append serverStats.domElement
