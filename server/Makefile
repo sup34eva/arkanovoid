@@ -35,11 +35,11 @@ export CYGWIN
 all: server.pexe
 
 clean:
-	$(RM) server.pexe server.bc
+	$(RM) server.pexe .server.bc
 
-server.bc: server.cc
+.server.bc: server.cc
 	$(PNACL_CXX) -o $@ $< -O2 $(CXXFLAGS) $(LDFLAGS)
 
-server.pexe: server.bc
+server.pexe: .server.bc
 	$(PNACL_FINALIZE) -o $@ $<
 

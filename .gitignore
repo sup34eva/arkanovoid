@@ -4,4 +4,4 @@ bower_components/
 forever/
 logs/
 .tmp/
-/server/server.bc
+server/.server.bc
