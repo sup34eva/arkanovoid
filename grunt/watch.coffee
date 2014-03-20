@@ -1,6 +1,6 @@
 module.exports =
 	express:
-		files: ['*.{js,json}']
+		files: ['*.{coffee,json}']
 		tasks: ['express:server', 'notify:express']
 		options:
 			spawn: false
