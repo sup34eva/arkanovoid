@@ -19,7 +19,7 @@ test:
 
 commit:
   - 'test'
-  - 'shell:make'
+  - 'make'
   - 'bump'
 
 default:
