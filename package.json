@@ -1,6 +1,6 @@
 {
 	"name": "arkanoid",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"description": "Arkanoid remake in HTML5 and NaCl",
 	"main": "main.js",
 	"scripts": {
