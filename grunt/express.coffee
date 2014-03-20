@@ -2,7 +2,7 @@ module.exports =
 	server:
 		options:
 			script: 'main.coffee'
-			cmd: 'coffee'
+			cmd: './node_modules/.bin/coffee'
 			port: 3000
 			node_env: 'development'
 			logs:
