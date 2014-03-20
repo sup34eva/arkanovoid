@@ -21,7 +21,7 @@ exports.log = (err, req, res, next) ->
 	next err
 
 exports.format = (err, req, res, next) ->
-	next(new ServerError(err));
+	next new ServerError(err)
 
 exports.xhr = (err, req, res, next) ->
 	if req.xhr

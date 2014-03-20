@@ -1,7 +1,7 @@
 module.exports =
 	dist:
 		files:
-			src: ['coffee/*.coffee']
+			src: ['{grunt,coffee}/*.coffee', '*.coffee']
 		reporter: require('coffeelint-stylish').reporter
 		options:
 			'no_tabs':

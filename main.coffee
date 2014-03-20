@@ -24,8 +24,7 @@ app.use errors.show
 
 handler = (req, res) -> res.render routes[req.route.path].template, routes[req.route.path].args
 
-`for (var i in routes)
-	app.get(i, handler);`
+app.get i, handler for r, i in routes
 
 app.listen port, ->
 	console.log 'Listening on port ' + port
