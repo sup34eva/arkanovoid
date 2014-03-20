@@ -11,3 +11,5 @@ module.exports =
 			'todo': false
 		'build':
 			'include': false
+		'runtime':
+			'threadsafe_fn': false

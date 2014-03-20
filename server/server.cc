@@ -25,7 +25,7 @@ bool ServerInstance::Init(uint32_t argc,
 	// Génération de niveau random
 	for(int x = 0; x < BRICKW; x++) {
 		for(int y = 0, val; y < BRICKH; y++) {
-			val = rand_r() % 5;
+			val = rand() % 5;
 			briques.Set((x * BRICKW) + y, val);
 			if(val > 0 && val < 4)
 				remaining++;
