@@ -3,21 +3,21 @@ errmsg =
 	404: 'Page non trouvée'
 	418: "I'm a teapot"
 
-
 class ServerError extends Error
-	constructor: (code, message) ->
-		if code instanceof Error
-			message = code.message
-			code = code.code
-		@message = message || "Server Error"
-		@code = code || 500
+	constructor: (@code, @message) ->
+		if @code instanceof Error
+			@message = @code.message
+			@code = @code.code
+		@message = @message || "Server Error"
+		@code = @code || 500
 		return
 
 exports.send404 = (req, res) ->
+	console.log 'Path:', req.route.path
 	throw new ServerError 404, 'Not Found'
 
 exports.log = (err, req, res, next) ->
-	console.error err.stack
+	console.error err
 	next err
 
 exports.format = (err, req, res, next) ->
