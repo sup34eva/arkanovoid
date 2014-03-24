@@ -6,8 +6,6 @@ ServerInstance::ServerInstance(PP_Instance instance)
 	: pp::Instance(instance), factory_(this) {
 	remaining = 0;
 	msgLoop = pp::MessageLoop::GetForMainThread();
-	rmTime = 1;
-	rmLoop = 60;
 }
 
 ServerInstance::~ServerInstance() {}
@@ -26,13 +24,11 @@ bool ServerInstance::Init(uint32_t argc,
 	for(int x = 0; x < BRICKW; x++) {
 		for(int y = 0, val; y < BRICKH; y++) {
 			val = rand() % 5;
-			briques.Set((x * BRICKW) + y, val);
+			briques += '0' + val;
 			if(val > 0 && val < 4)
 				remaining++;
 		}
 	}
-
-	// brickChanged = 1;
 
 	x = 0;
 	y = 0;
@@ -57,26 +53,15 @@ void ServerInstance::Loop(int32_t result, clock_t lt) {
 	state.Set("y", y);
 	state.Set("pos", pos);
 	state.Set("size", size);
-	if(brickChanged == 1) {
-		state.Set("brick", briques);
-		brickChanged = 0;
-	}
+	state.Set("brick", briques);
 	state.Set("win", remaining == 0);
 
 	PostMessage(state);
 
 	PostCalc();
 
-	/*rmLoop--;
-	if(rmLoop == 0)
-		rmLoop = 60;
-	rmTime -= double(clock() - lt)/CLOCKS_PER_SEC;
-	if(rmTime <= 0.0)
-		rmTime = 1;*/
-
 	pp::CompletionCallback cc = factory_.NewCallback(&ServerInstance::Loop, now);
 	// TODO: Temps d'attente dynamique en fonction du deltatime courant
-	// msgLoop.PostWork(cc, (rmTime * 1000)/rmLoop);
 	msgLoop.PostWork(cc, 1000/60);
 }
 
@@ -95,15 +80,14 @@ void ServerInstance::Calc(double deltaTime) {
 	// Gestion des collisions basique
 	brickX = x / (100/BRICKW);
 	brickY = y / (100/BRICKH);
-	brick = briques.Get((brickX * BRICKW) + brickY).AsInt();
+	brick = briques[(brickX * BRICKW) + brickY] - '0';
 	exists = brick > 0;
 	breakable = brick < 4;
 
 	if(exists && breakable) {
-		briques.Set((brickX * BRICKW) + brickY, brick - 1);
+		briques[(brickX * BRICKW) + brickY] = brick - 1;
 		if(brick == 1)
 			remaining--;
-		// brickChanged = 1;
 	}
 
 	// TODO: Ajouter des drops
@@ -132,12 +116,12 @@ void ServerInstance::PostCalc() {
 void ServerInstance::message(pp::Var message) {
 	pp::VarDictionary msg(message);
 	// Deplacement de la souris
-	if(msg.Get(pp::Var("name")).AsString() == "m")
-		pos += msg.Get(pp::Var("data")).AsDouble();
+	if(msg.Get("name").AsString() == "m")
+		pos += msg.Get("data").AsDouble();
 	// Touche enfoncée
-	if(msg.Get(pp::Var("name")).AsString() == "+")
-		inputs[msg.Get(pp::Var("data")).AsInt()] = 1;
+	if(msg.Get("name").AsString() == "+")
+		inputs[msg.Get("data").AsInt()] = 1;
 	// Touche relachée
-	if(msg.Get(pp::Var("name")).AsString() == "-")
-		inputs[msg.Get(pp::Var("data")).AsInt()] = 0;
+	if(msg.Get("name").AsString() == "-")
+		inputs[msg.Get("data").AsInt()] = 0;
 }

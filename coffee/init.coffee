@@ -12,14 +12,10 @@ ball = new Ball(two)
 paddle = new Paddle(two)
 
 bricks = []
-i = 0
-while i < 8
+for i in [0 ... 10]
 	bricks[i] = []
-	j = 0
-	while j < 10
-		bricks[i][j] = new Brick(two, j, i)
-		j++
-	i++
+	for j in [0 ... 8]
+		bricks[i][j] = new Brick two, j, i
 
 clientStats = new Stats()
 clientStats.domElement.style.position = 'absolute'

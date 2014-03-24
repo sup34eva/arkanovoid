@@ -36,9 +36,8 @@ class ServerInstance : public pp::Instance {
 		double x,
 			y,
 			pos,
-			size,
-			rmTime;
-		pp::VarArray briques;
+			size;
+		std::string briques;
 		struct Vector velocity;
 		int inputs[222],
 			prevX,
@@ -48,9 +47,7 @@ class ServerInstance : public pp::Instance {
 			brick,
 			remaining,
 			breakable,
-			exists,
-			brickChanged,
-			rmLoop;
+			exists;
 		pp::MessageLoop msgLoop;
 		pp::CompletionCallbackFactory<ServerInstance> factory_;
 
