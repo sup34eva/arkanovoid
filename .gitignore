@@ -5,3 +5,6 @@ forever/
 logs/
 .tmp/
 server/.server.bc
+.bower-cache/
+.bower-registry
+.bower-tmp/

@@ -53,7 +53,7 @@ void ServerInstance::Loop(int32_t result, clock_t lt) {
 	state.Set("y", y);
 	state.Set("pos", pos);
 	state.Set("size", size);
-	state.Set("brick", briques);
+	state.Set("brick", "1");
 	state.Set("win", remaining == 0);
 
 	PostMessage(state);

@@ -18,10 +18,10 @@
 #define BRICKH 10
 #define BRICKW 8
 
-struct Vector {
+typedef struct Vector {
     double X;
     double Y;
-};
+} Vector;
 
 class ServerInstance : public pp::Instance {
 	public:
@@ -38,7 +38,7 @@ class ServerInstance : public pp::Instance {
 			pos,
 			size;
 		std::string briques;
-		struct Vector velocity;
+		Vector velocity;
 		int inputs[222],
 			prevX,
 			prevY,
