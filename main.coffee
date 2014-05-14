@@ -17,11 +17,11 @@ handler = (req, res) ->
 
 app.get i, handler for i of routes
 
-app.use serveStatic('dist')
-app.use '/bootstrap', serveStatic('bower_components/bootstrap/dist')
-app.use '/jquery', serveStatic('bower_components/jquery/dist')
-app.use '/two', serveStatic('bower_components/two/build')
-app.use '/stats', serveStatic('bower_components/stats.js/build')
+app.use express.static('dist')
+app.use '/bootstrap', express.static('bower_components/bootstrap/dist')
+app.use '/jquery', express.static('bower_components/jquery/dist')
+app.use '/two', express.static('bower_components/two/build')
+app.use '/stats', express.static('bower_components/stats.js/build')
 app.use errors.send404
 app.use errors.log
 app.use errors.format
