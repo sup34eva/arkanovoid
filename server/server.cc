@@ -21,6 +21,7 @@ bool ServerInstance::Init(uint32_t argc,
 	srand(time(NULL));
 
 	// Génération de niveau random
+	// TODO: Implementer la méthode de Monte-Carlo (#10)
 	for(int x = 0; x < BRICKW; x++) {
 		for(int y = 0, val; y < BRICKH; y++) {
 			val = rand() % 5;
@@ -53,6 +54,7 @@ void ServerInstance::Loop(int32_t result, clock_t lt) {
 	state.Set("y", y);
 	state.Set("pos", pos);
 	state.Set("size", size);
+	// FIXME: Envoi des briques par delta (#9)
 	state.Set("brick", "1");
 	state.Set("win", remaining == 0);
 
@@ -90,7 +92,7 @@ void ServerInstance::Calc(double deltaTime) {
 			remaining--;
 	}
 
-	// TODO: Ajouter des drops
+	// TODO: Ajouter des drops (#11)
 }
 
 void ServerInstance::PostCalc() {

@@ -8,7 +8,7 @@
 #
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../bower_components/nacl_sdk/pepper_33/)
+NACL_SDK_ROOT ?= $(abspath $(dir $(THIS_MAKEFILE))../bower_components/nacl_sdk/pepper_34/)
 
 WARNINGS := -Wno-long-long -Wall -Wswitch-enum -pedantic -Werror
 CXXFLAGS := -pthread -std=gnu++98 $(WARNINGS)

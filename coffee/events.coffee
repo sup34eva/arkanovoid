@@ -1,4 +1,5 @@
 $(document).keydown((e) ->
+	# FIXME: postMessage se comporte de manière assez aléatoire et ne marche pas tout le temps
 	server.postMessage {name: "+", data: e.which}
 	return
 ).keyup((e) ->

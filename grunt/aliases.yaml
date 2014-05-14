@@ -1,6 +1,5 @@
 coffeescript:
   - 'coffee'
-  - 'uglify'
 
 server:
   - 'express'
@@ -18,8 +17,9 @@ test:
   - 'concurrent:test'
 
 commit:
+  - 'build'
   - 'test'
-  - 'make'
+  - 'todos'
   - 'bump'
 
 default:
