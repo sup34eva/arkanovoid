@@ -2,7 +2,6 @@ node_modules/
 dist/
 bower_components/
 forever/
-logs/
 .tmp/
 server/.server.bc
 .bower-cache/

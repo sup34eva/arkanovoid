@@ -10,5 +10,4 @@ module.exports =
 				'level': 'warn'
 				'value': 130
 			indentation:
-				'level': 'warn'
-				'value': 1
+				'level': 'ignore'

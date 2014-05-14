@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "./node_modules/.bin/grunt test",
-    "start": "./node_modules/.bin/grunt"
+    "start": "./node_modules/.bin/grunt",
+    "postinstall": "npm i -g grunt-cli bower"
   },
   "repository": {
     "type": "git",
