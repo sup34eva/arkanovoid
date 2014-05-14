@@ -6,7 +6,8 @@
   "scripts": {
     "test": "grunt test",
     "start": "grunt",
-    "postinstall": "npm i -g grunt-cli bower"
+    "install": "npm i -g grunt-cli bower",
+    "postinstall": "bower install"
   },
   "repository": {
     "type": "git",
