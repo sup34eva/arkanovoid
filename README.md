@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/hunsdetroyes/arkanoid.png?label=ready&title=Ready)](https://waffle.io/hunsdetroyes/arkanoid)
 # Arkanoid [![Version](https://badge.fury.io/gh/hunsdetroyes%2Farkanoid.png)](http://badge.fury.io/gh/hunsdetroyes%2Farkanoid) [![Dependencies](https://david-dm.org/hunsdetroyes/arkanoid.png?theme=shields.io)](https://david-dm.org/hunsdetroyes/arkanoid) [![Build](https://travis-ci.org/hunsdetroyes/arkanoid.png?branch=master)](https://travis-ci.org/hunsdetroyes/arkanoid) [![Status](http://statusbadge.herokuapp.com/http%3A%2F%2Farkanoid.herokuapp.com%2F)](http://arkanoid.herokuapp.com/)
 Remake en HTML5/NaCl du classique Arkanoid, remake japonais du classique Breakout, remake solo du classique Pong, remake vidéoludique du classique ping-pong.
 
