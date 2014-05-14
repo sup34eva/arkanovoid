@@ -4,8 +4,8 @@
   "description": "Arkanoid remake in HTML5 and NaCl",
   "main": "main.js",
   "scripts": {
-    "test": "./node_modules/.bin/grunt test",
-    "start": "./node_modules/.bin/grunt",
+    "test": "grunt test",
+    "start": "grunt",
     "postinstall": "npm i -g grunt-cli bower"
   },
   "repository": {
