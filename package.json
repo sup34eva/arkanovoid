@@ -8,7 +8,7 @@
     "start": "grunt",
     "preinstall": "npm i -g grunt-cli bower coffee-script",
     "install": "bower install",
-    "postinstall": "grunt nacl:install"
+    "postinstall": "grunt --force nacl:install"
   },
   "repository": {
     "type": "git",
