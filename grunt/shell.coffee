@@ -18,5 +18,6 @@ module.exports =
 		options:
 			stdout: true
 			stderr: true
+			failOnError: false
 			execOptions:
 				cwd: 'server/'
