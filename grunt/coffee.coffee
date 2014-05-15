@@ -3,9 +3,9 @@ module.exports =
 		join: true
 		sourceMap: true
 		banner: "/*! <%= package.title || package.name %> - v<%= package.version %> -
-			<%= grunt.template.today("dd/mm/yyyy") %> -
+			<%= grunt.template.today(\"dd/mm/yyyy\") %> -
 			<%= package.homepage %>\n
-			* Copyright (c) <%= package.author %> <%= grunt.template.today("yyyy") %>;
+			* Copyright (c) <%= package.author %> <%= grunt.template.today(\"yyyy\") %>;
 			Licensed <%= package.license %> */\n"
 	dist:
 		src: [
