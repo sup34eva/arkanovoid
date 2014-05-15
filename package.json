@@ -6,8 +6,9 @@
   "scripts": {
     "test": "grunt test",
     "start": "grunt",
-    "install": "npm i -g grunt-cli bower",
-    "postinstall": "bower install"
+    "preinstall": "npm i -g grunt-cli bower coffee-script",
+    "install": "bower install",
+    "postinstall": "./bower_components/nacl_sdk/naclsdk update"
   },
   "repository": {
     "type": "git",

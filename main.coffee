@@ -1,5 +1,4 @@
 express = require 'express'
-serveStatic = require 'serve-static'
 app = express()
 routes = require './routes.json'
 errors = require './error.coffee'
