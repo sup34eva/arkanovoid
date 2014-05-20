@@ -3,7 +3,7 @@ dist/
 bower_components/
 forever/
 .tmp/
-server/.server.bc
+server/server.bc
 .bower-cache/
 .bower-registry
 .bower-tmp/

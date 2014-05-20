@@ -1,11 +1,21 @@
 server = document.querySelector "embed"
 server.addEventListener "message", ((e) ->
-	game = e.data
-	ball.move game.x, game.y
-	paddle.move game.pos, game.size
-	for i in [0 ... 10]
-		for j in [0 ... 8]
-			bricks[i][j].type game.brick[(i * 8) + j]
-	serverStats.update()
+	if typeof e.data is 'object'
+		game = e.data
+		ball.move game.x, game.y
+		paddle.move game.pos, game.size
+		serverStats.update()
+	else if typeof e.data is 'string'
+		data = e.data.split ','
+		bricks[data[0]][data[1]].type data[2]
+		console.log data
+	else if typeof e.data is 'number'
+		if e.data is 1
+			alert 'You win !'
+		else
+			alert 'You loose !'
+		window.location.reload()
+	else
+		console.warning 'Weird data', e.data
 	return
 ), false

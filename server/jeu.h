@@ -37,7 +37,7 @@ class ServerInstance : public pp::Instance {
 			y,
 			pos,
 			size;
-		std::string briques;
+		int briques[BRICKH][BRICKW];
 		Vector velocity;
 		int inputs[222],
 			prevX,
@@ -47,13 +47,15 @@ class ServerInstance : public pp::Instance {
 			brick,
 			remaining,
 			breakable,
-			exists;
+			exists,
+            finished;
 		pp::MessageLoop msgLoop;
 		pp::CompletionCallbackFactory<ServerInstance> factory_;
 
 		void Calc (double deltaTime);
 		void PostCalc();
 		void message (pp::Var message);
+        void setBrick(int X, int Y, int valeur);
 };
 
 class ServerModule : public pp::Module {
@@ -73,4 +75,3 @@ namespace pp {
 };
 
 #endif
-

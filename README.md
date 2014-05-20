@@ -5,16 +5,12 @@ Remake en HTML5/NaCl du classique Arkanoid, remake japonais du classique Breakou
 Le jeu nécessite nodejs/npm pour lancer le serveur et effectuer la compilation. Une fois nodejs installé, installer les dépendances avec :
 > npm install
 
-npm va installer les dépendances de nodejs. Il faut aussi installer celles de bower avec :
-> bower install
-
-Une fois cela fais, il faut installer le SDK NaCl avec la commande :
-> grunt shell:update
+Cette commande va installer les dépendances npm mais aussi bower et ses dépendances, grunt, coffeescript et le SDK NaCl
 
 Enfin, lancer la commande :
 > grunt
 
-Celle-ci executer la tache par défaut de grunt, qui compile le code puis lance un serveur.
+Celle-ci va executer la tache par défaut de grunt, qui compile le code puis lance un serveur.
 
 ## Taches grunt
 
