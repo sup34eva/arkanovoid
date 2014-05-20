@@ -58,7 +58,6 @@ void ServerInstance::Loop(int32_t result, clock_t lt) {
 	state.Set("y", y);
 	state.Set("pos", pos);
 	state.Set("size", size);
-	state.Set("win", remaining == 0);
 
 	PostMessage(state);
 
@@ -93,8 +92,11 @@ void ServerInstance::Calc(double deltaTime) {
 	if(exists && breakable) {
 		briques[brickY][brickX] = brick - 1;
 		setBrick(brickY, brickX, brick - 1);
-		if(brick == 1)
+		if(brick == 1) {
 			remaining--;
+			finished = 1;
+			PostMessage(1);
+		}
 	}
 
 	// TODO: Ajouter des drops (#11)
@@ -140,6 +142,6 @@ void ServerInstance::message(pp::Var message) {
 
 void ServerInstance::setBrick(int X, int Y, int valeur) {
 	char buffer[10];
-	sprintf(buffer, "%d,%d,%d", X, Y, valeur);
+	snprintf(buffer, "%d,%d,%d", X, Y, valeur);
 	PostMessage(buffer);
 }

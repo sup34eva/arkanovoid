@@ -8,7 +8,6 @@ server.addEventListener "message", ((e) ->
 	else if typeof e.data is 'string'
 		data = e.data.split ','
 		bricks[data[0]][data[1]].type data[2]
-		console.log data
 	else if typeof e.data is 'number'
 		if e.data is 1
 			alert 'You win !'

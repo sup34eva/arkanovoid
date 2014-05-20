@@ -7,3 +7,4 @@ server/server.bc
 .bower-cache/
 .bower-registry
 .bower-tmp/
+npm-debug.log

@@ -1,27 +1,33 @@
-updateViewsize = ->
-  bricks.forEach (a, i) ->
-    a.forEach (b, j) ->
-      poly = two.makeRectangle(two.width/16+(j*two.width/8), two.width/20+(i*two.height/10), two.width/8, two.height/10)
-      bricks[i][j].remove()
-      bricks[i][j] = poly
-      return
-    return
-  return
+goFullscreen = ->
+    viewport.requestFullscreen = viewport.requestFullscreen or viewport.mozRequestFullscreen or viewport.mozRequestFullScreen or viewport.webkitRequestFullscreen
+    viewport.requestFullscreen()
 
 fullscreenChange = ->
-  if document.webkitFullscreenElement is elem
-    elem.requestPointerLock = elem.requestPointerLock or elem.webkitRequestPointerLock
-    elem.requestPointerLock()
-    updateViewsize()
-  return
+    if document.webkitFullscreenElement is viewport or document.mozFullscreenElement is viewport or document.mozFullScreenElement is viewport
+        lockPointer()
 
-elem = viewport.firstElementChild
+document.addEventListener 'fullscreenchange', fullscreenChange, false
+document.addEventListener 'mozfullscreenchange', fullscreenChange, false
+document.addEventListener 'webkitfullscreenchange', fullscreenChange, false
 
-document.addEventListener "fullscreenchange", fullscreenChange, false
-document.addEventListener "webkitfullscreenchange", fullscreenChange, false
-$(document).click ->
-  elem.requestFullscreen = elem.requestFullscreen or elem.webkitRequestFullscreen
-  elem.requestFullscreen()
-  return
+lockPointer = ->
+    viewport.requestPointerLock = viewport.requestPointerLock or viewport.mozRequestPointerLock or viewport.webkitRequestPointerLock
+    viewport.requestPointerLock()
 
-$(window).resize updateViewsize
+pointerLockChange = ->
+    if document.mozPointerLockElement is viewport or document.webkitPointerLockElement is viewport
+        console.log "Pointer Lock was successful."
+    else
+        console.log "Pointer Lock was lost."
+
+document.addEventListener 'pointerlockchange', pointerLockChange, false
+document.addEventListener 'mozpointerlockchange', pointerLockChange, false
+document.addEventListener 'webkitpointerlockchange', pointerLockChange, false
+
+pointerLockError = (e) -> console.log "Error while locking pointer.", e
+
+document.addEventListener 'pointerlockerror', pointerLockError, false
+document.addEventListener 'mozpointerlockerror', pointerLockError, false
+document.addEventListener 'webkitpointerlockerror', pointerLockError, false
+
+$(viewport).click lockPointer

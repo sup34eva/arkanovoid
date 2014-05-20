@@ -15,6 +15,7 @@ module.exports =
 			'coffee/init.coffee'
 			'coffee/draw.coffee'
 			'coffee/server.coffee'
+			'coffee/fullscreen.coffee'
 			'coffee/events.coffee'
 		]
 		dest: 'dist/js/<%= package.name %>.js'
