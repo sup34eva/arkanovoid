@@ -5,12 +5,22 @@ int server_main(int argc, char* argv[]) {
 	PSContext2D_t* context = PSContext2DAllocate(PP_IMAGEDATAFORMAT_BGRA_PREMUL);
 	Jeu gamestate;
 
+	// Charge les interfaces
+	g_pInputEvent =
+		(PPB_InputEvent*) PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
+	g_pKeyboardInput = (PPB_KeyboardInputEvent*)
+		PSGetInterface(PPB_KEYBOARD_INPUT_EVENT_INTERFACE);
+	g_pMouseInput =
+		(PPB_MouseInputEvent*) PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
+
+	fprintf(stderr, "Init");
 	Init(&gamestate);
 
 	while(1) {
 		PSEvent* event;
 		while ((event = PSEventTryAcquire()) != NULL) {
-			HandleEvent(event);
+			if (PSContext2DHandleEvent(context, event) == 0)
+				HandleEvent(event, &gamestate);
 			PSEventRelease(event);
 		}
 
@@ -32,20 +42,18 @@ void Init(Jeu* state) {
 }
 
 // Gère les évenements
-void HandleEvent (PSEvent* event) {
-	if (0 != PSContext2DHandleEvent(context, event))
-		return;
+void HandleEvent(PSEvent* event, Jeu* state) {
 	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
-		switch (GetType(event->as_resource)) {
+		switch (g_pInputEvent->GetType(event->as_resource)) {
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
-				uint32_t key_code = GetKeyCode(event->as_resource);
+				uint32_t key_code = g_pKeyboardInput->GetKeyCode(event->as_resource);
 				switch(key_code) {
 					// TODO: Handle keypress event
 				}
 				break;
 			}
 			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-				PP_Point movement = GetMovement(event->as_resource);
+				//struct PP_Point movement = g_pMouseInput->GetMovement(event->as_resource);
 				// TODO: Handle mouse event
 				break;
 			}
@@ -56,14 +64,14 @@ void HandleEvent (PSEvent* event) {
 }
 
 // Determine si un point est contenu dans un rectangle
-int Contains(PP_Rect rect, PP_Point point) {
-  return (point.X >= rect.point->X) && (point.X < (rect.point->X + rect.size->width)) &&
-         (point.Y >= rect.point->Y) && (point.X < (rect.point->Y + rect.size->height));
+int Contains(struct PP_Rect rect, struct PP_Point point) {
+  return (point.x >= rect.point.x) && (point.x < (rect.point.x + rect.size.width)) &&
+         (point.y >= rect.point.y) && (point.x < (rect.point.y + rect.size.height));
 }
 
 // Determine la distance entre 2 points
-int32_t Dist (PP_Point from, PP_Point to) {
-	return sqrt(pow(from.X - to.X, 2) + pow(from.Y - to.Y, 2));
+int32_t Dist (struct PP_Point from, struct PP_Point to) {
+	return sqrt(pow(from.x - to.x, 2) + pow(from.y - to.y, 2));
 }
 
 // Met a jour l'état du jeu
@@ -73,27 +81,29 @@ void Calc(Jeu* state) {
 }
 
 // Dessine un rectangle dans un contexte
-void DrawRect(PSContext2D_t* ctx, PP_Rect rect, uint32_t color) {
-	int32_t right = rect.point->X + rect.size->width,
-			bottom = rect.point->Y + rect.size->height;
+void DrawRect(PSContext2D_t* ctx, struct PP_Rect rect, uint32_t color) {
+	int32_t px = rect.point.x,
+			py = rect.point.y,
+			right = rect.point.x + rect.size.width,
+			bottom = rect.point.y + rect.size.height;
 
-	for(int px = rect.point->X; px < right; px++) {
-		for(int py = rect.point->Y; py < bottom; py++) {
+	for(; px < right; px++) {
+		for(; py < bottom; py++) {
 			ctx->data[ctx->width * py + px] = color;
 		}
 	}
 }
 
 // Dessine un cercle dans un contexte
-void DrawCircle(PSContext2D_t* ctx, PP_Point center, int32_t radius, uint32_t color) {
-	int32_t x = center.X - radius,
-			y = center.Y - radius,
-			right = center.X + radius,
-			bottom = center.Y + radius;
+void DrawCircle(PSContext2D_t* ctx, struct PP_Point center, int32_t radius, uint32_t color) {
+	int32_t px = center.x - radius,
+			py = center.y - radius,
+			right = center.x + radius,
+			bottom = center.y + radius;
 
-	for(int px = x; px < right; px++) {
-		for(int py = y; py < bottom; py++) {
-			if(Dist(MakePoint(px, py), center) < radius)
+	for(; px < right; px++) {
+		for(; py < bottom; py++) {
+			if(Dist(PP_MakePoint(px, py), center) < radius)
 				ctx->data[ctx->width * py + px] = color;
 		}
 	}
@@ -101,18 +111,21 @@ void DrawCircle(PSContext2D_t* ctx, PP_Point center, int32_t radius, uint32_t co
 
 // Dessine une frame
 void Draw (PSContext2D_t* context, Jeu state) {
+	int i;
 	// Briques
-	for(int i = 0; i < BRICKH * BRICKW; i++) {
-		DrawRect(context, state.bricks[i].rect, state.bricks[i].type);
+	for(i = 0; i < BRICKH * BRICKW; i++) {
+		if(state.bricks[i].type != BRICK_NONE)
+			DrawRect(context, state.bricks[i].surf, state.bricks[i].type);
 	}
 	// Drops
-	for(int i = 0; i < MAXDROP; i++) {
-		DrawRect(context, state.drops[i].pos, GREEN);
+	for(i = 0; i < MAXDROP; i++) {
+		if(state.drops[i].type != DROP_NONE)
+			DrawCircle(context, state.drops[i].pos, 10, COLOR_GREEN);
 	}
 	// Paddle
 	DrawRect(context, state.paddle, COLOR_WHITE);
 	// Balle
-	DrawCircle(context, state.ball, 1, COLOR_WHITE);
+	DrawCircle(context, state.ball.pos, state.ball.radius, COLOR_WHITE);
 }
 
 #ifndef SEL_LDR

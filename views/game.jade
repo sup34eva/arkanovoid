@@ -4,11 +4,14 @@ block styles
 	link(href="/css/client.css", rel="stylesheet")
 
 block content
-	#viewport
+	//#viewport
 	#listener
-		embed(width="0" height="0" src="/server/server.nmf" type="application/x-pnacl")
+		embed(width="500" height="500" src="/server/server.nmf" type="application/x-nacl")
 
-//block scripts
-	script(src="/two/two.min.js")
-	script(src="/stats/stats.min.js")
-	script(src="/js/arkanoid.js")
+block scripts
+	script.
+		var container = document.getElementById('listener');
+		container.addEventListener('message', function(e){console.log(e);}, true);
+	//script(src="/two/two.min.js")
+	//script(src="/stats/stats.min.js")
+	//script(src="/js/arkanoid.js")
