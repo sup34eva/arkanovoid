@@ -8,9 +8,10 @@ int server_main(int argc, char* argv[]) {
 
 	while(1) {
 		PSEvent* event;
-		event = PSEventTryAcquire()
-		HandleEvent(event);
-		PSEventRelease(event);
+		while ((event = PSEventTryAcquire()) != NULL) {
+			HandleEvent(event);
+			PSEventRelease(event);
+		}
 
 		PSContext2DGetBuffer(context);
 		Draw(context);
@@ -22,27 +23,24 @@ int server_main(int argc, char* argv[]) {
 }
 
 void Init(Jeu* state) {
+	PSEventSetFilter(PSE_ALL);
 	// TODO: Initialisation
 }
 
-void HandleEvent (PSEvent* ps_event) {
-	if (0 != PSContext2DHandleEvent(context, ps_event))
+void HandleEvent (PSEvent* event) {
+	if (0 != PSContext2DHandleEvent(context, event))
 		return;
-	if (ps_event->type == PSE_INSTANCE_HANDLEINPUT) {
-		// FIXME: Convert C event to C++
-		pp::InputEvent event(ps_event->as_resource);
-		switch (event.GetType()) {
+	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
+		switch (GetType(event->as_resource)) {
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
-				pp::KeyboardInputEvent key(event);
-				uint32_t key_code = key.GetKeyCode();
+				uint32_t key_code = GetKeyCode(event->as_resource);
 				switch(key_code) {
 					// TODO: Handle keypress event
 				}
 				break;
 			}
-			case PP_INPUTEVENT_TYPE_MOUSEDOWN:
 			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-				pp::MouseInputEvent mouse = pp::MouseInputEvent(event);
+				PP_Point movement = GetMovement(event->as_resource);
 				// TODO: Handle mouse event
 				break;
 			}

@@ -1,5 +1,7 @@
-#ifndef JEU_H
-#define JEU_H
+// Copyright 2014 Huns De Troyes
+
+#ifndef SERVER_JEU_H_
+#define SERVER_JEU_H_
 
 // Charge l'API simple
 #include "ppapi_simple/ps_main.h"
@@ -31,8 +33,8 @@ typedef struct {
 } Jeu;
 
 void Init(Jeu* state);
-void HandleEvent (PSEvent* ps_event);
+void HandleEvent(PSEvent* ps_event);
 void Calc(Jeu* state);
-void Draw (PSContext2D_t* context);
+void Draw(PSContext2D_t* context);
 
-#endif
+#endif  // SERVER_JEU_H_
