@@ -101,7 +101,18 @@ void DrawCircle(PSContext2D_t* ctx, PP_Point center, int32_t radius, uint32_t co
 
 // Dessine une frame
 void Draw (PSContext2D_t* context, Jeu state) {
-	// TODO: Rendu
+	// Briques
+	for(int i = 0; i < BRICKH * BRICKW; i++) {
+		DrawRect(context, state.bricks[i].rect, state.bricks[i].type);
+	}
+	// Drops
+	for(int i = 0; i < MAXDROP; i++) {
+		DrawRect(context, state.drops[i].pos, GREEN);
+	}
+	// Paddle
+	DrawRect(context, state.paddle, COLOR_WHITE);
+	// Balle
+	DrawCircle(context, state.ball, 1, COLOR_WHITE);
 }
 
 #ifndef SEL_LDR
