@@ -1,77 +1,38 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef JEU_H
+#define JEU_H
 
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/var.h"
-#include "ppapi/cpp/var_dictionary.h"
-#include "ppapi/cpp/message_loop.h"
-#include "ppapi/cpp/completion_callback.h"
-#include "ppapi/utility/completion_callback_factory.h"
-#include <sys/time.h>
-#include <time.h>
-#include <math.h>
-#include <string.h>
+// Charge l'API simple
+#include "ppapi_simple/ps_main.h"
+#include "ppapi_simple/ps_context_2d.h"
 
-#define SCREENSIZE 100
-#define BALLSPEED 40
-#define BRICKH 10
+#ifdef SEL_LDR
+#define server_main main
+#endif
+
 #define BRICKW 8
+#define BRICKH 10
+#define MAXDROP 5
 
-typedef struct Vector {
-    double X;
-    double Y;
-} Vector;
+typedef struct {
+	PP_Rect surf;
+	int type;
+} Brick;
 
-class ServerInstance : public pp::Instance {
-	public:
-		explicit ServerInstance (PP_Instance instance);
-		virtual ~ServerInstance ();
-		virtual void HandleMessage (const pp::Var& var_message);
-		virtual bool Init ( uint32_t argc, const char * argn[], const char * argv[]);
-		void Loop (int32_t result, clock_t lt);
+typedef struct {
+	PP_Point pos;
+	int type;
+} Drop;
 
-	protected:
-		pp::VarDictionary state;
-		double x,
-			y,
-			pos,
-			size;
-		int briques[BRICKH][BRICKW];
-		Vector velocity;
-		int inputs[222],
-			prevX,
-			prevY,
-			brickX,
-			brickY,
-			brick,
-			remaining,
-			breakable,
-			exists,
-            finished;
-		pp::MessageLoop msgLoop;
-		pp::CompletionCallbackFactory<ServerInstance> factory_;
+typedef struct {
+	PP_Point ball;
+	PP_Rect paddle;
+	Brick bricks[BRICKW * BRICKH];
+	Drop drops[MAXDROP];
+} Jeu;
 
-		void Calc (double deltaTime);
-		void PostCalc();
-		void message (pp::Var message);
-        void setBrick(int X, int Y, int valeur);
-};
-
-class ServerModule : public pp::Module {
-	public:
-		ServerModule () : pp::Module() {}
-		virtual ~ServerModule () {}
-
-		virtual pp::Instance* CreateInstance (PP_Instance instance) {
-			return new ServerInstance (instance);
-		}
-};
-
-namespace pp {
-	Module* CreateModule() {
-		return new ServerModule();
-	}
-};
+void Init(Jeu* state);
+void HandleEvent (PSEvent* ps_event);
+void Calc(Jeu* state);
+void Draw (PSContext2D_t* context);
 
 #endif

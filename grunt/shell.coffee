@@ -14,7 +14,7 @@ module.exports =
 			execOptions:
 				cwd: 'bower_components/nacl_sdk'
 	make:
-		command: 'make'
+		command: '.\make.bat'
 		options:
 			stdout: true
 			stderr: true
