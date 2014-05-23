@@ -15,6 +15,11 @@
 #define BRICKH 10
 #define MAXDROP 5
 
+#define RED 	0xffff0000
+#define GREEN	0xff00ff00
+#define BLUE	0xff0000ff
+
+// Structures de base du jeu : les briques, les drops, et le jeu en lui même
 typedef struct {
 	PP_Rect surf;
 	int type;
