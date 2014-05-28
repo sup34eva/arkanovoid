@@ -17,5 +17,11 @@
 			"title": "500 Server Error",
 			"message": "Le serveur a rencontré une erreur"
 		}
+	},
+	"/shop": {
+		"template": "shop",
+		"args": {
+			"title": "Shop"
+		}
 	}
 }
