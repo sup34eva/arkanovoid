@@ -4,6 +4,9 @@
 int server_main(int argc, char* argv[]) {
 	PSContext2D_t* context = PSContext2DAllocate(PP_IMAGEDATAFORMAT_BGRA_PREMUL);
 	Jeu gamestate;
+	
+	PP_Var var = PP_MakeDouble(4.2);
+	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), var);
 
 	// Charge les interfaces
 	g_pInputEvent =
@@ -13,22 +16,22 @@ int server_main(int argc, char* argv[]) {
 	g_pMouseInput =
 		(PPB_MouseInputEvent*) PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
 
-	fprintf(stderr, "Init");
 	Init(&gamestate);
 
-	while(1) {
+	while (true) {
 		PSEvent* event;
+
+		// Consume all available events
 		while ((event = PSEventTryAcquire()) != NULL) {
-			if (PSContext2DHandleEvent(context, event) == 0)
-				HandleEvent(event, &gamestate);
+			PSContext2DHandleEvent(context, event);
 			PSEventRelease(event);
 		}
-
+		
 		Calc(&gamestate);
 
-		PSContext2DGetBuffer(context);
-		Draw(context, gamestate);
-		PSContext2DSwapBuffer(context);
+		if (context->bound) {
+			Draw(context, gamestate);
+		}
 	}
 
 	PSContext2DFree(context);
@@ -85,10 +88,10 @@ void DrawRect(PSContext2D_t* ctx, struct PP_Rect rect, uint32_t color) {
 	int32_t px = rect.point.x,
 			py = rect.point.y,
 			right = rect.point.x + rect.size.width,
-			bottom = rect.point.y + rect.size.height;
+			bottom = rect.point.y - rect.size.height;
 
 	for(; px < right; px++) {
-		for(; py < bottom; py++) {
+		for(; py > bottom; py--) {
 			ctx->data[ctx->width * py + px] = color;
 		}
 	}
@@ -97,12 +100,12 @@ void DrawRect(PSContext2D_t* ctx, struct PP_Rect rect, uint32_t color) {
 // Dessine un cercle dans un contexte
 void DrawCircle(PSContext2D_t* ctx, struct PP_Point center, int32_t radius, uint32_t color) {
 	int32_t px = center.x - radius,
-			py = center.y - radius,
+			py = center.y + radius,
 			right = center.x + radius,
-			bottom = center.y + radius;
+			bottom = center.y - radius;
 
 	for(; px < right; px++) {
-		for(; py < bottom; py++) {
+		for(; py > bottom; py--) {
 			if(Dist(PP_MakePoint(px, py), center) < radius)
 				ctx->data[ctx->width * py + px] = color;
 		}
@@ -110,22 +113,33 @@ void DrawCircle(PSContext2D_t* ctx, struct PP_Point center, int32_t radius, uint
 }
 
 // Dessine une frame
-void Draw (PSContext2D_t* context, Jeu state) {
+void Draw (PSContext2D_t* ctx, Jeu state) {
+	PSContext2DGetBuffer(ctx);
+
+	if (NULL == ctx->data)
+		return;
+	
 	int i;
+	
 	// Briques
 	for(i = 0; i < BRICKH * BRICKW; i++) {
 		if(state.bricks[i].type != BRICK_NONE)
-			DrawRect(context, state.bricks[i].surf, state.bricks[i].type);
+			DrawRect(ctx, state.bricks[i].surf, state.bricks[i].type);
 	}
+	
 	// Drops
 	for(i = 0; i < MAXDROP; i++) {
 		if(state.drops[i].type != DROP_NONE)
-			DrawCircle(context, state.drops[i].pos, 10, COLOR_GREEN);
+			DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
 	}
+	
 	// Paddle
-	DrawRect(context, state.paddle, COLOR_WHITE);
+	DrawRect(ctx, state.paddle, COLOR_WHITE);
+	
 	// Balle
-	DrawCircle(context, state.ball.pos, state.ball.radius, COLOR_WHITE);
+	DrawCircle(ctx, state.ball.pos, state.ball.radius, COLOR_WHITE);
+	
+	PSContext2DSwapBuffer(ctx);
 }
 
 #ifndef SEL_LDR

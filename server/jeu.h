@@ -7,10 +7,17 @@
 #include <math.h>
 
 // Charge l'API simple
-#include "ppapi_simple/ps_main.h"
-#include "ppapi_simple/ps_event.h"
-#include "ppapi/c/ppb_input_event.h"
+#include "ppapi_simple/ps.h"
 #include "ppapi_simple/ps_context_2d.h"
+#include "ppapi_simple/ps_event.h"
+#include "ppapi_simple/ps_interface.h"
+#include "ppapi_simple/ps_main.h"
+
+#ifdef WIN32
+#undef PostMessage
+#endif
+
+#include "ppapi/c/ppb_input_event.h"
 
 #ifdef SEL_LDR
 #define server_main main
@@ -83,6 +90,6 @@ PPB_MouseInputEvent* g_pMouseInput;
 void Init(Jeu* state);
 void HandleEvent(PSEvent* event, Jeu* state);
 void Calc(Jeu* state);
-void Draw (PSContext2D_t* context, Jeu state);
+void Draw (PSContext2D_t* ctx, Jeu state);
 
 #endif  // SERVER_JEU_H_
