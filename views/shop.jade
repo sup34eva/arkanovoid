@@ -1,0 +1,26 @@
+extends layout
+block styles
+	link(href="css/shop.css" rel="stylesheet")
+
+block content
+	.container 
+		each row in [1, 2]
+			.row
+				each col in [1, 2, 3]
+					.col-md-4 
+						.thumbnail
+							img.power(src="holder.js/250x250" alt="image du pouvoir" class="img-circle")
+							.caption
+								h3 power
+								p
+									a.btn.btn-primary(href="check" class="button")
+										i.fa.fa-lg.fa-check
+										| &nbsp;Valider
+									a.btn.btn-danger(href="uncheck" class="button")
+										i.fa.fa-lg.fa-times
+										| &nbsp;Annuler
+
+									
+		
+block scripts
+	script(src="//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder.js")
