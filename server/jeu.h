@@ -59,12 +59,7 @@ typedef enum {
 	DROP_SPEED_PLUS
 } DropType;
 
-// Structures de base du jeu : les briques, les drops, et le jeu en lui même
-typedef struct {
-	struct PP_Rect surf;
-	BrickType type;
-} Brick;
-
+// Structures de base du jeu : les drops, et le jeu en lui même
 typedef struct {
 	struct PP_Point pos;
 	DropType type;
@@ -79,7 +74,8 @@ typedef struct {
 typedef struct {
 	Ball ball;
 	struct PP_Rect paddle;
-	Brick bricks[BRICKW * BRICKH];
+	BrickType bricks[BRICKW][BRICKH];
+	int brickCount;
 	Drop drops[MAXDROP];
 } Jeu;
 
@@ -87,9 +83,9 @@ PPB_InputEvent* g_pInputEvent;
 PPB_KeyboardInputEvent* g_pKeyboardInput;
 PPB_MouseInputEvent* g_pMouseInput;
 
-void Init(Jeu* state);
+void Init(PSContext2D_t*, Jeu* state);
 void HandleEvent(PSEvent* event, Jeu* state);
-void Calc(Jeu* state);
+void Calc(PSContext2D_t* ctx, Jeu* state);
 void Draw (PSContext2D_t* ctx, Jeu state);
 
 #endif  // SERVER_JEU_H_

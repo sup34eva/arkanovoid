@@ -7,7 +7,7 @@
 
 VALID_TOOLCHAINS := newlib glibc pnacl
 
-NACL_SDK_ROOT = $(abspath $(CURDIR)/../bower_components/nacl_sdk/pepper_33/)
+NACL_SDK_ROOT ?= $(abspath $(CURDIR)/../bower_components/nacl_sdk/pepper_32/)
 include $(NACL_SDK_ROOT)/tools/common.mk
 
 

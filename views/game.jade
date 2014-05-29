@@ -11,7 +11,7 @@ block content
 block scripts
 	script.
 		var container = document.getElementById('listener');
-		container.addEventListener('message', function(e){console.log(e);}, true);
+		container.addEventListener('message', function(e){console.log(e.data);}, true);
 	//script(src="/two/two.min.js")
 	//script(src="/stats/stats.min.js")
 	//script(src="/js/arkanoid.js")

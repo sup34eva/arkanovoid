@@ -1,6 +1,6 @@
 module.exports =
 	update:
-		command: './naclsdk update'
+		command: '.\\naclsdk update pepper_32'
 		options:
 			stdout: true
 			stderr: true

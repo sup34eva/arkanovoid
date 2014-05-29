@@ -19,3 +19,4 @@ module.exports =
 			'coffee/events.coffee'
 		]
 		dest: 'dist/js/<%= package.name %>.js'
+	'dist/js/shop/js' : 'coffee/shop.coffee'
