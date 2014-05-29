@@ -24,7 +24,7 @@ module.exports =
 			spawn: false
 			livereload: 35729
 	server:
-		files: ['server/**/*.{c,cc,cpp}']
+		files: ['server/**/*.{c,cc,cpp,h}']
 		tasks: ['make', 'notify:server']
 		options:
 			spawn: false

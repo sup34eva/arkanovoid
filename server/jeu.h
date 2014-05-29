@@ -61,13 +61,13 @@ typedef enum {
 
 // Structures de base du jeu : les drops, et le jeu en lui même
 typedef struct {
-	struct PP_Point pos;
+	PP_FloatPoint pos;
 	DropType type;
 } Drop;
 
 typedef struct {
-	struct PP_Point pos;
-	struct PP_Size velocity;
+	PP_FloatPoint pos;
+	PP_FloatPoint velocity;
 	uint32_t radius;
 } Ball;
 
@@ -86,6 +86,6 @@ PPB_MouseInputEvent* g_pMouseInput;
 void Init(PSContext2D_t*, Jeu* state);
 void HandleEvent(PSEvent* event, Jeu* state);
 void Calc(PSContext2D_t* ctx, Jeu* state);
-void Draw (PSContext2D_t* ctx, Jeu state);
+void Draw(PSContext2D_t* ctx, Jeu state);
 
 #endif  // SERVER_JEU_H_
