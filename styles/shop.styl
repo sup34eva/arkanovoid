@@ -1,14 +1,54 @@
-.power
-	margin-top 25px
-	border-color #66afe9
-	outline 0
-	box-shadow inset 0 1px 1px rgba(0,0,0,.075), 0 0 50px rgba(102, 175, 233, .6)
+body
+	background-color #9cdaf8	
 
 .thumbnail
-	margin-top 25px
+	margin-top 50px
+	background-color #d4f0fd
+	border-color #4bb3e5
+
+	img
+		-webkit-filter: grayscale(100%) brightness(50%)
+		transition: box-shadow 1s, -webkit-filter 1s
+		-webkit-filter: 1s
+		margin-top 25px
+		outline 0
+
+	&:not([data-amount="0"]) img
+		box-shadow: 0 0 50px #70c7f0;
+		-webkit-filter: grayscale(0) brightness(1);
 
 .button
+	margin-top 5px
 	margin-left 15%
 
 .titre
-	margin-left 50%
+	text-align center
+
+.nav-tabs
+	padding-right 0
+	position absolute 
+	right 0
+	top 10px
+	a
+		color Black
+		font-size 20px
+
+.desc 
+	text-align center
+	margin-top 5px
+
+.thumbnail::after
+	content: attr(data-amount)
+	position: absolute
+	top: 15%
+	right: 42%
+	z-index: 1000
+	font-size: 100px
+	color: #000
+	opacity: 0.5
+
+.form 
+	margin-top 5px
+	margin-left 15%
+
+				
