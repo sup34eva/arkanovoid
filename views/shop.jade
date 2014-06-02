@@ -3,44 +3,30 @@ block styles
 	link(href="css/shop.css" rel="stylesheet")
 
 block content
-	h1.titre
-		a(href='/') Arkanoid
-	ul.nav.nav-tabs
-		li
-			a(href='/') Accueil
-		li
-			a(href='/game') Jeu
-		li.active
-			a(href='/shop') Shop
-		li
-			a(href='/about') A propos
-		
-
-	.container
-		each row, index in items
-			.row
-				each col in row
-					.col-md-4 
-						.thumbnail(data-amount="0")
-							img.img-circle(src="img/#{col.image}" alt=col.name)
-							.caption
-								h3.titre= col.name
-								p.desc
-									desc= col.description
-								p
-									form(action='/postNumber' method='post')
-										.input-group
-											if index > 0
-												span.input-group-addon
-													input(type="checkbox" name="alltime" value="checkbox" title="All time")
-											input.form-control(name='number' type='number' value='1' min='1' max='10')
-											.input-group-btn
-												button.btn.btn-primary(type="button" data-item=col.id)
-													i.fa.fa-lg.fa-check
-													| &nbsp;Valider
-												button.btn.btn-danger(type="button")
-													i.fa.fa-lg.fa-times
-													| &nbsp;Annuler
+	each row, index in items
+		.row
+			each col in row
+				.col-md-4 
+					.thumbnail(data-amount="0")
+						img.img-circle(src="img/#{col.image}" alt=col.name)
+						.caption
+							h3.titre= col.name
+							p.desc
+								desc= col.description
+							p
+								form(data-item=col.id)
+									.input-group
+										if index > 0
+											span.input-group-addon
+												input(type="checkbox" name="alltime" value="checkbox" title="All time")
+										input.form-control(name='number' type='number' value='1' min='1' max='10')
+										.input-group-btn
+											button.btn.btn-primary(type="submit")
+												i.fa.fa-lg.fa-check
+												| &nbsp;Valider
+											button.btn.btn-danger(type="reset")
+												i.fa.fa-lg.fa-times
+												| &nbsp;Annuler
 									
 			
 		

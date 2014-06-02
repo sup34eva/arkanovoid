@@ -44,8 +44,9 @@ $('.thumbnail').each((i) ->
     $(this).attr('data-amount', Math.floor(Math.random() * 10))
 )
 
-$('.btn-primary').click (e) ->
+$('form').submit (e) ->
+    e.preventDefault()
     itemid = $(this).attr 'data-item'
-    for i in [0...$(this).parent().parent().children('input').val()]
+    for i in [0...$(this).find('input').val()]
         addItemForPerson 1, itemid
         console.log i
