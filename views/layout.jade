@@ -9,7 +9,39 @@ html(lang="fr")
 		link(href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet")
 		block styles
 	body
-		block content
+		.container
+			.row
+				a.page-header(href="/index")
+					h1 ArkanoVoid&nbsp&nbsp
+						small Huns de Troyes
+
+			.row
+				ul.nav.nav-pills.nav-justified
+					li.active
+						a(href="/index")
+							i.fa.fa-lg.fa-fw.fa-home
+							| &nbsp&nbspAccueil
+					li
+						a(href="/game")
+							i.fa.fa-lg.fa-fw.fa-gamepad
+							| &nbsp&nbspJeu
+					li
+						a(href="/connect")
+							i.fa.fa-lg.fa-fw.fa-power-off
+							| &nbsp&nbspConnection
+					li
+						a(href="/shop")
+							i.fa.fa-lg.fa-fw.fa-shopping-cart
+							| &nbsp&nbspBoutique
+					li
+						a(href="/contact") 
+							i.fa.fa-lg.fa-fw.fa-envelope
+							| &nbsp&nbspContact
+					li
+						a(href="/about")
+							i.fa.fa-lg.fa-fw.fa-question
+							| &nbsp&nbspA propos
+			block content
 		script(src="/jquery/jquery.min.js")
 		script(src="/bootstrap/js/bootstrap.min.js")
 		block scripts
