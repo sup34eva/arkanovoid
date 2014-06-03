@@ -4,28 +4,13 @@ block styles
 	link(href="/css/cover.css", rel="stylesheet")
 
 block content
-	.site-wrapper
-		.site-wrapper-inner
-			.cover-container
-				.masthead.clearfix
-					.inner
-						h3.masthead-brand Arkanoid
-						ul.nav.masthead-nav
-							li.active
-								a(href='/') Accueil
-							li
-								a(href='/game') Jeu
-							li
-								a(href='/shop') Shop
-							li
-								a(href='/about') A propos
-							
+	.row
+		.col-md-12.well
 			.inner.cover
-				h1.cover-heading Arkanoid
-				p.lead Achtéémel sinque et Hénaséhel
+				h1.cover-heading ArkanoVoid
+				p.lead Ashtéhemellent sainquent hé Hénasséhellent
 				p.lead
-					a.btn.btn-lg.btn-default(href='/game') Lancer le jeu
-			.mastfoot
-				.inner
-					p Huns de Troyes
-
+					a.btn.btn-lg.btn-default(href='/game')
+						i.fa.fa-lg.fa-play
+						| &nbsp&nbspLancer le jeu
+					p.lead Le but du jeu est de détruire toutes les briques en déviant la balle à l'aide de la paddle. La balle rebondit sur les murs et les briques. Certaines briques doivent être touchées plus d'une fois avant d'être détruites. D'autres briques sont incassables.
