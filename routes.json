@@ -1,4 +1,4 @@
-{
+﻿{
 	"/": {
 		"template": "index",
 		"args": {
@@ -27,19 +27,19 @@
 					{
 						"name": "Giant paddle",
 						"description": "La paddle est agrandit",
-						"image": "giant.jpg",
+						"image": "giant.png",
 						"id": 3
 					},
 					{
 						"name": "Minimum Speed",
 						"description": "Reduit la vitesse de la balle",
-						"image": "frozen.jpg",
+						"image": "frozen.png",
 						"id": 4
 					},
 					{
 						"name": "Rocket Paddle",
 						"description": "La paddle",
-						"image": "rocket.jpg",
+						"image": "rocket.png",
 						"id": 11
 					}	
 				],
@@ -47,19 +47,19 @@
 					{
 						"name": "Balle explosive",
 						"description": "Balle qui explose en contact des briques",
-						"image": "exp.jpg",
+						"image": "exp.png",
 						"id": 7
 					},
 					{
 						"name": "Paddle stick",
 						"description": "Paddle qui accroche la balle",
-						"image": "colle.jpg",
+						"image": "stick.png",
 						"id": 5
 					},
 					{
 						"name": "Double balle",
 						"description": "Permet de lancer 2 balles",
-						"image": "double.jpg",
+						"image": "double.png",
 						"id": 9
 					}
 				]
