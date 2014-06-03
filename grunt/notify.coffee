@@ -11,6 +11,10 @@ module.exports =
 		options:
 			title: 'Serveur redémarré'
 			message: 'Le serveur a redémarré suite a des changements.'
+	jade:
+		options:
+			title: 'Jade rechargé'
+			message: 'La page a été actualisée'
 	img:
 		options:
 			title: 'Images minifiées'

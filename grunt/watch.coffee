@@ -5,6 +5,12 @@ module.exports =
 		options:
 			spawn: false
 			livereload: 35729
+	jade:
+		files: ['*.{jade}']
+		tasks: ['notify:jade']
+		options:
+			spawn: false
+			livereload: 35729
 	coffee:
 		files: ['coffee/**/*.coffee']
 		tasks: ['coffeescript', 'notify:coffee']

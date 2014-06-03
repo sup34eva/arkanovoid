@@ -22,12 +22,12 @@ int server_main(int argc, char* argv[]) {
 			// TODO: Activer la reception d'evenements
 			while ((event = PSEventTryAcquire()) != NULL) {
 				PSContext2DHandleEvent(context, event);
+				HandleEvent(event, &gamestate, context);
 				PSEventRelease(event);
 			}
 
-			Calc(context, &gamestate);
-
 			if (context->bound) {
+				Calc(context, &gamestate);
 				Draw(context, gamestate);
 			}
 	}
@@ -36,7 +36,7 @@ int server_main(int argc, char* argv[]) {
 	return 0;
 }
 
-void PostNumber(int32_t num) {
+void PostNumber(float num) {
 	PP_Var var = PP_MakeDouble(num);
 	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), var);
 }
@@ -46,17 +46,21 @@ int32_t Dist (struct PP_FloatPoint from, struct PP_FloatPoint to) {
 	return sqrt(pow(from.x - to.x, 2) + pow(from.y - to.y, 2));
 }
 
+void MouseLockCallback (void* a, int32_t b) {}
+
 // Initialise l'état de la partie
 void Init(PSContext2D_t* ctx, Jeu* state) {
-	PSEventSetFilter(PSE_ALL);
+	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
+	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_KEYBOARD);
+	
+	/*PP_CompletionCallback cb;
+	cb.flags = 0;
+	cb.user_data = ctx;
+	cb.func = MouseLockCallback;
+	s_MouseLock = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
+	s_MouseLock->LockMouse(PSGetInstanceId(), cb);*/
 
 	srand(6841);
-
-	state->ball.pos = PP_MakeFloatPoint(0, 0);
-	state->ball.velocity = PP_MakeFloatPoint(2, 3);
-	state->ball.radius = 5;
-
-	state->paddle = PP_MakeRectFromXYWH(0, 0, 100, 20);
 
 	int i, j;
 	state->brickCount = 0;
@@ -91,26 +95,39 @@ void Init(PSContext2D_t* ctx, Jeu* state) {
 		state->drops[i].pos = PP_MakeFloatPoint(0, 0);
 		state->drops[i].type = DROP_NONE;
 	}
+	
+	state->ball.pos = PP_MakeFloatPoint(250, 450);
+	state->ball.velocity = PP_MakeFloatPoint(sin((PI / 180) * STARTANGLE) * BALLSPEED, cos((PI / 180) * STARTANGLE) * BALLSPEED);
+	state->ball.radius = 5;
+
+	state->paddle = PP_MakeRectFromXYWH(0, 0, 100, 20);
 
 }
 
+float clamp(float val, float low, float high) {
+	return fmin(fmax(val, low), high);
+}
+
 // Gère les évenements
-void HandleEvent(PSEvent* event, Jeu* state) {
+void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
 		switch (g_pInputEvent->GetType(event->as_resource)) {
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
 				uint32_t key_code = g_pKeyboardInput->GetKeyCode(event->as_resource);
 				PostNumber(key_code);
 				switch(key_code) {
-					// TODO: Gestion des touches
+					case 39:
+						state->paddle.point.x += ctx->width / 50;
+						break;
+					case 37:
+						state->paddle.point.x -= ctx->width / 50;
+						break;
 				}
 				break;
 			}
 			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
 				struct PP_Point movement = g_pMouseInput->GetMovement(event->as_resource);
-				PostNumber(movement.x);
-				PostNumber(movement.y);
-				//TODO: Gestion de la souris
+				state->paddle.point.x += movement.x;
 				break;
 			}
 			default:
@@ -125,15 +142,13 @@ int Contains(struct PP_Rect rect, PP_FloatPoint point) {
          (point.y >= rect.point.y) && (point.x < (rect.point.y + rect.size.height));
 }
 
-float clamp(float val, float low, float high) {
-	return fmin(fmax(val, low), high);
-}
-
 // Met a jour l'état du jeu
 void Calc(PSContext2D_t* ctx, Jeu* state) {
 	int h = ctx->height / BRICKH, w = ctx->width / BRICKW,
 		lastX = clamp(state->ball.pos.x, 1, ctx->width), lastY = clamp(state->ball.pos.y, 1, ctx->height);
 
+	state->paddle.point.x = clamp(state->paddle.point.x, 0, ctx->width - state->paddle.size.width);
+	
 	state->ball.pos.x += state->ball.velocity.x;
 	state->ball.pos.y += state->ball.velocity.y;
 
@@ -152,9 +167,13 @@ void Calc(PSContext2D_t* ctx, Jeu* state) {
 		state->ball.velocity.y = abs(state->ball.velocity.y);
 	}
 
-	if(state->ball.pos.y + state->ball.radius >= ctx->height - state->paddle.size.height) {
+	if(state->ball.pos.y + state->ball.radius >= ctx->height - state->paddle.size.height && state->ball.pos.x >= state->paddle.point.x && state->ball.pos.x <= state->paddle.point.x + state->paddle.size.width) {
 		state->ball.pos.y = ctx->height - (state->paddle.size.height + state->ball.radius + 1);
-		state->ball.velocity.y = -abs(state->ball.velocity.y);
+		float angle = ((90 * ((state->ball.pos.x - state->paddle.point.x) / state->paddle.size.width)) / 2) - (45 / 2),
+			x = sin((PI / 180) * angle) * BALLSPEED,
+			y = cos((PI / 180) * angle) * BALLSPEED;
+		state->ball.velocity.x = x;
+		state->ball.velocity.y = -y;
 	}
 
 	// TODO: Prendre en compte le rayon de la balle
@@ -180,16 +199,16 @@ void Calc(PSContext2D_t* ctx, Jeu* state) {
 
 			//TODO: Ajouter des drops
 
-			if(brickX > lastBrickX)
+			if(((state->ball.pos.x + state->ball.radius) / w) > lastBrickX)
 				state->ball.velocity.x = -abs(state->ball.velocity.x);
 
-			if(brickX < lastBrickX)
+			if(((state->ball.pos.x - state->ball.radius) / w) < lastBrickX)
 				state->ball.velocity.x = abs(state->ball.velocity.x);
 
-			if(brickY > lastBrickY)
+			if(((state->ball.pos.y + state->ball.radius) / h) > lastBrickY)
 				state->ball.velocity.y = -abs(state->ball.velocity.y);
 
-			if(brickY < lastBrickY)
+			if(((state->ball.pos.y - state->ball.radius) / h) < lastBrickY)
 				state->ball.velocity.y = abs(state->ball.velocity.y);
 		}
 	}
@@ -248,7 +267,6 @@ void Draw (PSContext2D_t* ctx, Jeu state) {
 	}
 	
 	// Paddle
-	state.paddle.point.x = state.ball.pos.x - ((state.paddle.size.width / 2) + (state.ball.radius / 2));
 	state.paddle.point.y = ctx->height - state.paddle.size.height;
 	DrawRect(ctx, state.paddle, COLOR_WHITE);
 
