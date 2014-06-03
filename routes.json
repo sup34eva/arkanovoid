@@ -21,7 +21,49 @@
 	"/shop": {
 		"template": "shop",
 		"args": {
-			"title": "Shop"
+			"title": "Shop",
+			"items": [
+				[
+					{
+						"name": "Giant paddle",
+						"description": "La paddle est agrandit",
+						"image": "giant.jpg",
+						"id": 3
+					},
+					{
+						"name": "Minimum Speed",
+						"description": "Reduit la vitesse de la balle",
+						"image": "frozen.jpg",
+						"id": 4
+					},
+					{
+						"name": "Rocket Paddle",
+						"description": "La paddle",
+						"image": "rocket.jpg",
+						"id": 11
+					}	
+				],
+				[
+					{
+						"name": "Balle explosive",
+						"description": "Balle qui explose en contact des briques",
+						"image": "exp.jpg",
+						"id": 7
+					},
+					{
+						"name": "Paddle stick",
+						"description": "Paddle qui accroche la balle",
+						"image": "colle.jpg",
+						"id": 5
+					},
+					{
+						"name": "Double balle",
+						"description": "Permet de lancer 2 balles",
+						"image": "double.jpg",
+						"id": 9
+					}
+				]
+			]
 		}
 	}
 }
