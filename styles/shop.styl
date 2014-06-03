@@ -16,6 +16,16 @@ body
 		box-shadow: 0 0 50px #70c7f0;
 		-webkit-filter: grayscale(0) brightness(1);
 
+.thumbnail::after
+	content: attr(data-amount)
+	position: absolute
+	top: 3%
+	right: 42%
+	z-index: 1000
+	font-size: 100px
+	color: #000
+	opacity: 0.5
+
 .button
 	margin-top 5px
 	margin-left 15%
@@ -23,28 +33,9 @@ body
 .titre
 	text-align center
 
-.nav-tabs
-	padding-right 0
-	position absolute 
-	right 0
-	top 10px
-	a
-		color Black
-		font-size 20px
-
 .desc 
 	text-align center
 	margin-top 5px
-
-.thumbnail::after
-	content: attr(data-amount)
-	position: absolute
-	top: 15%
-	right: 42%
-	z-index: 1000
-	font-size: 100px
-	color: #000
-	opacity: 0.5
 
 .form 
 	margin-top 5px
