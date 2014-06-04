@@ -8,7 +8,9 @@ app.set 'view engine', 'jade'
 
 app.use require('compression')()
 app.use require('morgan')('tiny')
-app.use require('connect-livereload')()
+app.use require('connect-livereload')(
+	port: 35729
+)
 
 handler = (req, res) ->
 	res.render routes[req.route.path].template, routes[req.route.path].args
