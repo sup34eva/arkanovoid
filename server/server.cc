@@ -1,4 +1,5 @@
-#include "jeu.h"
+// Copyright 2014 Huns de Troyes
+#include "include/jeu.h"
 
 // Fonction main du programme
 int server_main(int argc, char* argv[]) {
@@ -16,7 +17,6 @@ int server_main(int argc, char* argv[]) {
 	Init(context, &gamestate);
 
 	while (gamestate.brickCount > 0) {
-		
 			PSEvent* event;
 
 			// TODO: Activer la reception d'evenements
@@ -36,23 +36,41 @@ int server_main(int argc, char* argv[]) {
 	return 0;
 }
 
-void PostNumber(float num) {
-	PP_Var var = PP_MakeDouble(num);
-	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), var);
+void PostMessage(const char *format, ...) {
+	va_list ap;
+	char buffer[100];
+	va_start(ap, format);
+	vsnprintf(buffer, sizeof buffer, format, ap);
+	va_end(ap);
+	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(),
+										PSInterfaceVar()->VarFromUtf8(buffer,
+																	  sizeof buffer));
+}
+
+void PostNumber(double num) {
+	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), PP_MakeDouble(num));
 }
 
 // Determine la distance entre 2 points
-int32_t Dist (struct PP_FloatPoint from, struct PP_FloatPoint to) {
+float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to) {
 	return sqrt(pow(from.x - to.x, 2) + pow(from.y - to.y, 2));
 }
 
-void MouseLockCallback (void* a, int32_t b) {}
+/*Texture makeTexture(uint8_t* data, PP_Size size, int format) {
+	int i;
+	Texture tex;
+	tex.size = size;
+	for(i = 0; i < size.height * size.width; i += 4)
+		tex.data[i] = RGBA(data[i], data[i+1], data[i+2], data[i+3]);
+	return tex;
+}*/
 
 // Initialise l'état de la partie
 void Init(PSContext2D_t* ctx, Jeu* state) {
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
-	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_KEYBOARD);
-	
+	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
+												  PP_INPUTEVENT_CLASS_KEYBOARD);
+
 	/*PP_CompletionCallback cb;
 	cb.flags = 0;
 	cb.user_data = ctx;
@@ -60,34 +78,34 @@ void Init(PSContext2D_t* ctx, Jeu* state) {
 	s_MouseLock = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
 	s_MouseLock->LockMouse(PSGetInstanceId(), cb);*/
 
-	srand(6841);
+	srand(time(NULL));
 
 	int i, j;
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
 		for(j = 0; j < BRICKH; j++) {
-			if(j < BRICKH - 2)
+			if(j < BRICKH - 2) {
 				switch(rand() % 5) {
-					case 0:
-						state->bricks[i][j] = BRICK_NONE;
-						break;
-					case 1:
-						state->bricks[i][j] = BRICK_ONETOUCH;
-						state->brickCount++;
-						break;
-					case 2:
-						state->bricks[i][j] = BRICK_TWOTOUCH;
-						state->brickCount++;
-						break;
-					case 3:
-						state->bricks[i][j] = BRICK_THREETOUCH;
-						state->brickCount++;
-						break;
-					case 4:
-						state->bricks[i][j] = BRICK_UBER;
+						case 0 :
+							state->bricks[i][j] = BRICK_NONE;
+							break;
+						case 1 :
+							state->bricks[i][j] = BRICK_ONETOUCH;
+							state->brickCount++;
+							break;
+						case 2 :
+						case 3 :
+							state->bricks[i][j] = BRICK_THREETOUCH;
+							state->brickCount++;
+							break;
+						case 4 :
+							state->bricks[i][j] = BRICK_UBER;
+							state->brickCount++;
+							break;
 				}
-			else
+			} else {
 				state->bricks[i][j] = BRICK_NONE;
+			}
 		}
 	}
 
@@ -95,13 +113,14 @@ void Init(PSContext2D_t* ctx, Jeu* state) {
 		state->drops[i].pos = PP_MakeFloatPoint(0, 0);
 		state->drops[i].type = DROP_NONE;
 	}
-	
+
 	state->ball.pos = PP_MakeFloatPoint(250, 450);
-	state->ball.velocity = PP_MakeFloatPoint(sin((PI / 180) * STARTANGLE) * BALLSPEED, cos((PI / 180) * STARTANGLE) * BALLSPEED);
+	float x = sin((PI / 180) * STARTANGLE) * BALLSPEED,
+		y = cos((PI / 180) * STARTANGLE) * BALLSPEED;
+	state->ball.velocity = PP_MakeFloatPoint(x, y);
 	state->ball.radius = 5;
 
 	state->paddle = PP_MakeRectFromXYWH(0, 0, 100, 20);
-
 }
 
 float clamp(float val, float low, float high) {
@@ -114,14 +133,14 @@ void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 		switch (g_pInputEvent->GetType(event->as_resource)) {
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
 				uint32_t key_code = g_pKeyboardInput->GetKeyCode(event->as_resource);
-				PostNumber(key_code);
+				PostMessage("%d", key_code);
 				switch(key_code) {
-					case 39:
-						state->paddle.point.x += ctx->width / 50;
-						break;
-					case 37:
-						state->paddle.point.x -= ctx->width / 50;
-						break;
+						case 39 :
+							state->paddle.point.x += ctx->width / 50;
+							break;
+						case 37 :
+							state->paddle.point.x -= ctx->width / 50;
+							break;
 				}
 				break;
 			}
@@ -138,17 +157,21 @@ void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 
 // Determine si un point est contenu dans un rectangle
 int Contains(struct PP_Rect rect, PP_FloatPoint point) {
-  return (point.x >= rect.point.x) && (point.x < (rect.point.x + rect.size.width)) &&
-         (point.y >= rect.point.y) && (point.x < (rect.point.y + rect.size.height));
+  return (point.x >= rect.point.x) &&
+	  (point.x < (rect.point.x + rect.size.width)) &&
+	  (point.y >= rect.point.y) &&
+	  (point.x < (rect.point.y + rect.size.height));
 }
 
 // Met a jour l'état du jeu
 void Calc(PSContext2D_t* ctx, Jeu* state) {
 	int h = ctx->height / BRICKH, w = ctx->width / BRICKW,
-		lastX = clamp(state->ball.pos.x, 1, ctx->width), lastY = clamp(state->ball.pos.y, 1, ctx->height);
+		lastX = clamp(state->ball.pos.x, 1, ctx->width),
+		lastY = clamp(state->ball.pos.y, 1, ctx->height);
 
-	state->paddle.point.x = clamp(state->paddle.point.x, 0, ctx->width - state->paddle.size.width);
-	
+	state->paddle.point.x = clamp(state->paddle.point.x, 0,
+								  ctx->width - state->paddle.size.width);
+
 	state->ball.pos.x += state->ball.velocity.x;
 	state->ball.pos.y += state->ball.velocity.y;
 
@@ -167,9 +190,15 @@ void Calc(PSContext2D_t* ctx, Jeu* state) {
 		state->ball.velocity.y = abs(state->ball.velocity.y);
 	}
 
-	if(state->ball.pos.y + state->ball.radius >= ctx->height - state->paddle.size.height && state->ball.pos.x >= state->paddle.point.x && state->ball.pos.x <= state->paddle.point.x + state->paddle.size.width) {
-		state->ball.pos.y = ctx->height - (state->paddle.size.height + state->ball.radius + 1);
-		float angle = ((90 * ((state->ball.pos.x - state->paddle.point.x) / state->paddle.size.width)) / 2) - (45 / 2),
+	if(state->ball.pos.y + state->ball.radius>
+	   ctx->height - state->paddle.size.height &&
+	   state->ball.pos.x >= state->paddle.point.x &&
+	   state->ball.pos.x <= state->paddle.point.x + state->paddle.size.width) {
+		state->ball.pos.y = ctx->height - (
+			state->paddle.size.height + state->ball.radius + 1);
+		float angle = ((90 * (
+			(state->ball.pos.x - state->paddle.point.x) /
+			state->paddle.size.width)) / 2) - (45 / 2),
 			x = sin((PI / 180) * angle) * BALLSPEED,
 			y = cos((PI / 180) * angle) * BALLSPEED;
 		state->ball.velocity.x = x;
@@ -197,7 +226,7 @@ void Calc(PSContext2D_t* ctx, Jeu* state) {
 					break;
 			}
 
-			//TODO: Ajouter des drops
+			// TODO: Ajouter des drops
 
 			if(((state->ball.pos.x + state->ball.radius) / w) > lastBrickX)
 				state->ball.velocity.x = -abs(state->ball.velocity.x);
@@ -219,16 +248,43 @@ void DrawRect(PSContext2D_t* ctx, struct PP_Rect rect, uint32_t color) {
 	int32_t px, py, right, bottom;
 
 	for(px = clamp(rect.point.x, 0, ctx->width),
-		right = clamp(rect.point.x + rect.size.width, 0, ctx->width); px < right; px++) {
+		right = clamp(rect.point.x + rect.size.width, 0, ctx->width);
+		px < right; px++) {
 		for(py = clamp(rect.point.y, 0, ctx->height),
-			bottom = clamp(rect.point.y + rect.size.height, 0, ctx->height); py < bottom; py++) {
+			bottom = clamp(rect.point.y + rect.size.height, 0, ctx->height);
+			py < bottom; py++) {
 			ctx->data[ctx->width * py + px] = color;
 		}
 	}
 }
 
+// Dessine une texture dans un contexte
+void DrawTexture(PSContext2D_t* ctx,
+				 struct PP_Point origin,
+				 const Texture* tex) {
+	int px, py, j = 0;
+	for(py = origin.y; py < fmin(ctx->height, origin.y + tex->height); py++) {
+		for(px = origin.x; px < fmin(ctx->width, origin.x + tex->width); px++) {
+			uint8_t r, g, b, a = 255;
+
+			r = tex->pixel_data[j++];
+			g = tex->pixel_data[j++];
+			b = tex->pixel_data[j++];
+
+			if(tex->bytes_per_pixel == 4) {
+				a = tex->pixel_data[j++];
+			}
+
+			if(a > 128)
+				ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
+		}
+	}
+}
+
 // Dessine un cercle dans un contexte
-void DrawCircle(PSContext2D_t* ctx, struct PP_FloatPoint center, int32_t radius, uint32_t color) {
+void DrawCircle(PSContext2D_t* ctx,
+				struct PP_FloatPoint center,
+				int32_t radius, uint32_t color) {
 	int32_t px, py,
 	right = clamp(center.x + radius, 0, ctx->width),
 	bottom = clamp(center.y + radius, 0, ctx->width);
@@ -242,37 +298,54 @@ void DrawCircle(PSContext2D_t* ctx, struct PP_FloatPoint center, int32_t radius,
 }
 
 // Dessine une frame
-void Draw (PSContext2D_t* ctx, Jeu state) {
+void Draw(PSContext2D_t* ctx, Jeu state) {
 	PSContext2DGetBuffer(ctx);
 
 	if (NULL == ctx->data)
 		return;
-	
-	DrawRect(ctx, PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height), COLOR_BLUE);
+	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer1);
 
 	int i, j;
-	
+
 	// Briques
-	for(i = 0; i < BRICKW; i++) {
+	for(i = 0; i < BRICKW; i++)
 		for(j = 0; j < BRICKH; j++) {
-			if(state.bricks[i][j] != BRICK_NONE)
-				DrawRect(ctx, PP_MakeRectFromXYWH(i * (ctx->width / BRICKW), j * (ctx->height / BRICKH), ctx->width / BRICKW, ctx->height / BRICKH), state.bricks[i][j]);
+			PP_Point p = PP_MakePoint(i * (ctx->width / BRICKW),
+									  j * (ctx->height / BRICKH));
+			switch(state.bricks[i][j]) {
+				case BRICK_ONETOUCH:
+					DrawTexture(ctx, p, &texture_brick1);
+					break;
+				case BRICK_TWOTOUCH:
+					DrawTexture(ctx, p, &texture_brick2);
+					break;
+				case BRICK_THREETOUCH:
+					DrawTexture(ctx, p, &texture_brick3);
+					break;
+				case BRICK_UBER:
+					DrawTexture(ctx, p, &texture_brick4);
+					break;
+				default:
+					break;
+			}
 		}
-	}
-	
+
 	// Drops
 	for(i = 0; i < MAXDROP; i++) {
 		if(state.drops[i].type != DROP_NONE)
 			DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
 	}
-	
+
 	// Paddle
 	state.paddle.point.y = ctx->height - state.paddle.size.height;
-	DrawRect(ctx, state.paddle, COLOR_WHITE);
+	DrawTexture(ctx, state.paddle.point, &texture_paddle);
 
 	// Balle
-	DrawCircle(ctx, state.ball.pos, state.ball.radius, COLOR_WHITE);
-	
+	DrawTexture(ctx,
+				PP_MakePoint(state.ball.pos.x - state.ball.radius,
+							 state.ball.pos.y - state.ball.radius),
+				&texture_ball);
+
 	PSContext2DSwapBuffer(ctx);
 }
 

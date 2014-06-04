@@ -1,14 +1,16 @@
 module.exports =
 	files: [
-		'server/*.{c,h}'
+		'server/**/*.{cc,c,h}'
 	]
 	reporter: 'spec'
 	verbosity: 1
 	filters:
 		'whitespace':
 			'tab': false
+			'labels': false
 		'readability':
 			'todo': false
+			'casting':false
 		'build':
 			'include': false
 		'runtime':
