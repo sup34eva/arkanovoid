@@ -70,8 +70,18 @@ void DrawTexture(PSContext2D_t* ctx,
 				a = tex->pixel_data[j++];
 			}
 
-			if(a > 128)
+			if(a > 0) {
+				r = (r * (a / 255)) + (
+						((ctx->data[ctx->width * py + px] & 0xff0000) >> 16)
+					 * (1 - (a / 255)));
+				g = (g * (a / 255)) + (
+						((ctx->data[ctx->width * py + px] & 0xff00) >> 8)
+					 * (1 - (a / 255)));
+				b = (b * (a / 255)) + (
+						(ctx->data[ctx->width * py + px] & 0xff)
+					 * (1 - (a / 255)));
 				ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
+			}
 		}
 	}
 }

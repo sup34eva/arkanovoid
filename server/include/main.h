@@ -20,9 +20,8 @@
 
 #include "calc.h"
 #include "rendu.h"
-void Init(PSContext2D_t*, Jeu* state);
 
-static const PPB_MouseLock* s_MouseLock;
-const PPB_MouseLock* PSInterfaceMouseLock() { return s_MouseLock; }
+void PostMessage(const char *format, ...);
+void PostNumber(double num);
 
 #endif  // SERVER_INCLUDE_MAIN_H_

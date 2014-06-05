@@ -1,18 +1,15 @@
 // Copyright 2014 Huns de Troyes
 #include "include/calc.h"
 
+void MouseLocked(void* user_data, int32_t result) {
+  PostNumber(result);
+}
+
 // Initialise l'état de la partie
 void Init(PSContext2D_t* ctx, Jeu* state) {
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
 	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
 												  PP_INPUTEVENT_CLASS_KEYBOARD);
-
-	/*PP_CompletionCallback cb;
-	cb.flags = 0;
-	cb.user_data = ctx;
-	cb.func = MouseLockCallback;
-	s_MouseLock = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
-	s_MouseLock->LockMouse(PSGetInstanceId(), cb);*/
 
 	srand(time(NULL));
 
@@ -71,8 +68,17 @@ void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 		PSGetInterface(PPB_KEYBOARD_INPUT_EVENT_INTERFACE);
 	PPB_MouseInputEvent* pMouseInput = (PPB_MouseInputEvent*)
 		PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
+
 	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
 		switch (pInputEvent->GetType(event->as_resource)) {
+			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+				pMouseLock->LockMouse(PSGetInstanceId(),
+									  PP_MakeCompletionCallback(MouseLocked,
+																0));
+				break;
+			}
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
 				uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
 				// PostMessage("%d", key_code);
