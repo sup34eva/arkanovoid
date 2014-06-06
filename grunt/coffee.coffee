@@ -22,3 +22,6 @@ module.exports =
 	shop:
 		src: 'coffee/shop.coffee'
 		dest: 'dist/js/shop.js'
+	contact:
+		src: 'coffee/contact.coffee'
+		dest: 'dist/js/contact.js'

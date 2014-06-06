@@ -18,6 +18,12 @@
 			"message": "Le serveur a rencontré une erreur"
 		}
 	},
+	"/contact": {
+		"template": "contact",
+		"args": {
+			"title": "Contact"
+		}
+	},
 	"/shop": {
 		"template": "shop",
 		"args": {
