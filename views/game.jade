@@ -1,17 +1,13 @@
 extends layout
 
 block styles
-	link(href="/css/client.css", rel="stylesheet")
+	link(href="/css/game.css", rel="stylesheet")
 
 block content
-	//#viewport
-	#listener
+	#listener.row.well
 		embed(width="500" height="500" src="/server/server.nmf" type="application/x-nacl")
 
 block scripts
 	script.
 		var container = document.getElementById('listener');
 		container.addEventListener('message', function(e){console.log(e.data);}, true);
-	//script(src="/two/two.min.js")
-	//script(src="/stats/stats.min.js")
-	//script(src="/js/arkanoid.js")
