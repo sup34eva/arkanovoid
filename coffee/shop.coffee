@@ -19,23 +19,23 @@ xml2JS = (xml) ->
     return result
 
 getPerson = (user, callback) ->
-    getXML "http://192.168.202.134/?userid=#{user}", 'GET', (code, xml) ->
+    getXML "http://#{window.serverAddress}/?userid=#{user}", 'GET', (code, xml) ->
         callback xml2JS xml
 
 addItemForPerson = (user, item) ->   
-    getXML "http://192.168.202.134/?userid=#{user}&itemid=#{item}", 'POST', (code) ->
+    getXML "http://#{window.serverAddress}/?userid=#{user}&itemid=#{item}", 'POST', (code) ->
         console.log code
 
 useItemForPerson = (user, item) ->   
-    getXML "http://192.168.202.134/?userid=#{user}&itemid=#{item}", 'DELETE', (code) ->
+    getXML "http://#{window.serverAddress}/?userid=#{user}&itemid=#{item}", 'DELETE', (code) ->
         console.log code
 
 getItems = (callback) ->    
-    getXML "http://192.168.202.134/", 'GET', (code, xml) ->
+    getXML "http://#{window.serverAddress}/", 'GET', (code, xml) ->
         callback xml2JS xml
         
 getItem = (item, callback) ->    
-    getXML "http://192.168.202.134/?itemid=#{item}", 'GET', (code) ->
+    getXML "http://#{window.serverAddress}/?itemid=#{item}", 'GET', (code) ->
         console.log code
 
 
@@ -46,7 +46,10 @@ $('.thumbnail').each((i) ->
 
 $('form').submit (e) ->
     e.preventDefault()
-    itemid = $(this).attr 'data-item'
-    for i in [0...$(this).find('input').val()]
-        addItemForPerson 1, itemid
-        console.log i
+    itemid = Number($(this).attr('data-item'))
+    alltime = Number($(this).find('input[type="checkbox"]').prop('checked'))
+    if not Number.isNaN alltime
+        itemid += alltime
+    for i in [0...$(this).find('input[type="number"]').val()]
+        addItemForPerson localStorage.username, itemid
+        console.log localStorage.username, itemid

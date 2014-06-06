@@ -8,20 +8,8 @@ module.exports =
 			* Copyright (c) <%= package.author %> <%= grunt.template.today(\"yyyy\") %>;
 			Licensed <%= package.license %> */\n"
 	dist:
-		src: [
-			'coffee/ball.coffee'
-			'coffee/paddle.coffee'
-			'coffee/brick.coffee'
-			'coffee/init.coffee'
-			'coffee/draw.coffee'
-			'coffee/server.coffee'
-			'coffee/fullscreen.coffee'
-			'coffee/events.coffee'
-		]
-		dest: 'dist/js/<%= package.name %>.js'
-	shop:
-		src: 'coffee/shop.coffee'
-		dest: 'dist/js/shop.js'
-	contact:
-		src: 'coffee/contact.coffee'
-		dest: 'dist/js/contact.js'
+		expand: true
+		flatten: true
+		src: ['coffee/**/*.coffee']
+		dest: 'dist/js/'
+		ext: '.js'
