@@ -4,28 +4,34 @@ module.exports =
 		tasks: ['express:server', 'notify:express']
 		options:
 			spawn: false
-			livereload: true
+			livereload: 35729
+	jade:
+		files: ['*.{jade}']
+		tasks: ['notify:jade']
+		options:
+			spawn: false
+			livereload: 35729
 	coffee:
 		files: ['coffee/**/*.coffee']
 		tasks: ['coffeescript', 'notify:coffee']
 		options:
 			spawn: false
-			livereload: true
+			livereload: 35729
 	style:
 		files: ['styles/**/*.{styl,stylus}']
 		tasks: ['stylus', 'notify:stylus']
 		options:
 			spawn: false
-			livereload: true
+			livereload: 35729
 	img:
 		files: ['img/**/*.{png,jpg,gif,svg}']
 		tasks: ['imagemin', 'copy:img', 'notify:img']
 		options:
 			spawn: false
-			livereload: true
+			livereload: 35729
 	server:
-		files: ['server/**/*.{c,cc,cpp}']
+		files: ['server/**/*.{c,cc,cpp,h}']
 		tasks: ['make', 'notify:server']
 		options:
 			spawn: false
-			livereload: true
+			livereload: 35729

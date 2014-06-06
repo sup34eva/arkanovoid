@@ -1,9 +1,9 @@
 node_modules/
-dist/
+dist/css/
+dist/img/
+dist/js/
 bower_components/
-forever/
-.tmp/
-server/server.bc
+server/newlib/
 .bower-cache/
 .bower-registry
 .bower-tmp/
