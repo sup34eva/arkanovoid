@@ -1,5 +1,6 @@
 module.exports =
 	options:
+		bare: true
 		join: true
 		sourceMap: true
 		banner: "/*! <%= package.title || package.name %> - v<%= package.version %> -

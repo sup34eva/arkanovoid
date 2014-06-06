@@ -4,11 +4,47 @@ html(lang="fr")
 		meta(charset="utf-8")
 		meta(http-equiv="X-UA-Compatible", content="IE=edge")
 		meta(name="viewport", content="width=device-width, initial-scale=1")
-		title Arkanoid - #{title}
+		title ArkanoVoid - #{title}
 		link(href="/bootstrap/css/bootstrap.min.css", rel="stylesheet")
+		link(href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet")
+		link(href="/css/layout.css", rel="stylesheet")
 		block styles
 	body
-		block content
+		.container
+			.row
+				a.page-header.col-md-12(href="/")
+					h1 ArkanoVoid&nbsp&nbsp
+
+			.row
+				ul.nav.nav-pills.nav-justified
+					li
+						a(href="/")
+							i.fa.fa-lg.fa-fw.fa-home
+							| &nbsp&nbspAccueil
+					li
+						a(href="/game")
+							i.fa.fa-lg.fa-fw.fa-gamepad
+							| &nbsp&nbspJeu
+					li
+						a(href="/connexion")
+							i.fa.fa-lg.fa-fw.fa-power-off
+							| &nbsp&nbspConnexion
+					li
+						a(href="/shop")
+							i.fa.fa-lg.fa-fw.fa-shopping-cart
+							| &nbsp&nbspBoutique
+					li
+						a(href="/contact")
+							i.fa.fa-lg.fa-fw.fa-envelope
+							| &nbsp&nbspContact
+					li
+						a(href="/about")
+							i.fa.fa-lg.fa-fw.fa-question
+							| &nbsp&nbspA propos
+			block content
+			footer
+				H4 Huns de Troyes
 		script(src="/jquery/jquery.min.js")
 		script(src="/bootstrap/js/bootstrap.min.js")
+		script(src="js/layout.js")
 		block scripts

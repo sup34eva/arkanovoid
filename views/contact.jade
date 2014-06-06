@@ -1,0 +1,32 @@
+extends layout
+
+block styles
+	link(href="/css/index.css", rel="stylesheet")
+
+block content
+	.row
+		form.form-horizontal.col-md-12.well#contact(method="post" action="/contact")
+			.form-group.has-warning.has-feedback
+				label.col-lg-1.control-label(for="email")
+					i.fa.fa-lg.fa-fw.fa-envelope-o
+				.col-md-11
+					input.form-control#email(type="email" name="email" required="required" placeholder="Email")
+					span.fa.fa-exclamation-triangle.form-control-feedback
+			.form-group.has-warning.has-feedback
+				label.col-lg-1.control-label(for="sujet")
+					i.fa.fa-lg.fa-fw.fa-edit
+				.col-md-11
+					input.form-control#sujet(type="text" name="sujet" required="required" placeholder="Sujet")
+					span.fa.fa-exclamation-triangle.form-control-feedback
+			.form-group.has-warning.has-feedback
+				label.col-lg-1.control-label(for="texte")
+					i.fa.fa-lg.fa-fw.fa-file-text-o
+				.col-md-11
+					textarea.form-control#texte(name="texte" required="required" rows="10" placeholder="Texte")
+					span.fa.fa-exclamation-triangle.form-control-feedback
+			.form-group
+				.col-sm-offset-1.col-sm-11
+					button.btn.btn-primary(type="submit") Envoyer
+
+block scripts
+	script(src="js/contact.js")

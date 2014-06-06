@@ -1,4 +1,4 @@
-{
+﻿{
 	"/": {
 		"template": "index",
 		"args": {
@@ -16,6 +16,72 @@
 		"args": {
 			"title": "500 Server Error",
 			"message": "Le serveur a rencontré une erreur"
+		}
+	},
+	"/contact": {
+		"template": "contact",
+		"args": {
+			"title": "Contact"
+		}
+	},
+	"/connexion": {
+		"template": "connexion",
+		"args": {
+			"title": "Connexion"
+		}
+	},
+	"/about": {
+		"template": "about",
+		"args": {
+			"title": "About"
+		}
+	},
+	"/shop": {
+		"template": "shop",
+		"args": {
+			"title": "Shop",
+			"items": [
+				[
+					{
+						"name": "Giant paddle",
+						"description": "La paddle est agrandit",
+						"image": "giant.png",
+						"id": 3
+					},
+					{
+						"name": "Minimum Speed",
+						"description": "Reduit la vitesse de la balle",
+						"image": "frozen.png",
+						"id": 4
+					},
+					{
+						"name": "Rocket Paddle",
+						"description": "La paddle",
+						"image": "rocket.png",
+						"id": 11
+					}	
+				],
+				[
+					{
+						"name": "Balle explosive",
+						"description": "Balle qui explose en contact des briques",
+						"image": "exp.png",
+						"id": 7
+					},
+					{
+						"name": "Paddle stick",
+						"description": "Paddle qui accroche la balle",
+						"image": "stick.png",
+						"id": 5
+					},
+					{
+						"name": "Double balle",
+						"description": "Permet de lancer 2 balles",
+						"image": "double.png",
+						"id": 9
+					}
+				]
+			]
 		}
 	}
 }
