@@ -11,3 +11,7 @@ $('input, textarea').on('input', (e) ->
 		$(this).parent().parent().addClass('has-warning').removeClass('has-error').removeClass('has-success')
 		$(this).parent().find('.fa').addClass('fa-exclamation-triangle').removeClass('fa-check').removeClass('fa-times')
 )
+
+$('form').submit (e) ->
+	e.preventDefault()
+	$('input, textarea').val('').trigger('input')

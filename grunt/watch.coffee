@@ -18,8 +18,8 @@ module.exports =
 			spawn: false
 			livereload: true
 	img:
-		files: ['img/**/*.{png,jpg,gif}']
-		tasks: ['imagemin', 'notify:img']
+		files: ['img/**/*.{png,jpg,gif,svg}']
+		tasks: ['imagemin', 'copy:img', 'notify:img']
 		options:
 			spawn: false
 			livereload: true
