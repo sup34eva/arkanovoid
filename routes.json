@@ -30,6 +30,12 @@
 			"title": "Connexion"
 		}
 	},
+	"/about": {
+		"template": "about",
+		"args": {
+			"title": "About"
+		}
+	},
 	"/shop": {
 		"template": "shop",
 		"args": {
