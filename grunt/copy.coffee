@@ -8,3 +8,10 @@ module.exports =
 				dest: 'dist/server/'
 			}
 		]
+	img:
+		files: [
+			expand: true
+			flatten: true
+			src: ['img/**/*.svg']
+			dest: 'dist/img/'
+		]
