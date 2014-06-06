@@ -10,8 +10,8 @@
 #include "textures.h"
 #include "calc.h"
 
-void Draw(PSContext2D_t* ctx,
-		  Jeu state);
+void GameDraw(PSContext2D_t* ctx,
+			  Jeu state);
 void DrawTexture(PSContext2D_t* ctx,
 				 struct PP_Point origin,
 				 const Texture* tex);

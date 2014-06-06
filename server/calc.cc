@@ -6,10 +6,11 @@ void MouseLocked(void* user_data, int32_t result) {
 }
 
 // Initialise l'état de la partie
-void Init(PSContext2D_t* ctx, Jeu* state) {
+void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
 	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
-												  PP_INPUTEVENT_CLASS_KEYBOARD);
+												  PP_INPUTEVENT_CLASS_KEYBOARD |
+												  PP_INPUTEVENT_CLASS_TOUCH);
 
 	srand(time(NULL));
 
@@ -61,7 +62,7 @@ float clamp(float val, float low, float high) {
 }
 
 // Gère les évenements
-void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
+void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
 		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
 	PPB_KeyboardInputEvent* pKeyboardInput = (PPB_KeyboardInputEvent*)
@@ -98,6 +99,7 @@ void HandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 				break;
 			}
 			default:
+				PostNumber(event->type);
 				break;
 		}
 	}
@@ -112,7 +114,7 @@ int Contains(struct PP_Rect rect, PP_FloatPoint point) {
 }
 
 // Met a jour l'état du jeu
-void Calc(PSContext2D_t* ctx, Jeu* state) {
+void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 	int h = ctx->height / BRICKH, w = ctx->width / BRICKW,
 		lastX = clamp(state->ball.pos.x, 1, ctx->width),
 		lastY = clamp(state->ball.pos.y, 1, ctx->height);
@@ -189,6 +191,9 @@ void Calc(PSContext2D_t* ctx, Jeu* state) {
 				state->ball.velocity.y = fabs(state->ball.velocity.y);
 		}
 	}
+
+	if(state->brickCount <= 0)
+		SetState(STATE_SCORE);
 }
 
 // Determine la distance entre 2 points

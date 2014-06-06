@@ -23,5 +23,6 @@
 
 void PostMessage(const char *format, ...);
 void PostNumber(double num);
+void SetState(State nw);
 
 #endif  // SERVER_INCLUDE_MAIN_H_

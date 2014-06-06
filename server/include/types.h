@@ -28,6 +28,14 @@ typedef enum {
 	DROP_SPEED_PLUS
 } DropType;
 
+typedef enum {
+    STATE_NONE,
+	STATE_TITLE,
+    STATE_INGAME,
+    STATE_PAUSED,
+    STATE_SCORE
+} State;
+
 // Structures de base du jeu : les drops, et le jeu en lui même
 typedef struct {
 	PP_FloatPoint pos;

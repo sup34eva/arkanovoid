@@ -2,7 +2,7 @@
 #include "include/rendu.h"
 
 // Dessine une frame
-void Draw(PSContext2D_t* ctx, Jeu state) {
+void GameDraw(PSContext2D_t* ctx, Jeu state) {
 	PSContext2DGetBuffer(ctx);
 
 	if (NULL == ctx->data)

@@ -1,26 +1,51 @@
 // Copyright 2014 Huns de Troyes
 #include "include/main.h"
 
+State newState = STATE_INGAME;
+
 // Fonction main du programme
 int server_main(int argc, char* argv[]) {
 	PSContext2D_t* context = PSContext2DAllocate(PP_IMAGEDATAFORMAT_BGRA_PREMUL);
-	Jeu gamestate;
+	Jeu game;
+	State state = STATE_NONE;
 
-	Init(context, &gamestate);
+	while (1) {
+			if(newState != STATE_NONE) {
+				state = newState;
+				newState = STATE_NONE;
+				switch(state) {
+					case STATE_INGAME:
+						GameInit(context, &game);
+						break;
+					default:
+						break;
+				}
+			}
 
-	while (gamestate.brickCount > 0) {
 			PSEvent* event;
-
-			// TODO: Activer la reception d'evenements
 			while ((event = PSEventTryAcquire()) != NULL) {
 				PSContext2DHandleEvent(context, event);
-				HandleEvent(event, &gamestate, context);
+
+				switch(state) {
+					case STATE_INGAME:
+						GameHandleEvent(event, &game, context);
+						break;
+					default:
+						break;
+				}
+
 				PSEventRelease(event);
 			}
 
 			if (context->bound) {
-				Calc(context, &gamestate);
-				Draw(context, gamestate);
+				switch(state) {
+					case STATE_INGAME:
+						GameCalc(context, &game);
+						GameDraw(context, game);
+						break;
+					default:
+						break;
+				}
 			}
 	}
 
@@ -41,6 +66,10 @@ void PostMessage(const char *format, ...) {
 
 void PostNumber(double num) {
 	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), PP_MakeDouble(num));
+}
+
+void SetState(State nw) {
+	newState = nw;
 }
 
 #ifndef SEL_LDR
