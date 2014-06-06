@@ -7,3 +7,10 @@ module.exports =
 				dest: 'dist/'
 			}
 		]
+	img:
+		files: [
+		expand: true
+		flatten: true
+		src: ['img/**/*.svg']
+		dest: 'dist/img/'
+		]
