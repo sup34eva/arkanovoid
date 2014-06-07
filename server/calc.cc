@@ -48,7 +48,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 		state->drops[i].type = DROP_NONE;
 	}
 
-	state->ball.pos = PP_MakeFloatPoint(250, 450);
+	state->ball.pos = PP_MakeFloatPoint(1100/2, 700 - 20);
 	float x = sin((PI / 180) * STARTANGLE) * BALLSPEED,
 		y = cos((PI / 180) * STARTANGLE) * BALLSPEED;
 	state->ball.velocity = PP_MakeFloatPoint(x, y);

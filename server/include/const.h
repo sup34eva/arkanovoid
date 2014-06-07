@@ -7,8 +7,8 @@
 #define BALLSPEED 3
 #define STARTANGLE 180
 
-#define BRICKW 8
-#define BRICKH 10
+#define BRICKW 22
+#define BRICKH 20
 #define MAXDROP 5
 #define BALLRADIUS 10
 

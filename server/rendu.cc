@@ -7,7 +7,12 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 
 	if (NULL == ctx->data)
 		return;
-	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer1);
+
+	DrawRect(ctx, PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height), COLOR_BLACK);
+	/*DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer4);
+	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer3);
+	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer2);
+	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer1);*/
 
 	int i, j;
 

@@ -52,7 +52,7 @@ typedef struct {
   int  	 width;
   int  	 height;
   int  	 bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  uint8_t 	 pixel_data[500 * 500 * 4 + 1];
+  uint8_t 	 pixel_data[1100 * 700 * 4 + 1];
 } Texture;
 
 typedef struct {
