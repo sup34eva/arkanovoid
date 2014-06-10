@@ -1,7 +1,7 @@
 // Copyright 2014 Huns de Troyes
 #include "include/main.h"
 
-State newState = STATE_INGAME;
+State newState = STATE_TITLE;
 
 // Fonction main du programme
 int server_main(int argc, char* argv[]) {
@@ -10,12 +10,15 @@ int server_main(int argc, char* argv[]) {
 	State state = STATE_NONE;
 
 	while (1) {
-			if(newState != STATE_NONE) {
+			if(newState != state) {
 				state = newState;
-				newState = STATE_NONE;
+				// PostNumber(state);
 				switch(state) {
 					case STATE_INGAME:
 						GameInit(context, &game);
+						break;
+					case STATE_TITLE:
+						TitleInit();
 						break;
 					default:
 						break;
@@ -30,6 +33,11 @@ int server_main(int argc, char* argv[]) {
 					case STATE_INGAME:
 						GameHandleEvent(event, &game, context);
 						break;
+					case STATE_TITLE:
+					case STATE_PAUSED:
+					case STATE_SCORE:
+						TitleHandleEvent(event, &game, context);
+						break;
 					default:
 						break;
 				}
@@ -38,14 +46,26 @@ int server_main(int argc, char* argv[]) {
 			}
 
 			if (context->bound) {
+				PSContext2DGetBuffer(context);
+
+				if (NULL == context->data)
+					break;
+
 				switch(state) {
 					case STATE_INGAME:
 						GameCalc(context, &game);
 						GameDraw(context, game);
 						break;
+					case STATE_TITLE:
+					case STATE_PAUSED:
+					case STATE_SCORE:
+						TitleDraw(context);
+						break;
 					default:
 						break;
 				}
+
+				PSContext2DSwapBuffer(context);
 			}
 	}
 

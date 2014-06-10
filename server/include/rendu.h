@@ -3,6 +3,9 @@
 #ifndef SERVER_INCLUDE_RENDU_H_
 #define SERVER_INCLUDE_RENDU_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include "types.h"
@@ -10,6 +13,7 @@
 #include "textures.h"
 #include "calc.h"
 
+void TitleDraw(PSContext2D_t* ctx);
 void GameDraw(PSContext2D_t* ctx,
 			  Jeu state);
 void DrawTexture(PSContext2D_t* ctx,

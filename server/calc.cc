@@ -2,16 +2,24 @@
 #include "include/calc.h"
 
 void MouseLocked(void* user_data, int32_t result) {
-  PostNumber(result);
+	PostNumber(42);
+	PostNumber(result);
 }
 
-// Initialise l'état de la partie
-void GameInit(PSContext2D_t* ctx, Jeu* state) {
+void MouseLockLost(PP_Instance instance) {
+	PostNumber(101010);
+	SetState(STATE_PAUSED);
+}
+
+void TitleInit() {
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
 	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
 												  PP_INPUTEVENT_CLASS_KEYBOARD |
 												  PP_INPUTEVENT_CLASS_TOUCH);
+}
 
+// Initialise l'état de la partie
+void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	srand(time(NULL));
 
 	int i, j;
@@ -72,23 +80,18 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 
 	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
 		switch (pInputEvent->GetType(event->as_resource)) {
-			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
-					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
-				pMouseLock->LockMouse(PSGetInstanceId(),
-									  PP_MakeCompletionCallback(MouseLocked,
-																0));
-				break;
-			}
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
 				uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
-				// PostMessage("%d", key_code);
+				PostNumber(key_code);
 				switch(key_code) {
-						case 39 :
+						case 39 :  // Fleche Droite
 							state->paddle.point.x += ctx->width / 50;
 							break;
-						case 37 :
+						case 37 :  // Fleche Gauche
 							state->paddle.point.x -= ctx->width / 50;
+							break;
+						case 27 :  // Echap
+							SetState(STATE_PAUSED);
 							break;
 				}
 				break;
@@ -100,6 +103,27 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 			}
 			default:
 				PostNumber(event->type);
+				break;
+		}
+	}
+}
+
+void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
+	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
+		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
+
+	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
+		switch (pInputEvent->GetType(event->as_resource)) {
+			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+				pMouseLock->LockMouse(PSGetInstanceId(),
+									  PP_MakeCompletionCallback(MouseLocked,
+																0));
+				SetState(STATE_INGAME);
+				break;
+			}
+			default:
 				break;
 		}
 	}
@@ -140,19 +164,23 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 		state->ball.velocity.y = fabs(state->ball.velocity.y);
 	}
 
-	if(state->ball.pos.y + state->ball.radius>
-	   ctx->height - state->paddle.size.height &&
-	   state->ball.pos.x >= state->paddle.point.x &&
-	   state->ball.pos.x <= state->paddle.point.x + state->paddle.size.width) {
-		state->ball.pos.y = ctx->height - (
-			state->paddle.size.height + state->ball.radius + 1);
-		float angle = ((90 * (
-			(state->ball.pos.x - state->paddle.point.x) /
-			state->paddle.size.width)) / 2) - (45 / 2),
-			x = sin((PI / 180) * angle) * BALLSPEED,
-			y = cos((PI / 180) * angle) * BALLSPEED;
-		state->ball.velocity.x = x;
-		state->ball.velocity.y = -y;
+	if(state->ball.pos.y + state->ball.radius >
+	   ctx->height - state->paddle.size.height) {
+		if(state->ball.pos.x >= state->paddle.point.x &&
+		   state->ball.pos.x <= state->paddle.point.x +
+		   state->paddle.size.width) {
+			state->ball.pos.y = ctx->height -
+				(state->paddle.size.height + state->ball.radius + 1);
+			float angle = ((90 * ((state->ball.pos.x - state->paddle.point.x)
+								  / state->paddle.size.width)) / 2) - (45 / 2),
+				x = sin((PI / 180) * angle) * BALLSPEED,
+				y = cos((PI / 180) * angle) * BALLSPEED;
+
+			state->ball.velocity.x = x;
+			state->ball.velocity.y = -y;
+		} else if (state->ball.pos.y > ctx->height) {
+			SetState(STATE_SCORE);
+		}
 	}
 
 	// TODO: Prendre en compte le rayon de la balle

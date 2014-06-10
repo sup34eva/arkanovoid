@@ -1,6 +1,10 @@
 // Copyright 2014 Huns de Troyes
 #include "include/rendu.h"
 
+void TitleDraw(PSContext2D_t* ctx) {
+	memset(ctx->data, 0x00, ctx->stride * ctx->height);
+}
+
 // Dessine une frame
 void GameDraw(PSContext2D_t* ctx, Jeu state) {
 	PSContext2DGetBuffer(ctx);
@@ -8,7 +12,7 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 	if (NULL == ctx->data)
 		return;
 
-	DrawRect(ctx, PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height), COLOR_BLACK);
+	memset(ctx->data, 0x00, ctx->stride * ctx->height);
 	/*DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer4);
 	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer3);
 	DrawTexture(ctx, PP_MakePoint(0, 0), &texture_layer2);

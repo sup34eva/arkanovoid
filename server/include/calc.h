@@ -10,9 +10,14 @@
 // FIXME: Test header
 #include "main.h"
 
+void TitleInit();
 void GameInit(PSContext2D_t*, Jeu* state);
+
 float clamp(float val, float low, float high);
+
 void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx);
+void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx);
+
 int Contains(struct PP_Rect rect, PP_FloatPoint point);
 void GameCalc(PSContext2D_t* ctx, Jeu* state);
 float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to);
