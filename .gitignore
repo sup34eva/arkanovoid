@@ -8,3 +8,4 @@ server/newlib/
 .bower-registry
 .bower-tmp/
 npm-debug.log
+img/Thumbs.db

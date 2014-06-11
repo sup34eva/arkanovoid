@@ -54,12 +54,12 @@ int server_main(int argc, char* argv[]) {
 				switch(state) {
 					case STATE_INGAME:
 						GameCalc(context, &game);
-						GameDraw(context, game);
+						GameDraw(context, &game);
 						break;
 					case STATE_TITLE:
 					case STATE_PAUSED:
 					case STATE_SCORE:
-						TitleDraw(context);
+						TitleDraw(context, COLOR_BLUE);
 						break;
 					default:
 						break;

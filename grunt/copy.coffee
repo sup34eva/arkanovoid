@@ -10,6 +10,6 @@ module.exports =
 		files: [
 			expand: true
 			flatten: true
-			src: ['img/**/*.svg']
+			src: ['img/**/*.{svg,raw,tex}']
 			dest: 'dist/img/'
 		]

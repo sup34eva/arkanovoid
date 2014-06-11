@@ -22,6 +22,8 @@ void TitleInit() {
 void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	srand(time(NULL));
 
+	LoadTextures(state);
+
 	int i, j;
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {

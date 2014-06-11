@@ -51,8 +51,8 @@ typedef struct {
 typedef struct {
   int  	 width;
   int  	 height;
-  int  	 bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  uint8_t 	 pixel_data[1100 * 700 * 4 + 1];
+  int  	 channels; /* 3:RGB, 4:RGBA */
+  uint8_t* pixel_data;
 } Texture;
 
 typedef struct {
@@ -61,6 +61,7 @@ typedef struct {
 	BrickType bricks[BRICKW][BRICKH];
 	int brickCount;
 	Drop drops[MAXDROP];
+	Texture textures[6];
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_

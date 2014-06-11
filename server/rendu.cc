@@ -1,12 +1,45 @@
 // Copyright 2014 Huns de Troyes
 #include "include/rendu.h"
 
-void TitleDraw(PSContext2D_t* ctx) {
-	memset(ctx->data, 0x00, ctx->stride * ctx->height);
+Texture LoadTexture(const char* url) {
+	struct {
+		int  	 width;
+		int  	 height;
+		int  	 channels;
+	} fmt;
+	uint8_t* buffer;
+	size_t len;
+
+	mount("img", "/img", "httpfs", 0, "");
+
+	FILE* fp = fopen(url, "rb");
+	fread(&fmt, sizeof(fmt), 1, fp);
+
+	len = fmt.width * fmt.height * fmt.channels + 1;
+	buffer = new uint8_t[len];
+	fread(buffer, 1, len, fp);
+	fclose(fp);
+
+	Texture tex = {fmt.width, fmt.height, fmt.channels, buffer};
+
+	return tex;
+}
+
+void LoadTextures(Jeu* state) {
+	state->textures[0] = LoadTexture("/img/ball.tex");
+	state->textures[1] = LoadTexture("/img/brick1.tex");
+	state->textures[2] = LoadTexture("/img/brick2.tex");
+	state->textures[3] = LoadTexture("/img/brick3.tex");
+	state->textures[4] = LoadTexture("/img/brick4.tex");
+	state->textures[5] = LoadTexture("/img/paddle.tex");
+}
+
+void TitleDraw(PSContext2D_t* ctx, uint32_t color) {
+	memset(ctx->data, color, ctx->stride * ctx->height);
 }
 
 // Dessine une frame
-void GameDraw(PSContext2D_t* ctx, Jeu state) {
+void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 	PSContext2DGetBuffer(ctx);
 
 	if (NULL == ctx->data)
@@ -25,18 +58,18 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 		for(j = 0; j < BRICKH; j++) {
 			PP_Point p = PP_MakePoint(i * (ctx->width / BRICKW),
 									  j * (ctx->height / BRICKH));
-			switch(state.bricks[i][j]) {
+			switch(state->bricks[i][j]) {
 				case BRICK_ONETOUCH:
-					DrawTexture(ctx, p, &texture_brick1);
+					DrawTexture(ctx, p, state->textures[1]);
 					break;
 				case BRICK_TWOTOUCH:
-					DrawTexture(ctx, p, &texture_brick2);
+					DrawTexture(ctx, p, state->textures[2]);
 					break;
 				case BRICK_THREETOUCH:
-					DrawTexture(ctx, p, &texture_brick3);
+					DrawTexture(ctx, p, state->textures[3]);
 					break;
 				case BRICK_UBER:
-					DrawTexture(ctx, p, &texture_brick4);
+					DrawTexture(ctx, p, state->textures[4]);
 					break;
 				default:
 					break;
@@ -45,19 +78,19 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 
 	// Drops
 	for(i = 0; i < MAXDROP; i++) {
-		if(state.drops[i].type != DROP_NONE)
-			DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
+		if(state->drops[i].type != DROP_NONE)
+			DrawCircle(ctx, state->drops[i].pos, 10, COLOR_GREEN);
 	}
 
 	// Paddle
-	state.paddle.point.y = ctx->height - state.paddle.size.height;
-	DrawTexture(ctx, state.paddle.point, &texture_paddle);
+	state->paddle.point.y = ctx->height - state->paddle.size.height;
+	DrawTexture(ctx, state->paddle.point, state->textures[5]);
 
 	// Balle
 	DrawTexture(ctx,
-				PP_MakePoint(state.ball.pos.x - state.ball.radius,
-							 state.ball.pos.y - state.ball.radius),
-				&texture_ball);
+				PP_MakePoint(state->ball.pos.x - state->ball.radius,
+							 state->ball.pos.y - state->ball.radius),
+				state->textures[0]);
 
 	PSContext2DSwapBuffer(ctx);
 }
@@ -65,29 +98,29 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 // Dessine une texture dans un contexte
 void DrawTexture(PSContext2D_t* ctx,
 				 struct PP_Point origin,
-				 const Texture* tex) {
+				 const Texture tex) {
 	int px, py, j = 0;
-	for(py = origin.y; py < fmin(ctx->height, origin.y + tex->height); py++) {
-		for(px = origin.x; px < fmin(ctx->width, origin.x + tex->width); px++) {
+	for(py = origin.y; py < fmin(ctx->height, origin.y + tex.height); py++) {
+		for(px = origin.x; px < fmin(ctx->width, origin.x + tex.width); px++) {
 			uint8_t r, g, b, a = 255;
 
-			r = tex->pixel_data[j++];
-			g = tex->pixel_data[j++];
-			b = tex->pixel_data[j++];
+			r = tex.pixel_data[j++];
+			g = tex.pixel_data[j++];
+			b = tex.pixel_data[j++];
 
-			if(tex->bytes_per_pixel == 4) {
-				a = tex->pixel_data[j++];
+			if(tex.channels == 4) {
+				a = tex.pixel_data[j++];
 			}
 
 			if(a > 0) {
 				r = (r * (a / 255)) + (
-						((ctx->data[ctx->width * py + px] & 0xff0000) >> 16)
+						getRed(ctx->data[ctx->width * py + px])
 					 * (1 - (a / 255)));
 				g = (g * (a / 255)) + (
-						((ctx->data[ctx->width * py + px] & 0xff00) >> 8)
+						getGreen(ctx->data[ctx->width * py + px])
 					 * (1 - (a / 255)));
 				b = (b * (a / 255)) + (
-						(ctx->data[ctx->width * py + px] & 0xff)
+						getBlue(ctx->data[ctx->width * py + px])
 					 * (1 - (a / 255)));
 				ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
 			}

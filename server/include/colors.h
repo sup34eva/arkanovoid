@@ -14,5 +14,9 @@
 
 #define RGB(r, g, b) (a << 24) | (r << 16) | (g << 8) | b
 #define RGBA(r, g, b, a) (255 << 24) | (r << 16) | (g << 8) | b
+#define getRed(c) ((c & 0xff0000) >> 16)
+#define getGreen(c) ((c & 0xff00) >> 8)
+#define getBlue(c) (c & 0xff)
+#define getAlpha(c) ((c & 0xff000000) >> 24)
 
 #endif  // SERVER_INCLUDE_COLORS_H_
