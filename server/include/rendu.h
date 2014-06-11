@@ -14,7 +14,9 @@
 #include "calc.h"
 
 void LoadTextures(Jeu* state);
-void TitleDraw(PSContext2D_t* ctx, uint32_t color);
+Texture LoadTexture(const char* url);
+void TitleDraw(PSContext2D_t* ctx,
+			  Jeu* state);
 void GameDraw(PSContext2D_t* ctx,
 			  Jeu* state);
 void DrawTexture(PSContext2D_t* ctx,

@@ -18,7 +18,9 @@ int server_main(int argc, char* argv[]) {
 						GameInit(context, &game);
 						break;
 					case STATE_TITLE:
-						TitleInit();
+					case STATE_PAUSED:
+					case STATE_SCORE:
+						TitleInit(&game);
 						break;
 					default:
 						break;
@@ -59,7 +61,7 @@ int server_main(int argc, char* argv[]) {
 					case STATE_TITLE:
 					case STATE_PAUSED:
 					case STATE_SCORE:
-						TitleDraw(context, COLOR_BLUE);
+						TitleDraw(context, &game);
 						break;
 					default:
 						break;

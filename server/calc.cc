@@ -3,7 +3,6 @@
 
 void MouseLocked(void* user_data, int32_t result) {
 	PostNumber(42);
-	PostNumber(result);
 }
 
 void MouseLockLost(PP_Instance instance) {
@@ -11,11 +10,14 @@ void MouseLockLost(PP_Instance instance) {
 	SetState(STATE_PAUSED);
 }
 
-void TitleInit() {
+void TitleInit(Jeu* state) {
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
 	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
 												  PP_INPUTEVENT_CLASS_KEYBOARD |
 												  PP_INPUTEVENT_CLASS_TOUCH);
+
+	state->textures[0] = LoadTexture("/img/logo.tex");
+	state->textures[1] = LoadTexture("/img/button.tex");
 }
 
 // Initialise l'état de la partie
@@ -84,7 +86,7 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 		switch (pInputEvent->GetType(event->as_resource)) {
 			case PP_INPUTEVENT_TYPE_KEYDOWN: {
 				uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
-				PostNumber(key_code);
+				// PostNumber(key_code);
 				switch(key_code) {
 						case 39 :  // Fleche Droite
 							state->paddle.point.x += ctx->width / 50;

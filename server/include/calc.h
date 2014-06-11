@@ -6,11 +6,12 @@
 #include <math.h>
 #include "types.h"
 #include "nacl.h"
+#include "rendu.h"
 
 // FIXME: Test header
 #include "main.h"
 
-void TitleInit();
+void TitleInit(Jeu* state);
 void GameInit(PSContext2D_t*, Jeu* state);
 
 float clamp(float val, float low, float high);

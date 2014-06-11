@@ -34,8 +34,17 @@ void LoadTextures(Jeu* state) {
 	state->textures[5] = LoadTexture("/img/paddle.tex");
 }
 
-void TitleDraw(PSContext2D_t* ctx, uint32_t color) {
-	memset(ctx->data, color, ctx->stride * ctx->height);
+void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
+	memset(ctx->data, 0x00, ctx->stride * ctx->height);
+
+	PP_Point origin = PP_MakePoint((ctx->width / 2)
+								   - (state->textures[0].width / 2), 0);
+	DrawTexture(ctx, origin, state->textures[0]);
+
+	origin = PP_MakePoint((ctx->width / 2) -
+						  (state->textures[1].width / 2),
+						  state->textures[0].height);
+	DrawTexture(ctx, origin, state->textures[1]);
 }
 
 // Dessine une frame
