@@ -178,10 +178,9 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 					break;
 			}
 
-			for(i = 0; i < MAXDROP; i++) {
-                if(state.drops[i].type != DROP_NONE)
+			for(i = 0; i < MAXDROP; i++)
+                if (state.drops[i].type != DROP_NONE)
                     state.drops[i].pos.y--;
-                }
 
 			if(brickX > lastBrickX)
 				state->ball.velocity.x = -fabs(state->ball.velocity.x);
@@ -208,10 +207,10 @@ float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to) {
 
 void SpawnDrop(int brickX, int brickY, Jeu* state) {
     int i;
-    for(i = 0; i < MAXDROP; i++)
-    if (state->drops[i].type == DROP_NONE){
-        state->drops[i].pos = PP_MakeFloatPoint(brickX,brickY);
-        switch(rand() % 8) {
+    for (i = 0; i < MAXDROP; i++)
+    if (state->drops[i].type == DROP_NONE) {
+        state->drops[i].pos = PP_MakeFloatPoint(brickX, brickY);
+        switch (rand() % 8) {
             case 0 :
                 state->drops[i].type = DROP_PADDLE_PLUS;
                 break;
