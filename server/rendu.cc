@@ -42,7 +42,7 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 	// Drops
 	for(i = 0; i < MAXDROP; i++) {
 		if(state.drops[i].type != DROP_NONE)
-			DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
+			DrawCircle(ctx, state.drops[i].pos, 10, COLOR_RED);
 	}
 
 	// Paddle

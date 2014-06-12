@@ -165,7 +165,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				case BRICK_ONETOUCH:
 					state->bricks[brickX][brickY] = BRICK_NONE;
 					state->brickCount--;
-					if (1)
+					if (!rand() % 10)
                         SpawnDrop(brickX * w, brickY * h, state);
 					break;
 				case BRICK_TWOTOUCH:
@@ -179,8 +179,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 			}
 
 			for(i = 0; i < MAXDROP; i++)
-                if (state.drops[i].type != DROP_NONE)
-                    state.drops[i].pos.y--;
+                if (state->drops[i].type != DROP_NONE)
+                    state->drops[i].pos.y--;
 
 			if(brickX > lastBrickX)
 				state->ball.velocity.x = -fabs(state->ball.velocity.x);
