@@ -1,8 +1,14 @@
+Magma = #bb3c2d
+Lava = #c15628
+Explosion = #c87a28
+DarkGrey = #282828
+LightGrey = #333333
+
 :root
   overflow-y scroll
 
 body
-  background-color #9CDAF8
+  background-color DarkGrey
 
 ul.nav.nav-pills
   margin-bottom 20px
@@ -10,22 +16,33 @@ ul.nav.nav-pills
     padding-left 14px
     padding-right 14px
     a
-      background-color #D4F0FD
+      background-color LightGrey
+      color Explosion
 
 a.page-header
-  color black
+  color Explosion
   text-decoration none
-
-small
-  color #414141
-
-a.page-header
   position relative
   left 1%
   width 98%
 
+.page-header
+  border-bottom 1px solid
+  border-color Magma
+
+
 .well
   margin 0
-  background-color #D4F0FD
-  border solid 1 px #4BB3E5
-  border-color #4bb3e5
+  background-color LightGrey
+  border solid 1px
+  border-color Magma
+
+footer
+  color Explosion
+
+.btn.btn-primary
+  background-color Explosion
+  border-color rgba(0 0 0 0)
+
+.btn.btn-danger
+  background-color Magma
