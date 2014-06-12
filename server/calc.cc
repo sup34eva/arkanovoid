@@ -18,7 +18,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
 		for(j = 0; j < BRICKH; j++) {
-			if(j < BRICKH - 2) {
+			if((j < BRICKH - 6)&&(j > 3)) {
 				switch(rand() % 5) {
 						case 0 :
 							state->bricks[i][j] = BRICK_NONE;
@@ -165,6 +165,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				case BRICK_ONETOUCH:
 					state->bricks[brickX][brickY] = BRICK_NONE;
 					state->brickCount--;
+					if (1)
+                        SpawnDrop(brickX * w, brickY * h, state);
 					break;
 				case BRICK_TWOTOUCH:
 					state->bricks[brickX][brickY] = BRICK_ONETOUCH;
@@ -176,7 +178,10 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 					break;
 			}
 
-			// TODO: Ajouter des drops
+			for(i = 0; i < MAXDROP; i++) {
+                if(state.drops[i].type != DROP_NONE)
+                    state.drops[i].pos.y--;
+                }
 
 			if(brickX > lastBrickX)
 				state->ball.velocity.x = -fabs(state->ball.velocity.x);
@@ -201,3 +206,37 @@ float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to) {
 	return sqrt(pow(from.x - to.x, 2) + pow(from.y - to.y, 2));
 }
 
+void SpawnDrop(int brickX, int brickY, Jeu* state) {
+    int i;
+    for(i = 0; i < MAXDROP; i++)
+    if (state->drops[i].type == DROP_NONE){
+        state->drops[i].pos = PP_MakeFloatPoint(brickX,brickY);
+        switch(rand() % 8) {
+            case 0 :
+                state->drops[i].type = DROP_PADDLE_PLUS;
+                break;
+            case 1 :
+                state->drops[i].type = DROP_STICK;
+                break;
+            case 2 :
+                state->drops[i].type = DROP_CLONE;
+                break;
+            case 3 :
+                state->drops[i].type = DROP_EXPLODE;
+                break;
+            case 4 :
+                state->drops[i].type = DROP_SPEED_LESS;
+                break;
+            case 5 :
+                state->drops[i].type = DROP_PADDLE_LESS;
+                break;
+            case 6 :
+                state->drops[i].type = DROP_LOSE;
+                break;
+            case 7 :
+                state->drops[i].type = DROP_SPEED_PLUS;
+                break;
+        }
+        return;
+    }
+}

@@ -4,7 +4,7 @@
 
 #define PI 3.141592653589793
 
-#define BALLSPEED 3
+#define BALLSPEED 6
 #define STARTANGLE 180
 
 #define BRICKW 22
