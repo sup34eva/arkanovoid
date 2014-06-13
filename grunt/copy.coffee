@@ -13,3 +13,6 @@ module.exports =
 			src: ['img/**/*.{svg,raw,tex}']
 			dest: 'dist/img/'
 		]
+	hook:
+		src: 'tools/pre-commit'
+		dest: '.git/hooks/pre-commit'
