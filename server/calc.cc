@@ -24,6 +24,7 @@ void TitleInit(Jeu* state) {
 	// Chargement des texture de l'écran titre
 	state->textures[0] = LoadTexture("/img/logo.tex");
 	state->textures[1] = LoadTexture("/img/button.tex");
+	state->textures[8] = LoadTexture("/img/lava.tex");
 }
 
 // Initialise l'état de la partie en début de jeu
@@ -73,6 +74,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
             state->ball[i].type = BALL_NONE;
 	}
 	state->ballCount = 1;
+	state->lives = 5;
 
 	// Position initiale de la paddle
 	state->paddle = PP_MakeRectFromXYWH(1100/2 - 50, 0, 100,
@@ -209,8 +211,13 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
             if (state->ball[i].pos.y > ctx->height) {
                 state->ball[i].type = BALL_NONE;
                 state->ballCount--;
-                /*if(state->ballCount <= 0)
-                    SetState(STATE_SCORE);*/
+                if (state->ballCount <= 0) {
+					state->lives--;
+					if(state->lives > 0)
+						AddBall(state);
+					else
+                    	SetState(STATE_SCORE);
+				}
             }
 
             // TODO: Prendre en compte le rayon de la balle
@@ -224,7 +231,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                         case BRICK_ONETOUCH:
                             state->bricks[brickX][brickY] = BRICK_NONE;
                             state->brickCount--;
-                            if (1)
+                            if (rand() < (RAND_MAX / 2))
                                 SpawnDrop((brickX * (ctx->width / BRICKW) +
                                            (0.5 * (ctx->width / BRICKW))) ,
                                           brickY * (ctx->height / BRICKH),
@@ -288,6 +295,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                             break;
                         case DROP_LOSE:
                             state->lives--;
+							if(state->lives <= 0)
+								SetState(STATE_SCORE);
                             break;
                         case DROP_PADDLE_LESS:
                             state->paddle.size.width =

@@ -54,8 +54,6 @@ void LoadTextures(Jeu* state) {
 	state->textures[6] = LoadTexture("/img/paddle_middle.tex");
 	state->textures[7] = LoadTexture("/img/paddle_right.tex");
 
-	state->textures[8] = LoadTexture("/img/lava.tex");
-
 	state->textures[9] = LoadTexture("/img/paddle_plus.tex");
 	state->textures[10] = LoadTexture("/img/sticky.tex");
 	state->textures[11] = LoadTexture("/img/clone.tex");
@@ -68,7 +66,7 @@ void LoadTextures(Jeu* state) {
 
 // Fonction appelée a chaque frame de l'écran titre pour dessiner l'image
 void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
-	memset(ctx->data, 0x80, ctx->width * ctx->height * 4);
+	DrawTexture(ctx, PP_MakePoint(0, 0), state->textures[8]);
 
 	// Affichage du logo
 	PP_Point origin = PP_MakePoint((ctx->width / 2)
@@ -95,6 +93,12 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 	DrawTexture(ctx, PP_MakePoint(0, 0), state->textures[8]);
 
 	int i, j;
+
+	for(i = 0; i < state->lives; i++) {
+		DrawTexture(ctx,
+					PP_MakePoint(state->textures[0].width * i, 0),
+					state->textures[0]);
+	}
 
 	// Affichage des briques
 	for(i = 0; i < BRICKW; i++)
@@ -123,30 +127,54 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 
 	// Rendu des drops
 	for(i = 0; i < MAXDROP; i++) {
-		switch(state.drops[i].type) {
+		switch(state->drops[i].type) {
             case DROP_PADDLE_PLUS:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_RED);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[9]);
                 break;
             case DROP_STICK:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_YELLOW);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[10]);
                 break;
             case DROP_CLONE:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[11]);
                 break;
             case DROP_EXPLODE:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_BLACK);
-                break;
-            case DROP_LOSE:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_BLUE);
-                break;
-            case DROP_PADDLE_LESS:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREY);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[12]);
                 break;
             case DROP_SPEED_LESS:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_WHITE);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[13]);
+                break;
+            case DROP_PADDLE_LESS:
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[14]);
+                break;
+            case DROP_LOSE:
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[15]);
                 break;
             case DROP_SPEED_PLUS:
-                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_LGREY);
+                DrawTexture(ctx,
+							PP_MakePoint(state->drops[i].pos.x - 15,
+										 state->drops[i].pos.y - 15),
+							state->textures[16]);
                 break;
             default:
                 break;
@@ -168,10 +196,10 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 
 	// Rendu de la balle
 	for(i = 0; i < MAXBALL; i++)
-        if (state.ball[i].type != BALL_NONE)
+        if (state->ball[i].type != BALL_NONE)
             DrawTexture(ctx,
-				PP_MakePoint(state.ball[i].pos.x - state.ball[i].radius,
-                                    state.ball[i].pos.y - state.ball[i].radius),
+				PP_MakePoint(state->ball[i].pos.x - state->ball[i].radius,
+							 state->ball[i].pos.y - state->ball[i].radius),
 				state->textures[0]);
 }
 // Alpha blending
@@ -206,8 +234,11 @@ void DrawTexture(PSContext2D_t* ctx,
 
 			if(a > 0) {
 				// Ecriture de la couleur du pixel
-				ctx->data[ctx->width * py + px] = blend(
-					ctx->data[ctx->width * py + px], RGBA(r, g, b, a));
+				if(a < 255)
+					ctx->data[ctx->width * py + px] = blend(ctx->data[ctx->width * py + px],
+															RGBA(r, g, b, a));
+				else
+					ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
 			}
 		}
 		j += ((origin.x + tex.width) - px) * 4;
