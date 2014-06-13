@@ -1,9 +1,12 @@
-body
-	background-color #9cdaf8	
+Magma = #bb3c2d
+Lava = #c15628
+Explosion = #c87a28
+DarkGrey = #282828
+LightGrey = #333333
 
 .thumbnail
-	background-color #d4f0fd
-	border-color #4bb3e5
+	background-color LightGrey
+	border-color Magma
 
 	.img-circle
 		height 250px 
@@ -17,7 +20,7 @@ body
 		outline 0
 
 	&:not([data-amount="0"]) img
-		box-shadow: 0 0 50px #70c7f0;
+		box-shadow: 0 0 50px Explosion;
 		-webkit-filter: grayscale(0) brightness(1);
 
 .thumbnail::after
@@ -45,4 +48,3 @@ body
 	margin-top 5px
 	margin-left 15%
 
-				
