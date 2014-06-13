@@ -4,7 +4,7 @@
 
 #define PI 3.141592653589793
 
-#define BALLSPEED 3
+#define BALLSPEED 6
 #define STARTANGLE 180
 
 #define BRICKW 22
@@ -12,5 +12,6 @@
 #define MAXDROP 5
 #define BALLRADIUS 15
 #define TEXSIZE 17
+#define MAXBALL 4
 
 #endif  // SERVER_INCLUDE_CONST_H_

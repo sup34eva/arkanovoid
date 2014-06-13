@@ -123,8 +123,34 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 
 	// Rendu des drops
 	for(i = 0; i < MAXDROP; i++) {
-		if(state->drops[i].type != DROP_NONE)
-			DrawCircle(ctx, state->drops[i].pos, 10, COLOR_GREEN);
+		switch(state.drops[i].type) {
+            case DROP_PADDLE_PLUS:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_RED);
+                break;
+            case DROP_STICK:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_YELLOW);
+                break;
+            case DROP_CLONE:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREEN);
+                break;
+            case DROP_EXPLODE:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_BLACK);
+                break;
+            case DROP_LOSE:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_BLUE);
+                break;
+            case DROP_PADDLE_LESS:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_GREY);
+                break;
+            case DROP_SPEED_LESS:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_WHITE);
+                break;
+            case DROP_SPEED_PLUS:
+                DrawCircle(ctx, state.drops[i].pos, 10, COLOR_LGREY);
+                break;
+            default:
+                break;
+		}
 	}
 
 	// Rendu de la paddle
@@ -141,12 +167,13 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 							 state->paddle.point.y), state->textures[7]);
 
 	// Rendu de la balle
-	DrawTexture(ctx,
-				PP_MakePoint(state->ball.pos.x - state->ball.radius,
-							 state->ball.pos.y - state->ball.radius),
+	for(i = 0; i < MAXBALL; i++)
+        if (state.ball[i].type != BALL_NONE)
+            DrawTexture(ctx,
+				PP_MakePoint(state.ball[i].pos.x - state.ball[i].radius,
+                                    state.ball[i].pos.y - state.ball[i].radius),
 				state->textures[0]);
 }
-
 // Alpha blending
 uint32_t blend(uint32_t base, uint32_t blend) {
 	unsigned int r = getRed(blend),

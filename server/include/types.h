@@ -36,6 +36,13 @@ typedef enum {
     STATE_SCORE
 } State;
 
+typedef enum {
+    BALL_NONE,
+    BALL_CLASSIC,
+    BALL_STICKY,
+    BALL_EXPLODE
+} BallType;
+
 // Structures de base du jeu : les drops, et le jeu en lui même
 typedef struct {
 	PP_FloatPoint pos;
@@ -46,6 +53,8 @@ typedef struct {
 	PP_FloatPoint pos;
 	PP_FloatPoint velocity;
 	uint32_t radius;
+	BallType type;
+	int speed;
 } Ball;
 
 typedef struct {
@@ -56,12 +65,14 @@ typedef struct {
 } Texture;
 
 typedef struct {
-	Ball ball;
+	Ball ball[MAXBALL];
 	struct PP_Rect paddle;
 	BrickType bricks[BRICKW][BRICKH];
 	int brickCount;
 	Drop drops[MAXDROP];
 	Texture textures[TEXSIZE];
+	int lives;
+	int ballCount;
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_
