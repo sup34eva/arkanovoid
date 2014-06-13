@@ -17,9 +17,25 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	int i, j;
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
-		for(j = 0; j < BRICKH; j++) {
-			if(j < BRICKH - 2) {
-				switch(rand() % 5) {
+		for(j = 2; j < BRICKH; j++) {
+			if(j < BRICKH - 4) {
+
+				int rnd = rand() % 100;
+				int type = 1;
+
+				if (rnd < 50)
+					type = 0;
+
+				else if (rnd < 75)
+					type = 1;
+
+				else if (rnd < 90)
+					type = 2;
+
+				else if (rnd <= 100)
+					type = 3;
+
+				switch(type) {
 						case 0 :
 							state->bricks[i][j] = BRICK_NONE;
 							break;
@@ -28,11 +44,10 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 							state->brickCount++;
 							break;
 						case 2 :
-						case 3 :
 							state->bricks[i][j] = BRICK_THREETOUCH;
 							state->brickCount++;
 							break;
-						case 4 :
+						case 3 :
 							state->bricks[i][j] = BRICK_UBER;
 							state->brickCount++;
 							break;
