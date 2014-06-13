@@ -16,5 +16,8 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx);
 int Contains(struct PP_Rect rect, PP_FloatPoint point);
 void GameCalc(PSContext2D_t* ctx, Jeu* state);
 float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to);
+void SpawnDrop(int brickX, int brickY, Jeu* state);
+void InitBall(Jeu* state, int i);
+int AddBall(Jeu* state);
 
 #endif  // SERVER_INCLUDE_CALC_H_
