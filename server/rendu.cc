@@ -41,7 +41,7 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 
 	// Drops
 	for(i = 0; i < MAXDROP; i++) {
-		switch(state.drops[i].type){
+		switch(state.drops[i].type) {
             case DROP_PADDLE_PLUS:
                 DrawCircle(ctx, state.drops[i].pos, 10, COLOR_RED);
                 break;
@@ -73,16 +73,16 @@ void GameDraw(PSContext2D_t* ctx, Jeu state) {
 
 	// Paddle
 	state.paddle.point.y = ctx->height - state.paddle.size.height;
-	//DrawTexture(ctx, state.paddle.point, &texture_paddle);
+	// DrawTexture(ctx, state.paddle.point, &texture_paddle);
 	DrawRect(ctx, state.paddle, COLOR_RED);
 
 	// Balle
 	for(i = 0; i < MAXBALL; i++)
-        if(state.ball[i].type != BALL_NONE)
+        if (state.ball[i].type != BALL_NONE)
             DrawTexture(ctx,
-                        PP_MakePoint(state.ball[i].pos.x - state.ball[i].radius,
-                                     state.ball[i].pos.y - state.ball[i].radius),
-                        &texture_ball);
+                    PP_MakePoint(state.ball[i].pos.x - state.ball[i].radius,
+                                    state.ball[i].pos.y - state.ball[i].radius),
+                    &texture_ball);
 
 	PSContext2DSwapBuffer(ctx);
 }

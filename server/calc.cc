@@ -50,7 +50,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 
 	for(i = 0; i < MAXBALL; i++) {
         InitBall(state, i);
-        if(i == 0)
+        if (i == 0)
             state->ball[i].type = BALL_CLASSIC;
         else
             state->ball[i].type = BALL_NONE;
@@ -122,33 +122,34 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 	state->paddle.point.x = clamp(state->paddle.point.x, 0,
 								  ctx->width - state->paddle.size.width);
 
-    for(i = 0; i < MAXBALL; i++) {
-        if(state->ball[i].type != BALL_NONE) {
+    for (i = 0; i < MAXBALL; i++) {
+        if (state->ball[i].type != BALL_NONE) {
             int lastX = clamp(state->ball[i].pos.x, 1, ctx->width),
                 lastY = clamp(state->ball[i].pos.y, 1, ctx->height);
 
             state->ball[i].pos.x += state->ball[i].velocity.x;
             state->ball[i].pos.y += state->ball[i].velocity.y;
 
-            if(state->ball[i].pos.x - state->ball[i].radius <= 0) {
+            if (state->ball[i].pos.x - state->ball[i].radius <= 0) {
                 state->ball[i].pos.x = state->ball[i].radius + 1;
                 state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
             }
 
-            if(state->ball[i].pos.x + state->ball[i].radius >= ctx->width) {
+            if (state->ball[i].pos.x + state->ball[i].radius >= ctx->width) {
                 state->ball[i].pos.x = ctx->width - state->ball[i].radius - 1;
                 state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
             }
 
-            if(state->ball[i].pos.y - state->ball[i].radius <= 0) {
+            if (state->ball[i].pos.y - state->ball[i].radius <= 0) {
                 state->ball[i].pos.y = state->ball[i].radius + 1;
                 state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
             }
 
-            if(state->ball[i].pos.y + state->ball[i].radius>
+            if (state->ball[i].pos.y + state->ball[i].radius>
                ctx->height - state->paddle.size.height &&
                state->ball[i].pos.x >= state->paddle.point.x &&
-               state->ball[i].pos.x <= state->paddle.point.x + state->paddle.size.width) {
+               state->ball[i].pos.x <= state->paddle.point.x +
+               state->paddle.size.width) {
                 state->ball[i].pos.y = ctx->height - (
                     state->paddle.size.height + state->ball[i].radius + 1);
                 float angle = ((90 * (
@@ -160,7 +161,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                 state->ball[i].velocity.y = -y;
             }
 
-            if(state->ball[i].pos.y > ctx->height) {
+            if (state->ball[i].pos.y > ctx->height) {
                 state->ball[i].type = BALL_NONE;
                 state->ballCount--;
                 /*if(state->ballCount <= 0)
@@ -168,17 +169,21 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
             }
 
             // TODO: Prendre en compte le rayon de la balle
-            if(h != 0 && w != 0) {
-                int brickX = state->ball[i].pos.x / w, brickY = state->ball[i].pos.y / h,
+            if (h != 0 && w != 0) {
+                int brickX = state->ball[i].pos.x / w,
+                    brickY = state->ball[i].pos.y / h,
                     lastBrickX = lastX / w, lastBrickY = lastY / h;
 
-                if(state->bricks[brickX][brickY] != BRICK_NONE) {
-                    switch(state->bricks[brickX][brickY]) {
+                if (state->bricks[brickX][brickY] != BRICK_NONE) {
+                    switch (state->bricks[brickX][brickY]) {
                         case BRICK_ONETOUCH:
                             state->bricks[brickX][brickY] = BRICK_NONE;
                             state->brickCount--;
                             if (1)
-                                SpawnDrop((brickX * (ctx->width / BRICKW) + (0.5 * (ctx->width / BRICKW))) , brickY * (ctx->height / BRICKH), state);
+                                SpawnDrop((brickX * (ctx->width / BRICKW) +
+                                           (0.5 * (ctx->width / BRICKW))) ,
+                                          brickY * (ctx->height / BRICKH),
+                                          state);
                             break;
                         case BRICK_TWOTOUCH:
                             state->bricks[brickX][brickY] = BRICK_ONETOUCH;
@@ -190,51 +195,62 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                             break;
                     }
 
-                    if(brickX > lastBrickX)
-                        state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
+                    if (brickX > lastBrickX)
+                        state->ball[i].velocity.x =
+                        -fabs(state->ball[i].velocity.x);
 
-                    if(brickX < lastBrickX)
-                        state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
+                    if (brickX < lastBrickX)
+                        state->ball[i].velocity.x =
+                        fabs(state->ball[i].velocity.x);
 
-                    if(brickY > lastBrickY)
-                        state->ball[i].velocity.y = -fabs(state->ball[i].velocity.y);
+                    if (brickY > lastBrickY)
+                        state->ball[i].velocity.y =
+                        -fabs(state->ball[i].velocity.y);
 
-                    if(brickY < lastBrickY)
-                        state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
+                    if (brickY < lastBrickY)
+                        state->ball[i].velocity.y =
+                        fabs(state->ball[i].velocity.y);
                 }
             }
         }
     }
 
-    for(i = 0; i < MAXDROP; i++)
-        if (state->drops[i].type != DROP_NONE){
+    for (i = 0; i < MAXDROP; i++)
+        if (state->drops[i].type != DROP_NONE) {
             state->drops[i].pos.y++;
-            if(state->drops[i].pos.y + 10 >= ctx->height - state->paddle.size.height) {
-                if(state->drops[i].pos.x >= state->paddle.point.x && state->drops[i].pos.x <= state->paddle.point.x + state->paddle.size.width) {
+            if (state->drops[i].pos.y + 10 >=
+                ctx->height - state->paddle.size.height) {
+                if (state->drops[i].pos.x >= state->paddle.point.x &&
+                    state->drops[i].pos.x <=
+                    state->paddle.point.x + state->paddle.size.width) {
                     switch (state->drops[i].type) {
                         case DROP_PADDLE_PLUS:
-                            state->paddle.size.width = clamp(state->paddle.size.width * 1.5, 30, 300);
+                            state->paddle.size.width =
+                                clamp(state->paddle.size.width * 1.5, 30, 300);
                             break;
                         case DROP_STICK:
-                            for(j = 0; j < MAXBALL; j++)
-                                state->ball[j].type = BALL_STICKY;
+                            for (j = 0; j < MAXBALL; j++)
+                                if (state->ball[j].type != BALL_NONE)
+                                    state->ball[j].type = BALL_STICKY;
                             break;
                         case DROP_CLONE:
                             AddBall(state);
                             break;
                         case DROP_EXPLODE:
-                            for(j = 0; j < MAXBALL; j++)
-                                state->ball[j].type = BALL_EXPLODE;
+                            for (j = 0; j < MAXBALL; j++)
+                                if (state->ball[j].type != BALL_NONE)
+                                    state->ball[j].type = BALL_EXPLODE;
                             break;
                         case DROP_LOSE:
                             state->lives--;
                             break;
                         case DROP_PADDLE_LESS:
-                            state->paddle.size.width = clamp(state->paddle.size.width / 1.5, 30, 300);
+                            state->paddle.size.width =
+                            clamp(state->paddle.size.width / 1.5, 30, 300);
                             break;
                         case DROP_SPEED_LESS:
-                            for(j = 0; j < MAXBALL; j++) {
-                                if(state->ball[j].type != BALL_NONE) {
+                            for (j = 0; j < MAXBALL; j++) {
+                                if (state->ball[j].type != BALL_NONE) {
                                     state->ball[j].velocity.x /= 1.5;
                                     state->ball[j].velocity.y /= 1.5;
                                     clamp(state->ball[j].speed / 1.5, 2, 18);
@@ -242,8 +258,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                             }
                             break;
                         case DROP_SPEED_PLUS:
-                            for(j = 0; j < MAXBALL; j++) {
-                                if(state->ball[j].type != BALL_NONE) {
+                            for (j = 0; j < MAXBALL; j++) {
+                                if (state->ball[j].type != BALL_NONE) {
                                     state->ball[j].velocity.x *= 1.5;
                                     state->ball[j].velocity.y *= 1.5;
                                     clamp(state->ball[j].speed * 1.5, 2, 18);
@@ -254,8 +270,9 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                             break;
                     }
                     state->drops[i].type = DROP_NONE;
-                } else if (state->drops[i].pos.y >= ctx->height)
+                } else if (state->drops[i].pos.y >= ctx->height) {
                     state->drops[i].type = DROP_NONE;
+                }
             }
         }
 
@@ -314,8 +331,8 @@ void InitBall(Jeu* state, int i) {
 
 int AddBall(Jeu* state) {
     int i;
-    for(i = 0; i < MAXBALL; i++) {
-        if(state->ball[i].type == BALL_NONE) {
+    for (i = 0; i < MAXBALL; i++) {
+        if (state->ball[i].type == BALL_NONE) {
             InitBall(state, i);
             state->ballCount++;
             state->ball[i].type = BALL_CLASSIC;
