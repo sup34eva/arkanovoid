@@ -18,10 +18,8 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
 		for(j = 2; j < BRICKH; j++) {
-			if(j < BRICKH - 4) {
+			if(j < BRICKH - 4 && j > 1) {
 				int rnd = rand() % 100;
-				int type = 1;
-
 				if (rnd < 50) {
 					state->bricks[i][j] = BRICK_NONE;
 				} else if (rnd < 75) {
@@ -30,10 +28,12 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 				} else if (rnd < 90) {
 					state->bricks[i][j] = BRICK_THREETOUCH;
 					state->brickCount++;
-				} else if (rnd <= 100) {
+				} else {
 					state->bricks[i][j] = BRICK_UBER;
-					state->brickCount++;
 				}
+			} else {
+				state->bricks[i][j] = BRICK_NONE;
+			}
 		}
 	}
 
@@ -51,7 +51,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	}
 
 	state->ballCount = 1;
-	state->paddle = PP_MakeRectFromXYWH(0, 0, 100, 20);
+	state->paddle = PP_MakeRectFromXYWH(1100/2 - 50, 0, 100, 20);
 }
 
 float clamp(float val, float low, float high) {

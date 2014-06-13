@@ -11,6 +11,7 @@ module.exports =
 		options:
 			stdout: true
 			stderr: true
+			failOnError: false
 			execOptions:
 				cwd: 'bower_components/nacl_sdk'
 	make:
