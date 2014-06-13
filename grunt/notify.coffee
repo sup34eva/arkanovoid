@@ -19,6 +19,10 @@ module.exports =
 		options:
 			title: 'Images minifiées'
 			message: 'Les images on été minifiées.'
+	tex:
+		options:
+			title: 'Textures converties'
+			message: 'Les textures ont été converties.'
 	server:
 		options:
 			title: 'NaCl compilé'

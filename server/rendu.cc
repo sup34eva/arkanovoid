@@ -43,25 +43,25 @@ void UnloadTexture(Texture tex) {
 
 // Chargement des textures du jeu dans un tableau
 void LoadTextures(Jeu* state) {
-	state->textures[0] = LoadTexture("/img/ball.tex");
+	state->textures[0] = LoadTexture("/img/textures/ball.tex");
 
-	state->textures[1] = LoadTexture("/img/brick1.tex");
-	state->textures[2] = LoadTexture("/img/brick2.tex");
-	state->textures[3] = LoadTexture("/img/brick3.tex");
-	state->textures[4] = LoadTexture("/img/brick4.tex");
+	state->textures[1] = LoadTexture("/img/textures/brick1.tex");
+	state->textures[2] = LoadTexture("/img/textures/brick2.tex");
+	state->textures[3] = LoadTexture("/img/textures/brick3.tex");
+	state->textures[4] = LoadTexture("/img/textures/brick4.tex");
 
-	state->textures[5] = LoadTexture("/img/paddle_left.tex");
-	state->textures[6] = LoadTexture("/img/paddle_middle.tex");
-	state->textures[7] = LoadTexture("/img/paddle_right.tex");
+	state->textures[5] = LoadTexture("/img/textures/paddle_left.tex");
+	state->textures[6] = LoadTexture("/img/textures/paddle_middle.tex");
+	state->textures[7] = LoadTexture("/img/textures/paddle_right.tex");
 
-	state->textures[9] = LoadTexture("/img/paddle_plus.tex");
-	state->textures[10] = LoadTexture("/img/sticky.tex");
-	state->textures[11] = LoadTexture("/img/clone.tex");
-	state->textures[12] = LoadTexture("/img/explode.tex");
-	state->textures[13] = LoadTexture("/img/speed_less.tex");
-	state->textures[14] = LoadTexture("/img/paddle_less.tex");
-	state->textures[15] = LoadTexture("/img/skull.tex");
-	state->textures[16] = LoadTexture("/img/speed_plus.tex");
+	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
+	state->textures[10] = LoadTexture("/img/textures/sticky.tex");
+	state->textures[11] = LoadTexture("/img/textures/clone.tex");
+	state->textures[12] = LoadTexture("/img/textures/explode.tex");
+	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");
+	state->textures[14] = LoadTexture("/img/textures/paddle_less.tex");
+	state->textures[15] = LoadTexture("/img/textures/skull.tex");
+	state->textures[16] = LoadTexture("/img/textures/speed_plus.tex");
 }
 
 // Fonction appelée a chaque frame de l'écran titre pour dessiner l'image

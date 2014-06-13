@@ -22,9 +22,9 @@ void TitleInit(Jeu* state) {
 												  PP_INPUTEVENT_CLASS_TOUCH);
 
 	// Chargement des texture de l'écran titre
-	state->textures[0] = LoadTexture("/img/logo.tex");
-	state->textures[1] = LoadTexture("/img/button.tex");
-	state->textures[8] = LoadTexture("/img/lava.tex");
+	state->textures[0] = LoadTexture("/img/textures/logo.tex");
+	state->textures[1] = LoadTexture("/img/textures/button.tex");
+	state->textures[8] = LoadTexture("/img/textures/lava.tex");
 }
 
 // Initialise l'état de la partie en début de jeu
