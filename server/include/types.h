@@ -61,7 +61,7 @@ typedef struct {
 	BrickType bricks[BRICKW][BRICKH];
 	int brickCount;
 	Drop drops[MAXDROP];
-	Texture textures[6];
+	Texture textures[TEXSIZE];
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_

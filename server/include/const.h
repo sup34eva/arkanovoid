@@ -10,6 +10,7 @@
 #define BRICKW 22
 #define BRICKH 20
 #define MAXDROP 5
-#define BALLRADIUS 10
+#define BALLRADIUS 15
+#define TEXSIZE 17
 
 #endif  // SERVER_INCLUDE_CONST_H_
