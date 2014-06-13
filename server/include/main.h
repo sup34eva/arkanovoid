@@ -7,7 +7,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include "textures.h"
 #include "nacl.h"
 
 #ifdef SEL_LDR

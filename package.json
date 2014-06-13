@@ -1,24 +1,24 @@
 {
-  "name": "arkanoid",
-  "version": "0.1.0",
-  "description": "Arkanoid remake in HTML5 and NaCl",
-  "main": "main.js",
-  "scripts": {
-    "test": "grunt test",
-    "start": "grunt",
-    "preinstall": "npm i -g grunt-cli bower coffee-script",
-    "install": "bower install",
-    "postinstall": "grunt --force nacl:install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hunsdetroyes/arkanoid/"
-  },
-  "bugs": {
-    "url": "http://github.com/hunsdetroyes/arkanoid/issues",
-    "email": "leopaul3@gmail.com"
-  },
-  "keywords": [
+	"name": "arkanoid",
+	"version": "0.1.0",
+	"description": "Arkanoid remake in HTML5 and NaCl",
+	"main": "main.js",
+	"scripts": {
+		"test": "grunt test",
+		"start": "grunt",
+		"preinstall": "npm i -g grunt-cli bower coffee-script",
+		"install": "bower install",
+		"postinstall": "grunt --force install"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hunsdetroyes/arkanoid/"
+	},
+	"bugs": {
+		"url": "http://github.com/hunsdetroyes/arkanoid/issues",
+		"email": "leopaul3@gmail.com"
+	},
+	"keywords": [
     "arkanoid",
     "breakout",
     "nacl",

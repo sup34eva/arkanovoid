@@ -1,19 +1,40 @@
 // Copyright 2014 Huns de Troyes
 #include "include/calc.h"
 
+// Appelée quand la souris est vérrouillée
 void MouseLocked(void* user_data, int32_t result) {
-  PostNumber(result);
+	PostNumber(42);
 }
 
-// Initialise l'état de la partie
-void GameInit(PSContext2D_t* ctx, Jeu* state) {
+// Appelée quand la souris est dévérouillée
+void MouseLockLost(PP_Instance instance) {
+	PostNumber(101010);
+	SetState(STATE_PAUSED);
+}
+
+// Initialisation de l'écran titre
+void TitleInit(Jeu* state) {
+	/* Définitions des événements que le programme doit recevoir :
+	 * (souris, clavier et écran tactile) */
 	PSInstance::GetInstance()->SetEnabledEvents(PSE_ALL);
 	PSInstance::GetInstance()->RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
 												  PP_INPUTEVENT_CLASS_KEYBOARD |
 												  PP_INPUTEVENT_CLASS_TOUCH);
 
+	// Chargement des texture de l'écran titre
+	state->textures[0] = LoadTexture("/img/logo.tex");
+	state->textures[1] = LoadTexture("/img/button.tex");
+}
+
+// Initialise l'état de la partie en début de jeu
+void GameInit(PSContext2D_t* ctx, Jeu* state) {
+	// Initialisation de la fonction rand
 	srand(time(NULL));
 
+	// Chargement des textures
+	LoadTextures(state);
+
+	// Initialisation des briques
 	int i, j;
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
@@ -37,11 +58,13 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 		}
 	}
 
+	// Mise a zero des drop (type = none)
 	for(i = 0; i < MAXDROP; i++) {
 		state->drops[i].pos = PP_MakeFloatPoint(0, 0);
 		state->drops[i].type = DROP_NONE;
 	}
 
+	// Position initiale de la balle
 	for(i = 0; i < MAXBALL; i++) {
         InitBall(state, i);
         if (i == 0)
@@ -49,17 +72,21 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
         else
             state->ball[i].type = BALL_NONE;
 	}
-
 	state->ballCount = 1;
-	state->paddle = PP_MakeRectFromXYWH(1100/2 - 50, 0, 100, 20);
+
+	// Position initiale de la paddle
+	state->paddle = PP_MakeRectFromXYWH(1100/2 - 50, 0, 100,
+										state->textures[6].height);
 }
 
+// Cette fonction bloque un nombre entre 2 limites
 float clamp(float val, float low, float high) {
 	return fmin(fmax(val, low), high);
 }
 
-// Gère les évenements
+// Gère les évenements en jeu
 void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
+	// Interface de gestion des evenements claviers / souris
 	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
 		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
 	PPB_KeyboardInputEvent* pKeyboardInput = (PPB_KeyboardInputEvent*)
@@ -67,35 +94,58 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	PPB_MouseInputEvent* pMouseInput = (PPB_MouseInputEvent*)
 		PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
 
+	// Si l'evenement est une entrée utilisateur
 	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
+		// Action a effectuer en fonction du type d'event
 		switch (pInputEvent->GetType(event->as_resource)) {
-			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
-					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
-				pMouseLock->LockMouse(PSGetInstanceId(),
-									  PP_MakeCompletionCallback(MouseLocked,
-																0));
-				break;
-			}
-			case PP_INPUTEVENT_TYPE_KEYDOWN: {
+			case PP_INPUTEVENT_TYPE_KEYDOWN: {  // Appui d'une touche du clavier
+				// Recupération du code de la touche
 				uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
 				switch(key_code) {
-						case 39 :
+						case 39 :  // Fleche Droite
 							state->paddle.point.x += ctx->width / 50;
 							break;
-						case 37 :
+						case 37 :  // Fleche Gauche
 							state->paddle.point.x -= ctx->width / 50;
+							break;
+						case 27 :  // Echap
+							SetState(STATE_PAUSED);
 							break;
 				}
 				break;
 			}
-			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
+			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {  // Mouvement de la souris
 				struct PP_Point movement = pMouseInput->GetMovement(event->as_resource);
 				state->paddle.point.x += movement.x;
 				break;
 			}
 			default:
-				PostNumber(event->type);
+				break;
+		}
+	}
+}
+
+// Gestion des evenements sur l'écran titre
+void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
+	// Interface de gestion des evenements
+	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
+		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
+
+	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
+		switch (pInputEvent->GetType(event->as_resource)) {
+			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {  // Click de souris
+				// Interface de verrouillage du curseur
+				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+				// Verrouille le curseur pour améliorer l'immersion / ergonomie
+				pMouseLock->LockMouse(PSGetInstanceId(),
+									  PP_MakeCompletionCallback(MouseLocked,
+																0));
+				// Passe a l'état "en jeu"
+				SetState(STATE_INGAME);
+				break;
+			}
+			default:
 				break;
 		}
 	}
@@ -113,6 +163,7 @@ int Contains(struct PP_Rect rect, PP_FloatPoint point) {
 void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 	int i, j, h = ctx->height / BRICKH, w = ctx->width / BRICKW;
 
+	// Vérifie que la paddle ne sort pas de l'écran
 	state->paddle.point.x = clamp(state->paddle.point.x, 0,
 								  ctx->width - state->paddle.size.width);
 
@@ -270,6 +321,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
             }
         }
 
+	// Si il n'y a plus de briques
 	if(state->brickCount <= 0)
 		SetState(STATE_SCORE);
 }

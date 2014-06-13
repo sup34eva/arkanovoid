@@ -1,3 +1,0 @@
-target remote localhost:4014
-nacl-manifest "C:/Users/user/Documents/GitHub/arkanoid/server/newlib/Release/server.nmf"
-nacl-irt "C:/Program Files (x86)/Google/Chrome/Application/35.0.1916.114/nacl_irt_x86_64.nexe"
