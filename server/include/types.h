@@ -40,7 +40,6 @@ typedef enum {
 typedef enum {
     BALL_NONE,
     BALL_CLASSIC,
-    BALL_STICKY,
     BALL_EXPLODE
 } BallType;
 
@@ -56,7 +55,7 @@ typedef struct {
 	uint32_t radius;
 	BallType type;
 	int speed;
-	int stuck;
+	PP_Bool stuck;
 } Ball;
 
 typedef struct {
@@ -67,8 +66,13 @@ typedef struct {
 } Texture;
 
 typedef struct {
+	struct PP_Rect surf;
+	PP_Bool sticky;
+} Paddle;
+
+typedef struct {
 	Ball ball[MAXBALL];
-	struct PP_Rect paddle;
+	Paddle paddle;
 	BrickType bricks[BRICKW][BRICKH];
 	int brickCount;
 	Drop drops[MAXDROP];
@@ -76,6 +80,8 @@ typedef struct {
 	int lives;
 	int ballCount;
 	PP_Bool shop[9];
+	State state;
+	State newState;
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_

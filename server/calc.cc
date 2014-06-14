@@ -18,39 +18,9 @@ void TitleInit(Jeu* state) {
 		state->shop[i] = PP_FALSE;
 }
 
-// Initialise l'état de la partie en début de jeu
-void GameInit(PSContext2D_t* ctx, Jeu* state) {
-	// Initialisation de la fonction rand
-	srand(time(NULL));
-
-	// Chargement des textures
-	LoadGameTextures(state);
-
-	// Initialisation des briques
-	int i, j;
-	state->brickCount = 0;
-	for(i = 0; i < BRICKW; i++) {
-		for(j = 0; j < BRICKH; j++) {
-			if(j < BRICKH - 4 && j > 1) {
-				int rnd = rand() % 100;
-				if (rnd < 50) {
-					state->bricks[i][j] = BRICK_NONE;
-				} else if (rnd < 75) {
-					state->bricks[i][j] = BRICK_ONETOUCH;
-					state->brickCount++;
-				} else if (rnd < 90) {
-					state->bricks[i][j] = BRICK_THREETOUCH;
-					state->brickCount++;
-				} else {
-					state->bricks[i][j] = BRICK_UBER;
-				}
-			} else {
-				state->bricks[i][j] = BRICK_NONE;
-			}
-		}
-	}
-
+void NewLife(PSContext2D_t* ctx, Jeu* state) {
 	// Mise a zero des drop (type = none)
+	int i;
 	for(i = 0; i < MAXDROP; i++) {
 		state->drops[i].pos = PP_MakeFloatPoint(0, 0);
 		state->drops[i].type = DROP_NONE;
@@ -61,17 +31,56 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
         InitBall(state, i);
         if (i == 0) {
             state->ball[i].type = BALL_CLASSIC;
-			state->ball[i].stuck = 1;
+			state->ball[i].stuck = PP_TRUE;
+			state->ball[i].velocity = PP_MakeFloatPoint(0, 0);
 		} else {
             state->ball[i].type = BALL_NONE;
 		}
 	}
 	state->ballCount = 1;
-	state->lives = 5;
 
 	// Position initiale de la paddle
-	state->paddle = PP_MakeRectFromXYWH(1100/2 - 50, 0, 100,
-										state->textures[6].height);
+	state->paddle.surf = PP_MakeRectFromXYWH(1100/2 - 50, 0, 130,
+											 state->textures[6].height);
+	state->paddle.sticky = PP_FALSE;
+}
+
+// Initialise l'état de la partie en début de jeu
+void GameInit(PSContext2D_t* ctx, Jeu* state) {
+	if(state->state != STATE_PAUSED) {
+		// Initialisation de la fonction rand
+		srand(time(NULL));
+
+		// Chargement des textures
+		LoadGameTextures(state);
+
+		// Initialisation des briques
+		int i, j;
+		state->brickCount = 0;
+		for(i = 0; i < BRICKW; i++) {
+			for(j = 0; j < BRICKH; j++) {
+				if(j < BRICKH - 4 && j > 1) {
+					int rnd = rand() % 100;
+					if (rnd < 50) {
+						state->bricks[i][j] = BRICK_NONE;
+					} else if (rnd < 75) {
+						state->bricks[i][j] = BRICK_ONETOUCH;
+						state->brickCount++;
+					} else if (rnd < 90) {
+						state->bricks[i][j] = BRICK_THREETOUCH;
+						state->brickCount++;
+					} else {
+						state->bricks[i][j] = BRICK_UBER;
+					}
+				} else {
+					state->bricks[i][j] = BRICK_NONE;
+				}
+			}
+		}
+
+		NewLife(ctx, state);
+		state->lives = 5;
+	}
 }
 
 // Cette fonction bloque un nombre entre 2 limites
@@ -98,21 +107,48 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 					// Recupération du code de la touche
 					uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
 					switch(key_code) {
-							case 39 :  // Fleche Droite
-								state->paddle.point.x += ctx->width / 50;
+							case 39 : {  // Fleche Droite
+								state->paddle.surf.point.x += ctx->width / 50;
+								int i;
+								for (i = 0; i < MAXBALL; i++) {
+									if(state->ball[i].stuck == PP_TRUE)
+										state->ball[i].pos.x += ctx->width / 50;
+								}
 								break;
-							case 37 :  // Fleche Gauche
-								state->paddle.point.x -= ctx->width / 50;
+							}
+							case 37 : {  // Fleche Gauche
+								state->paddle.surf.point.x -= ctx->width / 50;
+								int i;
+								for (i = 0; i < MAXBALL; i++) {
+									if(state->ball[i].stuck == PP_TRUE)
+										state->ball[i].pos.x -= ctx->width / 50;
+								}
 								break;
+							}
 							case 27 :  // Echap
-								SetState(STATE_PAUSED);
+								state->newState = STATE_PAUSED;
 								break;
 					}
 					break;
 				}
 				case PP_INPUTEVENT_TYPE_MOUSEMOVE: {  // Mouvement de la souris
 					struct PP_Point movement = pMouseInput->GetMovement(event->as_resource);
-					state->paddle.point.x += movement.x;
+					state->paddle.surf.point.x += movement.x;
+					int i;
+					for (i = 0; i < MAXBALL; i++) {
+						if(state->ball[i].stuck == PP_TRUE)
+							state->ball[i].pos.x += movement.x;
+					}
+					break;
+				}
+				case PP_INPUTEVENT_TYPE_MOUSEDOWN: {  // Click de souris
+					int i;
+					for (i = 0; i < MAXBALL; i++) {
+						if(state->ball[i].stuck == PP_TRUE) {
+							PaddleCollision(ctx, state, i);
+							state->ball[i].stuck = PP_FALSE;
+						}
+					}
 					break;
 				}
 				default:
@@ -121,7 +157,7 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 			break;
 		}
 		case PSE_MOUSELOCK_MOUSELOCKLOST: {
-			SetState(STATE_PAUSED);
+			state->newState = STATE_PAUSED;
 			break;
 		}
 		default:
@@ -130,8 +166,9 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 }
 
 // Appelée quand la souris est vérrouillée
-void MouseLocked(void* user_data, int32_t result) {
-	SetState(STATE_INGAME);
+void MouseLocked(void* data, int32_t result) {
+	Jeu* state = (Jeu*) data;
+	state->newState = STATE_INGAME;
 }
 
 // Gestion des evenements sur l'écran titre
@@ -143,15 +180,15 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	switch(event->type) {
 		case PSE_INSTANCE_HANDLEINPUT: {
 			switch (pInputEvent->GetType(event->as_resource)) {
-				case PP_INPUTEVENT_TYPE_MOUSEDOWN: {  // Click de souris
+				case PP_INPUTEVENT_TYPE_MOUSEUP: {  // Click de souris
 					// Interface de verrouillage du curseur
 					PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
 						PSGetInterface(PPB_MOUSELOCK_INTERFACE);
 					// Verrouille le curseur pour améliorer l'immersion / ergonomie
 					pMouseLock->LockMouse(PSGetInstanceId(),
-										  PP_MakeCompletionCallback(MouseLocked, NULL));
+										  PP_MakeCompletionCallback(MouseLocked, state));
 					// Passe a l'état "en jeu"
-					SetState(STATE_INGAME);
+					state->newState = STATE_INGAME;
 					break;
 				}
 				default:
@@ -188,49 +225,85 @@ int collides(Ball a, struct PP_Rect b) {
 		a.pos.y + a.radius > b.point.y;
 }
 
+void WallsCollision(PSContext2D_t* ctx, Jeu* state, int i) {
+	if (state->ball[i].pos.x - state->ball[i].radius <= 0) {
+		state->ball[i].pos.x = state->ball[i].radius + 1;
+		state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
+	}
+
+	if (state->ball[i].pos.x + state->ball[i].radius >= ctx->width) {
+		state->ball[i].pos.x = ctx->width - state->ball[i].radius - 1;
+		state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
+	}
+
+	if (state->ball[i].pos.y - state->ball[i].radius <= 0) {
+		state->ball[i].pos.y = state->ball[i].radius + 1;
+		state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
+	}
+}
+
+void PaddleCollision(PSContext2D_t* ctx, Jeu* state, int i) {
+	float angle = ((90 * (
+		(state->ball[i].pos.x - state->paddle.surf.point.x) /
+		state->paddle.surf.size.width)) / 2) - (45 / 2),
+		x = sin(angle / 180 * PI) * state->ball[i].speed,
+		y = cos(angle / 180 * PI) * state->ball[i].speed;
+	state->ball[i].velocity.x = x;
+	state->ball[i].velocity.y = -y;
+}
+
+void HitBrick(PSContext2D_t* ctx, Jeu* state, int j, int k) {
+	int h = ctx->height / BRICKH,
+		w = ctx->width / BRICKW,
+		x = j * (ctx->width / BRICKW),
+		y = k * (ctx->height / BRICKH);
+	switch (state->bricks[j][k]) {
+		case BRICK_ONETOUCH:
+			state->bricks[j][k] = BRICK_NONE;
+			state->brickCount--;
+			if (rand() < (RAND_MAX / 2))
+				SpawnDrop(x + (w/2), y + (h/2), state);
+			break;
+		case BRICK_TWOTOUCH:
+			state->bricks[j][k] = BRICK_ONETOUCH;
+			break;
+		case BRICK_THREETOUCH:
+			state->bricks[j][k] = BRICK_TWOTOUCH;
+			break;
+		default:
+			break;
+	}
+}
+
 // Met a jour l'état du jeu
 void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 	int i, j, k, h = ctx->height / BRICKH, w = ctx->width / BRICKW;
 
 	// Vérifie que la paddle ne sort pas de l'écran
-	state->paddle.point.x = clamp(state->paddle.point.x, 0,
-								  ctx->width - state->paddle.size.width);
+	state->paddle.surf.point.x = clamp(state->paddle.surf.point.x, 0,
+									   ctx->width - state->paddle.surf.size.width);
 
     for (i = 0; i < MAXBALL; i++) {
         if (state->ball[i].type != BALL_NONE) {
             state->ball[i].pos.x += state->ball[i].velocity.x;
             state->ball[i].pos.y += state->ball[i].velocity.y;
 
-            if (state->ball[i].pos.x - state->ball[i].radius <= 0) {
-                state->ball[i].pos.x = state->ball[i].radius + 1;
-                state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
-            }
+            WallsCollision(ctx, state, i);
 
-            if (state->ball[i].pos.x + state->ball[i].radius >= ctx->width) {
-                state->ball[i].pos.x = ctx->width - state->ball[i].radius - 1;
-                state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
-            }
-
-            if (state->ball[i].pos.y - state->ball[i].radius <= 0) {
-                state->ball[i].pos.y = state->ball[i].radius + 1;
-                state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
-            }
-
-            if (state->ball[i].pos.y + state->ball[i].radius>
-               ctx->height - state->paddle.size.height &&
-               state->ball[i].pos.x >= state->paddle.point.x &&
-               state->ball[i].pos.x <= state->paddle.point.x +
-               state->paddle.size.width) {
-                state->ball[i].pos.y = ctx->height - (
-                    state->paddle.size.height + state->ball[i].radius + 1);
-                float angle = ((90 * (
-                    (state->ball[i].pos.x - state->paddle.point.x) /
-                    state->paddle.size.width)) / 2) - (45 / 2),
-                    x = sin(angle / 180 * PI) * state->ball[i].speed,
-                    y = cos(angle / 180 * PI) * state->ball[i].speed;
-                state->ball[i].velocity.x = x;
-                state->ball[i].velocity.y = -y;
-            }
+			if (state->ball[i].pos.y + state->ball[i].radius >
+			ctx->height - state->paddle.surf.size.height &&
+			state->ball[i].pos.x >= state->paddle.surf.point.x &&
+			state->ball[i].pos.x <= state->paddle.surf.point.x +
+			state->paddle.surf.size.width) {
+				state->ball[i].pos.y = ctx->height -
+					(state->paddle.surf.size.height + state->ball[i].radius + 1);
+				if(state->paddle.sticky == PP_FALSE && state->ball[i].stuck == PP_FALSE) {
+					PaddleCollision(ctx, state, i);
+				} else {
+					state->ball[i].velocity = PP_MakeFloatPoint(0, 0);
+					state->ball[i].stuck = PP_TRUE;
+				}
+			}
 
             if (state->ball[i].pos.y > ctx->height) {
                 state->ball[i].type = BALL_NONE;
@@ -238,9 +311,9 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                 if (state->ballCount <= 0) {
 					state->lives--;
 					if(state->lives > 0)
-						AddBall(state);
+						NewLife(ctx, state);
 					else
-                    	SetState(STATE_SCORE);
+                    	state->newState = STATE_SCORE;
 				}
             }
 
@@ -252,21 +325,13 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 						if (state->bricks[j][k] != BRICK_NONE &&
 							collides(state->ball[i],
 									 PP_MakeRectFromXYWH(x, y, w, h))) {
-							switch (state->bricks[j][k]) {
-								case BRICK_ONETOUCH:
-									state->bricks[j][k] = BRICK_NONE;
-									state->brickCount--;
-									if (rand() < (RAND_MAX / 2))
-										SpawnDrop(x + (w/2), y + (h/2), state);
-									break;
-								case BRICK_TWOTOUCH:
-									state->bricks[j][k] = BRICK_ONETOUCH;
-									break;
-								case BRICK_THREETOUCH:
-									state->bricks[j][k] = BRICK_TWOTOUCH;
-									break;
-								default:
-									break;
+							if(state->ball[i].type == BALL_EXPLODE) {
+								int l, m;
+								for(l = j - 1; l <= j + 1; l++)
+									for(m = k - 1; m <= k + 1; m++)
+										HitBrick(ctx, state, l, m);
+							} else {
+								HitBrick(ctx, state, j, k);
 							}
 
 							// Collision sur le dessous de la brique
@@ -295,19 +360,17 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 		if (state->drops[i].type != DROP_NONE) {
 			state->drops[i].pos.y++;
 			if (state->drops[i].pos.y + 10 >=
-				ctx->height - state->paddle.size.height) {
-				if (state->drops[i].pos.x >= state->paddle.point.x &&
+				ctx->height - state->paddle.surf.size.height) {
+				if (state->drops[i].pos.x >= state->paddle.surf.point.x &&
 					state->drops[i].pos.x <=
-					state->paddle.point.x + state->paddle.size.width) {
+					state->paddle.surf.point.x + state->paddle.surf.size.width) {
 					switch (state->drops[i].type) {
 						case DROP_PADDLE_PLUS:
-							state->paddle.size.width =
-								clamp(state->paddle.size.width * 1.5, 30, 300);
+							state->paddle.surf.size.width =
+								clamp(state->paddle.surf.size.width + 50, 30, 330);
 							break;
 						case DROP_STICK:
-							for (j = 0; j < MAXBALL; j++)
-								if (state->ball[j].type != BALL_NONE)
-									state->ball[j].type = BALL_STICKY;
+							state->paddle.sticky = PP_TRUE;
 							break;
 						case DROP_CLONE:
 							AddBall(state);
@@ -320,18 +383,20 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 						case DROP_LOSE:
 							state->lives--;
 							if(state->lives <= 0)
-								SetState(STATE_SCORE);
+								state->newState = STATE_SCORE;
+							else
+								NewLife(ctx, state);
 							break;
 						case DROP_PADDLE_LESS:
-							state->paddle.size.width =
-							clamp(state->paddle.size.width / 1.5, 30, 300);
+							state->paddle.surf.size.width =
+							clamp(state->paddle.surf.size.width - 50, 30, 330);
 							break;
 						case DROP_SPEED_LESS:
 							for (j = 0; j < MAXBALL; j++) {
 								if (state->ball[j].type != BALL_NONE) {
 									state->ball[j].velocity.x /= 1.5;
 									state->ball[j].velocity.y /= 1.5;
-									clamp(state->ball[j].speed / 1.5, 2, 18);
+									state->ball[j].speed = clamp(state->ball[j].speed - 3, 2, 18);
 								}
 							}
 							break;
@@ -340,7 +405,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 								if (state->ball[j].type != BALL_NONE) {
 									state->ball[j].velocity.x *= 1.5;
 									state->ball[j].velocity.y *= 1.5;
-									clamp(state->ball[j].speed * 1.5, 2, 18);
+									state->ball[j].speed = clamp(state->ball[j].speed + 3, 2, 18);
 								}
 							}
 							break;
@@ -356,7 +421,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 
 	// Si il n'y a plus de briques
 	if(state->brickCount <= 0)
-		SetState(STATE_SCORE);
+		state->newState = STATE_SCORE;
 }
 
 // Determine la distance entre 2 points
@@ -401,10 +466,10 @@ void SpawnDrop(int x, int y, Jeu* state) {
 
 void InitBall(Jeu* state, int i) {
     state->ball[i].speed = BALLSPEED;
+	state->ball[i].velocity = PP_MakeFloatPoint(0, 0);
     state->ball[i].pos = PP_MakeFloatPoint(1100/2, 700 - 20);
-    state->ball[i].velocity = PP_MakeFloatPoint(0, -state->ball[i].speed);
     state->ball[i].radius = BALLRADIUS;
-	state->ball[i].stuck = 0;
+	state->ball[i].stuck = PP_FALSE;
 }
 
 int AddBall(Jeu* state) {
@@ -412,6 +477,7 @@ int AddBall(Jeu* state) {
     for (i = 0; i < MAXBALL; i++) {
         if (state->ball[i].type == BALL_NONE) {
             InitBall(state, i);
+			state->ball[i].velocity = PP_MakeFloatPoint(0, -state->ball[i].speed);
             state->ballCount++;
             state->ball[i].type = BALL_CLASSIC;
             return i;

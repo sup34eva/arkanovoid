@@ -25,5 +25,6 @@ float Dist(struct PP_FloatPoint from, struct PP_FloatPoint to);
 void SpawnDrop(int brickX, int brickY, Jeu* state);
 void InitBall(Jeu* state, int i);
 int AddBall(Jeu* state);
+void PaddleCollision(PSContext2D_t* ctx, Jeu* state, int i);
 
 #endif  // SERVER_INCLUDE_CALC_H_

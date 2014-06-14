@@ -69,6 +69,12 @@ void LoadGameTextures(Jeu* state) {
 
 	state->textures[14] = LoadTexture("/img/textures/paddle_less.tex");
 	state->textures[16] = LoadTexture("/img/textures/speed_plus.tex");
+
+	state->textures[17] = LoadTexture("/img/textures/glue_left.tex");
+	state->textures[18] = LoadTexture("/img/textures/glue_middle.tex");
+	state->textures[19] = LoadTexture("/img/textures/glue_right.tex");
+
+	state->textures[20] = LoadTexture("/img/textures/bomb.tex");
 }
 
 // Fonction appelée a chaque frame de l'écran titre pour dessiner l'image
@@ -228,25 +234,44 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 	}
 
 	// Rendu de la paddle
-	state->paddle.point.y = ctx->height - state->paddle.size.height;
-	DrawTexture(ctx, state->paddle.point, state->textures[5]);
-	for(i = 0; i < state->paddle.size.width - 30; i++)
+	state->paddle.surf.point.y = ctx->height - state->paddle.surf.size.height;
+	DrawTexture(ctx, state->paddle.surf.point, state->textures[5]);
+	for(i = 0; i < state->paddle.surf.size.width - 30; i++)
 		DrawTexture(ctx,
-					PP_MakePoint(state->paddle.point.x + 15 + i,
-								 state->paddle.point.y),
+					PP_MakePoint(state->paddle.surf.point.x + 15 + i,
+								 state->paddle.surf.point.y),
 					state->textures[6]);
 	DrawTexture(ctx,
-				PP_MakePoint(state->paddle.point.x +
-							 (state->paddle.size.width - 15),
-							 state->paddle.point.y), state->textures[7]);
+				PP_MakePoint(state->paddle.surf.point.x +
+							 (state->paddle.surf.size.width - 15),
+							 state->paddle.surf.point.y), state->textures[7]);
+
+	if(state->paddle.sticky == PP_TRUE) {
+		DrawTexture(ctx, state->paddle.surf.point, state->textures[17]);
+		for(i = 0; i < state->paddle.surf.size.width - 30; i += 50)
+			DrawTexture(ctx,
+						PP_MakePoint(state->paddle.surf.point.x + 15 + i,
+									 state->paddle.surf.point.y),
+						state->textures[18]);
+		DrawTexture(ctx,
+				PP_MakePoint(state->paddle.surf.point.x +
+							 (state->paddle.surf.size.width - 15),
+							 state->paddle.surf.point.y), state->textures[19]);
+	}
 
 	// Rendu de la balle
 	for(i = 0; i < MAXBALL; i++)
-        if (state->ball[i].type != BALL_NONE)
+		if (state->ball[i].type == BALL_CLASSIC) {
 			DrawTexture(ctx,
-				PP_MakePoint(state->ball[i].pos.x - state->ball[i].radius,
-							 state->ball[i].pos.y - state->ball[i].radius),
-				state->textures[0]);
+						PP_MakePoint(state->ball[i].pos.x - state->ball[i].radius,
+									 state->ball[i].pos.y - state->ball[i].radius),
+						state->textures[0]);
+		} else if (state->ball[i].type == BALL_EXPLODE) {
+			DrawTexture(ctx,
+						PP_MakePoint(state->ball[i].pos.x - state->ball[i].radius,
+									 state->ball[i].pos.y - state->ball[i].radius - 10),
+						state->textures[20]);
+		}
 }
 // Alpha blending
 uint32_t blend(uint32_t base, uint32_t blend) {

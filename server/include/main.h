@@ -21,6 +21,5 @@
 #include "rendu.h"
 
 void PostMessage(const char *format, ...);
-void SetState(State nw);
 
 #endif  // SERVER_INCLUDE_MAIN_H_

@@ -4,26 +4,21 @@
 #include "ppapi/c/ppp_instance.h"
 #include "ppapi/c/ppp_messaging.h"
 
-// Cette variable stocke l'état du programme a la prochaine frame
-State newState = STATE_TITLE;
-
 // Fonction main du programme
 int server_main(int argc, char* argv[]) {
 	// Allocation d'un contexte 2d pour dessiner les images du jeu dans un cadre
 	PSContext2D_t* context = PSContext2DAllocate(PP_IMAGEDATAFORMAT_BGRA_PREMUL);
 	// Création des données de jeu
 	Jeu game;
-	// Le jeu est initialisé a l'état none pour que la fonction TitleInit s'execute
-	State state = STATE_NONE;
+
+	game.newState = STATE_TITLE;
 
 	// Boucle de jeu
 	while (1) {
 		// Si l'état a changé depuis la dernière frame
-		if(newState != state) {
-			// Change l'etat du jeu
-			state = newState;
+		if(game.newState != game.state) {
 			// Initialise le nouvel etat
-			switch(state) {
+			switch(game.newState) {
 				case STATE_INGAME:
 					GameInit(context, &game);
 					break;
@@ -34,6 +29,8 @@ int server_main(int argc, char* argv[]) {
 				default:
 					break;
 			}
+			// Change l'etat du jeu
+			game.state = game.newState;
 		}
 
 		// Prise en charge des evenements
@@ -44,7 +41,7 @@ int server_main(int argc, char* argv[]) {
 			PSContext2DHandleEvent(context, event);
 
 			// Appel la fonction de gestion d'event en fonction de l'etat
-			switch(state) {
+			switch(game.state) {
 				case STATE_INGAME:
 					GameHandleEvent(event, &game, context);
 					break;
@@ -71,7 +68,7 @@ int server_main(int argc, char* argv[]) {
 				break;
 
 			// Mise a jour de du jeu et calcul de l'image en fonction de l'état
-			switch(state) {
+			switch(game.state) {
 				case STATE_INGAME:
 					GameCalc(context, &game);
 					GameDraw(context, &game);
@@ -126,11 +123,6 @@ void PostMessage(const char *format, ...) {
 	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(),
 										PSInterfaceVar()->VarFromUtf8(string, strlen(string)));
 	free(string);
-}
-
-// Change l'état du programme
-void SetState(State nw) {
-	newState = nw;
 }
 
 // Enregistre la fonction server_main en tant que fonction main du module NaCl
