@@ -39,7 +39,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	int i, j;
 	state->brickCount = 0;
 	for(i = 0; i < BRICKW; i++) {
-		for(j = 2; j < BRICKH; j++) {
+		for(j = 0; j < BRICKH; j++) {
 			if(j < BRICKH - 4 && j > 1) {
 				int rnd = rand() % 100;
 				if (rnd < 50) {
@@ -68,10 +68,12 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	// Position initiale de la balle
 	for(i = 0; i < MAXBALL; i++) {
         InitBall(state, i);
-        if (i == 0)
+        if (i == 0) {
             state->ball[i].type = BALL_CLASSIC;
-        else
+			state->ball[i].stuck = 1;
+		} else {
             state->ball[i].type = BALL_NONE;
+		}
 	}
 	state->ballCount = 1;
 	state->lives = 5;
@@ -153,17 +155,16 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	}
 }
 
-// Determine si un point est contenu dans un rectangle
-int Contains(struct PP_Rect rect, PP_FloatPoint point) {
-  return (point.x >= rect.point.x) &&
-	  (point.x < (rect.point.x + rect.size.width)) &&
-	  (point.y >= rect.point.y) &&
-	  (point.x < (rect.point.y + rect.size.height));
+int collides(Ball a, struct PP_Rect b) {
+	return a.pos.x - a.radius < b.point.x + b.size.width &&
+		a.pos.x + a.radius > b.point.x &&
+		a.pos.y - a.radius < b.point.y + b.size.height &&
+		a.pos.y + a.radius > b.point.y;
 }
 
 // Met a jour l'état du jeu
 void GameCalc(PSContext2D_t* ctx, Jeu* state) {
-	int i, j, h = ctx->height / BRICKH, w = ctx->width / BRICKW;
+	int i, j, k, h = ctx->height / BRICKH, w = ctx->width / BRICKW;
 
 	// Vérifie que la paddle ne sort pas de l'écran
 	state->paddle.point.x = clamp(state->paddle.point.x, 0,
@@ -171,9 +172,6 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 
     for (i = 0; i < MAXBALL; i++) {
         if (state->ball[i].type != BALL_NONE) {
-            int lastX = clamp(state->ball[i].pos.x, 1, ctx->width),
-                lastY = clamp(state->ball[i].pos.y, 1, ctx->height);
-
             state->ball[i].pos.x += state->ball[i].velocity.x;
             state->ball[i].pos.y += state->ball[i].velocity.y;
 
@@ -202,8 +200,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
                 float angle = ((90 * (
                     (state->ball[i].pos.x - state->paddle.point.x) /
                     state->paddle.size.width)) / 2) - (45 / 2),
-                    x = sin((PI / 180) * angle) * state->ball[i].speed,
-                    y = cos((PI / 180) * angle) * state->ball[i].speed;
+                    x = sin(angle / 180 * PI) * state->ball[i].speed,
+                    y = cos(angle / 180 * PI) * state->ball[i].speed;
                 state->ball[i].velocity.x = x;
                 state->ball[i].velocity.y = -y;
             }
@@ -220,115 +218,115 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				}
             }
 
-            // TODO: Prendre en compte le rayon de la balle
-            if (h != 0 && w != 0) {
-                int brickX = state->ball[i].pos.x / w,
-                    brickY = state->ball[i].pos.y / h,
-                    lastBrickX = lastX / w, lastBrickY = lastY / h;
+			if (w != 0 && h != 0) {
+				for(j = 0; j < BRICKW; j++) {
+					for(k = 0; k < BRICKH; k++) {
+						int x = j * (ctx->width / BRICKW),
+							y = k * (ctx->height / BRICKH);
+						if (state->bricks[j][k] != BRICK_NONE &&
+							collides(state->ball[i],
+									 PP_MakeRectFromXYWH(x, y, w, h))) {
+							switch (state->bricks[j][k]) {
+								case BRICK_ONETOUCH:
+									state->bricks[j][k] = BRICK_NONE;
+									state->brickCount--;
+									if (rand() < (RAND_MAX / 2))
+										SpawnDrop(x + (w/2), y + (h/2), state);
+									break;
+								case BRICK_TWOTOUCH:
+									state->bricks[j][k] = BRICK_ONETOUCH;
+									break;
+								case BRICK_THREETOUCH:
+									state->bricks[j][k] = BRICK_TWOTOUCH;
+									break;
+								default:
+									break;
+							}
 
-                if (state->bricks[brickX][brickY] != BRICK_NONE) {
-                    switch (state->bricks[brickX][brickY]) {
-                        case BRICK_ONETOUCH:
-                            state->bricks[brickX][brickY] = BRICK_NONE;
-                            state->brickCount--;
-                            if (rand() < (RAND_MAX / 2))
-                                SpawnDrop((brickX * (ctx->width / BRICKW) +
-                                           (0.5 * (ctx->width / BRICKW))) ,
-                                          brickY * (ctx->height / BRICKH),
-                                          state);
-                            break;
-                        case BRICK_TWOTOUCH:
-                            state->bricks[brickX][brickY] = BRICK_ONETOUCH;
-                            break;
-                        case BRICK_THREETOUCH:
-                            state->bricks[brickX][brickY] = BRICK_TWOTOUCH;
-                            break;
-                        default:
-                            break;
-                    }
+							// Collision sur le dessous de la brique
+							if(state->ball[i].pos.y - state->ball[i].radius <= y + h)
+								state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
 
-                    if (brickX > lastBrickX)
-                        state->ball[i].velocity.x =
-                        -fabs(state->ball[i].velocity.x);
+							// Collision sur le dessus de la brique
+							else if (state->ball[i].pos.y + state->ball[i].radius >= y)
+								state->ball[i].velocity.y = -fabs(state->ball[i].velocity.y);
 
-                    if (brickX < lastBrickX)
-                        state->ball[i].velocity.x =
-                        fabs(state->ball[i].velocity.x);
+							// Collision sur la gauche
+							if(state->ball[i].pos.x + state->ball[i].radius > x)
+								state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
 
-                    if (brickY > lastBrickY)
-                        state->ball[i].velocity.y =
-                        -fabs(state->ball[i].velocity.y);
+							// Collision sur la droite
+							if(state->ball[i].pos.x  - state->ball[i].radius < x + w)
+								state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
+						}
+					}
+				}
+			}
+		}
+	}
 
-                    if (brickY < lastBrickY)
-                        state->ball[i].velocity.y =
-                        fabs(state->ball[i].velocity.y);
-                }
-            }
-        }
-    }
-
-    for (i = 0; i < MAXDROP; i++)
-        if (state->drops[i].type != DROP_NONE) {
-            state->drops[i].pos.y++;
-            if (state->drops[i].pos.y + 10 >=
-                ctx->height - state->paddle.size.height) {
-                if (state->drops[i].pos.x >= state->paddle.point.x &&
-                    state->drops[i].pos.x <=
-                    state->paddle.point.x + state->paddle.size.width) {
-                    switch (state->drops[i].type) {
-                        case DROP_PADDLE_PLUS:
-                            state->paddle.size.width =
-                                clamp(state->paddle.size.width * 1.5, 30, 300);
-                            break;
-                        case DROP_STICK:
-                            for (j = 0; j < MAXBALL; j++)
-                                if (state->ball[j].type != BALL_NONE)
-                                    state->ball[j].type = BALL_STICKY;
-                            break;
-                        case DROP_CLONE:
-                            AddBall(state);
-                            break;
-                        case DROP_EXPLODE:
-                            for (j = 0; j < MAXBALL; j++)
-                                if (state->ball[j].type != BALL_NONE)
-                                    state->ball[j].type = BALL_EXPLODE;
-                            break;
-                        case DROP_LOSE:
-                            state->lives--;
+	for (i = 0; i < MAXDROP; i++)
+		if (state->drops[i].type != DROP_NONE) {
+			state->drops[i].pos.y++;
+			if (state->drops[i].pos.y + 10 >=
+				ctx->height - state->paddle.size.height) {
+				if (state->drops[i].pos.x >= state->paddle.point.x &&
+					state->drops[i].pos.x <=
+					state->paddle.point.x + state->paddle.size.width) {
+					switch (state->drops[i].type) {
+						case DROP_PADDLE_PLUS:
+							state->paddle.size.width =
+								clamp(state->paddle.size.width * 1.5, 30, 300);
+							break;
+						case DROP_STICK:
+							for (j = 0; j < MAXBALL; j++)
+								if (state->ball[j].type != BALL_NONE)
+									state->ball[j].type = BALL_STICKY;
+							break;
+						case DROP_CLONE:
+							AddBall(state);
+							break;
+						case DROP_EXPLODE:
+							for (j = 0; j < MAXBALL; j++)
+								if (state->ball[j].type != BALL_NONE)
+									state->ball[j].type = BALL_EXPLODE;
+							break;
+						case DROP_LOSE:
+							state->lives--;
 							if(state->lives <= 0)
 								SetState(STATE_SCORE);
-                            break;
-                        case DROP_PADDLE_LESS:
-                            state->paddle.size.width =
-                            clamp(state->paddle.size.width / 1.5, 30, 300);
-                            break;
-                        case DROP_SPEED_LESS:
-                            for (j = 0; j < MAXBALL; j++) {
-                                if (state->ball[j].type != BALL_NONE) {
-                                    state->ball[j].velocity.x /= 1.5;
-                                    state->ball[j].velocity.y /= 1.5;
-                                    clamp(state->ball[j].speed / 1.5, 2, 18);
-                                }
-                            }
-                            break;
-                        case DROP_SPEED_PLUS:
-                            for (j = 0; j < MAXBALL; j++) {
-                                if (state->ball[j].type != BALL_NONE) {
-                                    state->ball[j].velocity.x *= 1.5;
-                                    state->ball[j].velocity.y *= 1.5;
-                                    clamp(state->ball[j].speed * 1.5, 2, 18);
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    state->drops[i].type = DROP_NONE;
-                } else if (state->drops[i].pos.y >= ctx->height) {
-                    state->drops[i].type = DROP_NONE;
-                }
-            }
-        }
+							break;
+						case DROP_PADDLE_LESS:
+							state->paddle.size.width =
+							clamp(state->paddle.size.width / 1.5, 30, 300);
+							break;
+						case DROP_SPEED_LESS:
+							for (j = 0; j < MAXBALL; j++) {
+								if (state->ball[j].type != BALL_NONE) {
+									state->ball[j].velocity.x /= 1.5;
+									state->ball[j].velocity.y /= 1.5;
+									clamp(state->ball[j].speed / 1.5, 2, 18);
+								}
+							}
+							break;
+						case DROP_SPEED_PLUS:
+							for (j = 0; j < MAXBALL; j++) {
+								if (state->ball[j].type != BALL_NONE) {
+									state->ball[j].velocity.x *= 1.5;
+									state->ball[j].velocity.y *= 1.5;
+									clamp(state->ball[j].speed * 1.5, 2, 18);
+								}
+							}
+							break;
+						default:
+							break;
+					}
+					state->drops[i].type = DROP_NONE;
+				} else if (state->drops[i].pos.y >= ctx->height) {
+					state->drops[i].type = DROP_NONE;
+				}
+			}
+		}
 
 	// Si il n'y a plus de briques
 	if(state->brickCount <= 0)
@@ -378,10 +376,9 @@ void SpawnDrop(int x, int y, Jeu* state) {
 void InitBall(Jeu* state, int i) {
     state->ball[i].speed = BALLSPEED;
     state->ball[i].pos = PP_MakeFloatPoint(1100/2, 700 - 20);
-    float x = sin((PI / 180) * STARTANGLE) * BALLSPEED,
-        y = cos((PI / 180) * STARTANGLE) * BALLSPEED;
-    state->ball[i].velocity = PP_MakeFloatPoint(x, y);
-    state->ball[i].radius = 5;
+    state->ball[i].velocity = PP_MakeFloatPoint(0, -state->ball[i].speed);
+    state->ball[i].radius = BALLRADIUS;
+	state->ball[i].stuck = 0;
 }
 
 int AddBall(Jeu* state) {

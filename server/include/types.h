@@ -55,6 +55,7 @@ typedef struct {
 	uint32_t radius;
 	BallType type;
 	int speed;
+	int stuck;
 } Ball;
 
 typedef struct {

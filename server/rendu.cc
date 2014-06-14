@@ -197,7 +197,7 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 	// Rendu de la balle
 	for(i = 0; i < MAXBALL; i++)
         if (state->ball[i].type != BALL_NONE)
-            DrawTexture(ctx,
+			DrawTexture(ctx,
 				PP_MakePoint(state->ball[i].pos.x - state->ball[i].radius,
 							 state->ball[i].pos.y - state->ball[i].radius),
 				state->textures[0]);
