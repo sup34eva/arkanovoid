@@ -322,9 +322,9 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 					for(k = 0; k < BRICKH; k++) {
 						int x = j * (ctx->width / BRICKW),
 							y = k * (ctx->height / BRICKH);
+						PP_Rect surf = PP_MakeRectFromXYWH(x, y, w, h);
 						if (state->bricks[j][k] != BRICK_NONE &&
-							collides(state->ball[i],
-									 PP_MakeRectFromXYWH(x, y, w, h))) {
+							collides(state->ball[i], surf)) {
 							if(state->ball[i].type == BALL_EXPLODE) {
 								int l, m;
 								for(l = j - 1; l <= j + 1; l++)
@@ -334,21 +334,26 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 								HitBrick(ctx, state, j, k);
 							}
 
-							// Collision sur le dessous de la brique
-							if(state->ball[i].pos.y - state->ball[i].radius <= y + h)
-								state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
+							int xd = (surf.point.x + surf.size.width / 2) -
+								state->ball[i].pos.x;
+							int yd = (surf.point.y + surf.size.height / 2) -
+								state->ball[i].pos.y;
 
-							// Collision sur le dessus de la brique
-							else if (state->ball[i].pos.y + state->ball[i].radius >= y)
-								state->ball[i].velocity.y = -fabs(state->ball[i].velocity.y);
+							PostMessage("xd: %d, yd: %d", xd, yd);
 
-							// Collision sur la gauche
-							if(state->ball[i].pos.x + state->ball[i].radius > x)
-								state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
-
-							// Collision sur la droite
-							if(state->ball[i].pos.x  - state->ball[i].radius < x + w)
-								state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
+							if (fabs(xd) > fabs(yd)) {
+								if (xd < 0) {
+									state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
+								} else {
+									state->ball[i].velocity.x = -fabs(state->ball[i].velocity.x);
+								}
+							} else {
+								if (yd < 0) {
+									state->ball[i].velocity.y = fabs(state->ball[i].velocity.y);
+								} else {
+									state->ball[i].velocity.y = -fabs(state->ball[i].velocity.y);
+								}
+							}
 						}
 					}
 				}
