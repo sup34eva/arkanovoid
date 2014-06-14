@@ -13,7 +13,8 @@
 #include "nacl.h"
 #include "calc.h"
 
-void LoadTextures(Jeu* state);
+void LoadTitleTextures(Jeu* state);
+void LoadGameTextures(Jeu* state);
 Texture LoadTexture(const char* url);
 void TitleDraw(PSContext2D_t* ctx,
 			  Jeu* state);

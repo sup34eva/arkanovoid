@@ -1,6 +1,5 @@
 node_modules/
 dist/css/
-dist/img/
 dist/js/
 bower_components/
 server/newlib/

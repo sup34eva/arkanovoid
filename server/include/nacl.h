@@ -18,5 +18,6 @@
 #include "ppapi/c/ppb_input_event.h"
 #include "ppapi/c/ppb_mouse_lock.h"
 #include "ppapi/c/ppp_mouse_lock.h"
+#include "ppapi/c/ppb_var_array.h"
 
 #endif  // SERVER_INCLUDE_NACL_H_

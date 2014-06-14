@@ -41,8 +41,21 @@ void UnloadTexture(Texture tex) {
 	free(tex.pixel_data);
 }
 
+void LoadTitleTextures(Jeu* state) {
+	state->textures[8] = LoadTexture("/img/textures/lava.tex");
+	state->textures[0] = LoadTexture("/img/textures/logo.tex");
+	state->textures[1] = LoadTexture("/img/textures/button.tex");
+
+	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
+	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");
+	state->textures[15] = LoadTexture("/img/textures/skull.tex");
+	state->textures[12] = LoadTexture("/img/textures/explode.tex");
+	state->textures[10] = LoadTexture("/img/textures/sticky.tex");
+	state->textures[11] = LoadTexture("/img/textures/clone.tex");
+}
+
 // Chargement des textures du jeu dans un tableau
-void LoadTextures(Jeu* state) {
+void LoadGameTextures(Jeu* state) {
 	state->textures[0] = LoadTexture("/img/textures/ball.tex");
 
 	state->textures[1] = LoadTexture("/img/textures/brick1.tex");
@@ -54,13 +67,7 @@ void LoadTextures(Jeu* state) {
 	state->textures[6] = LoadTexture("/img/textures/paddle_middle.tex");
 	state->textures[7] = LoadTexture("/img/textures/paddle_right.tex");
 
-	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
-	state->textures[10] = LoadTexture("/img/textures/sticky.tex");
-	state->textures[11] = LoadTexture("/img/textures/clone.tex");
-	state->textures[12] = LoadTexture("/img/textures/explode.tex");
-	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");
 	state->textures[14] = LoadTexture("/img/textures/paddle_less.tex");
-	state->textures[15] = LoadTexture("/img/textures/skull.tex");
 	state->textures[16] = LoadTexture("/img/textures/speed_plus.tex");
 }
 
@@ -78,6 +85,45 @@ void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
 						  (state->textures[1].width / 2),
 						  state->textures[0].height);
 	DrawTexture(ctx, origin, state->textures[1]);
+
+	int i;
+	for(i = 0; i < 9; i++) {
+		if(state->shop[i] == PP_TRUE) {
+			Texture tex;
+			PP_Point pos = PP_MakePoint(i * 20, ctx->height - 20);
+			switch(i) {
+				case 0:
+					tex = state->textures[9];
+					break;
+				case 1:
+					tex = state->textures[13];
+					break;
+				case 2:
+					tex = state->textures[15];
+					break;
+				case 3:
+					tex = state->textures[12];
+					break;
+				case 4:
+					tex = state->textures[12];
+					break;
+				case 5:
+					tex = state->textures[10];
+					break;
+				case 6:
+					tex = state->textures[10];
+					break;
+				case 7:
+					tex = state->textures[11];
+					break;
+				case 8:
+				default:
+					tex = state->textures[11];
+					break;
+			}
+			DrawTexture(ctx, pos, tex);
+		}
+	}
 }
 
 void PauseDraw(PSContext2D_t* ctx, Jeu* state) {

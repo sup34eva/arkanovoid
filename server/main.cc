@@ -1,5 +1,8 @@
 // Copyright 2014 Huns de Troyes
 #include "include/main.h"
+#include "ppapi/c/ppp.h"
+#include "ppapi/c/ppp_instance.h"
+#include "ppapi/c/ppp_messaging.h"
 
 // Cette variable stocke l'état du programme a la prochaine frame
 State newState = STATE_TITLE;
@@ -94,20 +97,35 @@ int server_main(int argc, char* argv[]) {
 	return 0;
 }
 
-// Fonctions de debug
-void PostMessage(const char *format, ...) {
-	va_list ap;
-	char buffer[100];
-	va_start(ap, format);
-	vsnprintf(buffer, sizeof buffer, format, ap);
-	va_end(ap);
-	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(),
-										PSInterfaceVar()->VarFromUtf8(buffer,
-																	  sizeof buffer));
+char* VprintfToNewString(const char* format, va_list args) {
+	va_list args_copy;
+	int length;
+	char* buffer;
+	int result;
+
+	va_copy(args_copy, args);
+	length = vsnprintf(NULL, 0, format, args);
+	buffer = (char*)malloc(length + 1); /* +1 for NULL-terminator. */
+	result = vsnprintf(&buffer[0], length + 1, format, args_copy);
+	if (result != length) {
+		assert(0);
+		return NULL;
+	}
+	return buffer;
 }
 
-void PostNumber(double num) {
-	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), PP_MakeDouble(num));
+// Fonctions de debug
+void PostMessage(const char *format, ...) {
+	char* string;
+	va_list args;
+
+	va_start(args, format);
+	string = VprintfToNewString(format, args);
+	va_end(args);
+
+	PSInterfaceMessaging()->PostMessage(PSGetInstanceId(),
+										PSInterfaceVar()->VarFromUtf8(string, strlen(string)));
+	free(string);
 }
 
 // Change l'état du programme
@@ -115,7 +133,7 @@ void SetState(State nw) {
 	newState = nw;
 }
 
-// Enresitre la fonction server_main en tant que fonction main auprès d'NaCl
+// Enregistre la fonction server_main en tant que fonction main du module NaCl
 #ifndef SEL_LDR
 PPAPI_SIMPLE_REGISTER_MAIN(server_main)
 #endif

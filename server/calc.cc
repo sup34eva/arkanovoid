@@ -1,17 +1,6 @@
 // Copyright 2014 Huns de Troyes
 #include "include/calc.h"
 
-// Appelée quand la souris est vérrouillée
-void MouseLocked(void* user_data, int32_t result) {
-	PostNumber(42);
-}
-
-// Appelée quand la souris est dévérouillée
-void MouseLockLost(PP_Instance instance) {
-	PostNumber(101010);
-	SetState(STATE_PAUSED);
-}
-
 // Initialisation de l'écran titre
 void TitleInit(Jeu* state) {
 	/* Définitions des événements que le programme doit recevoir :
@@ -21,10 +10,12 @@ void TitleInit(Jeu* state) {
 												  PP_INPUTEVENT_CLASS_KEYBOARD |
 												  PP_INPUTEVENT_CLASS_TOUCH);
 
-	// Chargement des texture de l'écran titre
-	state->textures[0] = LoadTexture("/img/textures/logo.tex");
-	state->textures[1] = LoadTexture("/img/textures/button.tex");
-	state->textures[8] = LoadTexture("/img/textures/lava.tex");
+	// Chargement des textures
+	LoadTitleTextures(state);
+
+	int i;
+	for(i = 0; i < 9; i++)
+		state->shop[i] = PP_FALSE;
 }
 
 // Initialise l'état de la partie en début de jeu
@@ -33,7 +24,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 	srand(time(NULL));
 
 	// Chargement des textures
-	LoadTextures(state);
+	LoadGameTextures(state);
 
 	// Initialisation des briques
 	int i, j;
@@ -99,34 +90,48 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 		PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
 
 	// Si l'evenement est une entrée utilisateur
-	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
-		// Action a effectuer en fonction du type d'event
-		switch (pInputEvent->GetType(event->as_resource)) {
-			case PP_INPUTEVENT_TYPE_KEYDOWN: {  // Appui d'une touche du clavier
-				// Recupération du code de la touche
-				uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
-				switch(key_code) {
-						case 39 :  // Fleche Droite
-							state->paddle.point.x += ctx->width / 50;
-							break;
-						case 37 :  // Fleche Gauche
-							state->paddle.point.x -= ctx->width / 50;
-							break;
-						case 27 :  // Echap
-							SetState(STATE_PAUSED);
-							break;
+	switch(event->type) {
+		case PSE_INSTANCE_HANDLEINPUT: {
+			// Action a effectuer en fonction du type d'event
+			switch (pInputEvent->GetType(event->as_resource)) {
+				case PP_INPUTEVENT_TYPE_KEYDOWN: {  // Appui d'une touche du clavier
+					// Recupération du code de la touche
+					uint32_t key_code = pKeyboardInput->GetKeyCode(event->as_resource);
+					switch(key_code) {
+							case 39 :  // Fleche Droite
+								state->paddle.point.x += ctx->width / 50;
+								break;
+							case 37 :  // Fleche Gauche
+								state->paddle.point.x -= ctx->width / 50;
+								break;
+							case 27 :  // Echap
+								SetState(STATE_PAUSED);
+								break;
+					}
+					break;
 				}
-				break;
+				case PP_INPUTEVENT_TYPE_MOUSEMOVE: {  // Mouvement de la souris
+					struct PP_Point movement = pMouseInput->GetMovement(event->as_resource);
+					state->paddle.point.x += movement.x;
+					break;
+				}
+				default:
+					break;
 			}
-			case PP_INPUTEVENT_TYPE_MOUSEMOVE: {  // Mouvement de la souris
-				struct PP_Point movement = pMouseInput->GetMovement(event->as_resource);
-				state->paddle.point.x += movement.x;
-				break;
-			}
-			default:
-				break;
+			break;
 		}
+		case PSE_MOUSELOCK_MOUSELOCKLOST: {
+			SetState(STATE_PAUSED);
+			break;
+		}
+		default:
+			break;
 	}
+}
+
+// Appelée quand la souris est vérrouillée
+void MouseLocked(void* user_data, int32_t result) {
+	SetState(STATE_INGAME);
 }
 
 // Gestion des evenements sur l'écran titre
@@ -135,23 +140,44 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
 		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
 
-	if (event->type == PSE_INSTANCE_HANDLEINPUT) {
-		switch (pInputEvent->GetType(event->as_resource)) {
-			case PP_INPUTEVENT_TYPE_MOUSEDOWN: {  // Click de souris
-				// Interface de verrouillage du curseur
-				PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
-					PSGetInterface(PPB_MOUSELOCK_INTERFACE);
-				// Verrouille le curseur pour améliorer l'immersion / ergonomie
-				pMouseLock->LockMouse(PSGetInstanceId(),
-									  PP_MakeCompletionCallback(MouseLocked,
-																0));
-				// Passe a l'état "en jeu"
-				SetState(STATE_INGAME);
-				break;
+	switch(event->type) {
+		case PSE_INSTANCE_HANDLEINPUT: {
+			switch (pInputEvent->GetType(event->as_resource)) {
+				case PP_INPUTEVENT_TYPE_MOUSEDOWN: {  // Click de souris
+					// Interface de verrouillage du curseur
+					PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+						PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+					// Verrouille le curseur pour améliorer l'immersion / ergonomie
+					pMouseLock->LockMouse(PSGetInstanceId(),
+										  PP_MakeCompletionCallback(MouseLocked, NULL));
+					// Passe a l'état "en jeu"
+					SetState(STATE_INGAME);
+					break;
+				}
+				default:
+					break;
 			}
-			default:
-				break;
+			break;
 		}
+		case PSE_INSTANCE_HANDLEMESSAGE: {
+			PP_Var message = event->as_var;
+			if(message.type == PP_VARTYPE_ARRAY) {
+				// Interface de lecture des tableaux
+				PPB_VarArray* pVarArray = (PPB_VarArray*)
+					PSGetInterface(PPB_VAR_ARRAY_INTERFACE);
+				// Longeur du message
+				uint32_t i, len = pVarArray->GetLength(message);
+				for(i = 0; i < len; i++) {
+					PP_Var item = pVarArray->Get(message, i);
+					if(item.type == PP_VARTYPE_BOOL)
+						state->shop[i] = item.value.as_bool;
+				}
+			} else if (message.type == PP_VARTYPE_INT32) {
+			}
+			break;
+		}
+		default:
+			break;
 	}
 }
 
