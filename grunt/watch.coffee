@@ -24,13 +24,13 @@ module.exports =
 			spawn: false
 			livereload: 35729
 	img:
-		files: ['img/**/*.{png,jpg,gif,svg}']
+		files: ['img/**/*.{png,jpg,gif,svg}', '!img/**/textures/**']
 		tasks: ['imagemin', 'copy:img', 'notify:img']
 		options:
 			spawn: false
 			livereload: 35729
 	tex:
-		files: ['img/textures/**/*.png}']
+		files: ['img/textures/**/*.png']
 		tasks: ['png2tex', 'notify:tex']
 		options:
 			spawn: false

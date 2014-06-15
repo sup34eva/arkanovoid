@@ -80,6 +80,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 
 		NewLife(ctx, state);
 		state->lives = 5;
+		state->score = 0;
 	}
 }
 
@@ -259,6 +260,7 @@ void HitBrick(PSContext2D_t* ctx, Jeu* state, int j, int k) {
 		y = k * (ctx->height / BRICKH);
 	switch (state->bricks[j][k]) {
 		case BRICK_ONETOUCH:
+			state->score++;
 			state->bricks[j][k] = BRICK_NONE;
 			state->brickCount--;
 			if (rand() < (RAND_MAX / 2))
@@ -339,8 +341,6 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 							int yd = (surf.point.y + surf.size.height / 2) -
 								state->ball[i].pos.y;
 
-							PostMessage("xd: %d, yd: %d", xd, yd);
-
 							if (fabs(xd) > fabs(yd)) {
 								if (xd < 0) {
 									state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
@@ -369,6 +369,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				if (state->drops[i].pos.x >= state->paddle.surf.point.x &&
 					state->drops[i].pos.x <=
 					state->paddle.surf.point.x + state->paddle.surf.size.width) {
+					state->score++;
 					switch (state->drops[i].type) {
 						case DROP_PADDLE_PLUS:
 							state->paddle.surf.size.width =

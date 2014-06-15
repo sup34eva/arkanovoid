@@ -20,6 +20,7 @@
 #include "calc.h"
 #include "rendu.h"
 
+char* VprintfToNewString(const char* format, va_list args);
 void PostMessage(const char *format, ...);
 
 #endif  // SERVER_INCLUDE_MAIN_H_

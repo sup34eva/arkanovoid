@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/mount.h>
 #include <math.h>
+#include <inttypes.h>
 
 #include "types.h"
 #include "nacl.h"
@@ -22,6 +23,8 @@ void GameDraw(PSContext2D_t* ctx,
 			  Jeu* state);
 void PauseDraw(PSContext2D_t* ctx,
 			   Jeu* state);
+void ScoreDraw(PSContext2D_t* ctx,
+			   Jeu* state);
 void DrawTexture(PSContext2D_t* ctx,
 				 struct PP_Point origin,
 				 const Texture tex);
@@ -32,5 +35,10 @@ void DrawCircle(PSContext2D_t* ctx,
 void DrawRect(PSContext2D_t* ctx,
 			  struct PP_Rect rect,
 			  uint32_t color);
+void DrawText(PSContext2D_t* ctx,
+			  struct PP_Point origin,
+			  const char* text,
+			  const Texture font);
+char* IntToText(uint64_t num);
 
 #endif  // SERVER_INCLUDE_RENDU_H_

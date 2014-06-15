@@ -82,6 +82,7 @@ typedef struct {
 	PP_Bool shop[9];
 	State state;
 	State newState;
+	uint64_t score;
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_

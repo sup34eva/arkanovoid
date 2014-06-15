@@ -75,6 +75,9 @@ void LoadGameTextures(Jeu* state) {
 	state->textures[19] = LoadTexture("/img/textures/glue_right.tex");
 
 	state->textures[20] = LoadTexture("/img/textures/bomb.tex");
+
+	state->textures[21] = LoadTexture("/img/textures/font.tex");
+	state->textures[22] = LoadTexture("/img/textures/score.tex");
 }
 
 // Fonction appelée a chaque frame de l'écran titre pour dessiner l'image
@@ -130,6 +133,32 @@ void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
 			DrawTexture(ctx, pos, tex);
 		}
 	}
+}
+
+// Fonction appelée a chaque frame de l'écran titre pour dessiner l'image
+void ScoreDraw(PSContext2D_t* ctx, Jeu* state) {
+	DrawTexture(ctx, PP_MakePoint(0, 0), state->textures[8]);
+
+	// Affichage du logo
+	PP_Point origin = PP_MakePoint((ctx->width / 2)
+								   - (state->textures[0].width / 2), 0);
+	DrawTexture(ctx, origin, state->textures[0]);
+
+	// Affichage du score
+	char score[20];
+	snprintf(score, sizeof score, "%" PRIu64, state->score);
+	origin = PP_MakePoint((ctx->width / 2) -
+		((state->textures[22].width + (strlen(score) * 26)) / 2)
+		, state->textures[0].height);
+	DrawTexture(ctx, origin, state->textures[22]);
+	origin.x += state->textures[22].width;
+	DrawText(ctx, origin, score, state->textures[21]);
+
+	// Affichage du bouton "nouvelle partie"
+	origin = PP_MakePoint((ctx->width / 2) -
+						  (state->textures[1].width / 2),
+						  state->textures[0].height + state->textures[21].height);
+	DrawTexture(ctx, origin, state->textures[1]);
 }
 
 void PauseDraw(PSContext2D_t* ctx, Jeu* state) {
@@ -259,6 +288,13 @@ void GameDraw(PSContext2D_t* ctx, Jeu* state) {
 							 state->paddle.surf.point.y), state->textures[19]);
 	}
 
+	// Affichage du score
+	char score[20];
+	snprintf(score, sizeof score, "%" PRIu64, state->score);
+	DrawText(ctx,
+			 PP_MakePoint(ctx->width - (26 * strlen(score)), 0),
+			 score, state->textures[21]);
+
 	// Rendu de la balle
 	for(i = 0; i < MAXBALL; i++)
 		if (state->ball[i].type == BALL_CLASSIC) {
@@ -312,7 +348,44 @@ void DrawTexture(PSContext2D_t* ctx,
 					ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
 			}
 		}
-		j += ((origin.x + tex.width) - px) * 4;
+		j += ((origin.x + tex.width) - px) * tex.channels;
+	}
+}
+
+// NOTE: La largeur de caractère est hardcodée a 26px
+void DrawText(PSContext2D_t* ctx,
+			  struct PP_Point origin,
+			  const char* text,
+			  const Texture font) {
+	unsigned int i, j, px, py, length = strlen(text);
+	for(i = 0; i < length; i++) {
+		char ch = text[i];
+		j = (ch - '0') * (font.channels * 26);
+		for(py = origin.y; py < fmin(ctx->height, origin.y + font.height); py++) {
+			for(px = origin.x; px < fmin(ctx->width, origin.x + 26); px++) {
+				unsigned int r, g, b, a = 255;
+
+				// Récupération des différentes chaines de la texture
+				r = font.pixel_data[j++];
+				g = font.pixel_data[j++];
+				b = font.pixel_data[j++];
+
+				if(font.channels == 4) {
+					a = font.pixel_data[j++];
+				}
+
+				if(a > 0) {
+					// Ecriture de la couleur du pixel
+					if(a < 255)
+						ctx->data[ctx->width * py + px] = blend(ctx->data[ctx->width * py + px],
+																RGBA(r, g, b, a));
+					else
+						ctx->data[ctx->width * py + px] = RGBA(r, g, b, a);
+				}
+			}
+			j += ((origin.x + font.width) - px) * font.channels;
+		}
+		origin.x += 26;
 	}
 }
 
