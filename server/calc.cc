@@ -16,6 +16,12 @@ void TitleInit(Jeu* state) {
 	int i;
 	for(i = 0; i < 9; i++)
 		state->shop[i] = PP_FALSE;
+
+	// Interface de verrouillage du curseur
+	PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+		PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+	// Déverrouille le curseur
+	pMouseLock->UnlockMouse(PSGetInstanceId());
 }
 
 void NewLife(PSContext2D_t* ctx, Jeu* state) {
@@ -126,6 +132,16 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 								}
 								break;
 							}
+							case 38 : {  // Fleche haut
+								int i;
+								for (i = 0; i < MAXBALL; i++) {
+									if(state->ball[i].stuck == PP_TRUE) {
+										PaddleCollision(ctx, state, i);
+										state->ball[i].stuck = PP_FALSE;
+									}
+								}
+								break;
+							}
 							case 27 :  // Echap
 								state->newState = STATE_PAUSED;
 								break;
@@ -168,8 +184,12 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 
 // Appelée quand la souris est vérrouillée
 void MouseLocked(void* data, int32_t result) {
-	Jeu* state = (Jeu*) data;
-	state->newState = STATE_INGAME;
+	if(result == PP_OK) {
+		Jeu* state = (Jeu*) data;
+		state->newState = STATE_INGAME;
+	} else {
+		PostMessage("PointerLock error %d", result);
+	}
 }
 
 // Gestion des evenements sur l'écran titre
@@ -187,7 +207,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 						PSGetInterface(PPB_MOUSELOCK_INTERFACE);
 					// Verrouille le curseur pour améliorer l'immersion / ergonomie
 					pMouseLock->LockMouse(PSGetInstanceId(),
-										  PP_MakeCompletionCallback(MouseLocked, state));
+										 PP_MakeCompletionCallback(MouseLocked, state));
 					// Passe a l'état "en jeu"
 					state->newState = STATE_INGAME;
 					break;
