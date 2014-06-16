@@ -121,13 +121,13 @@ void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
 
 	// Affichage du logo
 	PP_Point origin = PP_MakePoint((ctx->width / 2)
-								   - (state->textures[0].width / 2), 0);
+								   - (state->textures[0].width / 2), 100);
 	DrawTexture(ctx, origin, state->textures[0]);
 
 	// Affichage du bouton "nouvelle partie"
 	origin = PP_MakePoint((ctx->width / 2) -
 						  (state->textures[1].width / 2),
-						  state->textures[0].height);
+						  state->textures[0].height + 200);
 	DrawTexture(ctx, origin, state->textures[1]);
 
 
