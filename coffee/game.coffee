@@ -15,3 +15,14 @@ $('embed').on('progress', (e) ->
 		else
 			console.warn "No item for this user"
 )
+
+fbShare = (score) ->
+	FB.ui({
+		method: "share_open_graph",
+		action_type: "games.passes",
+		action_properties: JSON.stringify({
+			game: "http://arkanoid.herokuapp.com/",
+			score: score,
+			passed_users: localStorage.username
+		})
+	}, (response) -> console.log response)

@@ -1,9 +1,14 @@
 doctype html
 html(lang="fr")
-	head
+	head(prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# game: http://ogp.me/ns/game#")
 		meta(charset="utf-8")
 		meta(http-equiv="X-UA-Compatible", content="IE=edge")
 		meta(name="viewport", content="width=device-width, initial-scale=1")
+		meta(property="fb:app_id" content="466753843426934")
+		meta(property="og:type" content="game")
+		meta(property="og:url" content="http://arkanoid.herokuapp.com/")
+		meta(property="og:title" content="ArkanoVoid")
+		meta(property="og:image" content="http://static.ak.fbcdn.net/images/devsite/attachment_blank.png")
 		title ArkanoVoid - #{title}
 		link(href="/bootstrap/css/bootstrap.min.css", rel="stylesheet")
 		link(href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet")
