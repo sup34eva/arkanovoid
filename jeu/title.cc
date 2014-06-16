@@ -39,7 +39,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 
 					if(state->state == STATE_TITLE) {
 						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
-											  state->textures[0].height);
+											  state->textures[0].height + 200);
 					} else {
 						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
 											  state->textures[0].height + state->textures[21].height);
@@ -61,8 +61,10 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 						state->bonus = 0;
 						for(i = 0; i < 9; i++) {
 							if(state->shop[i] > 0) {
+								// Active le drop et le supprime
 								state->bonus = state->shop[i];
 								PostMessage("delete:%d", state->shop[i]);
+								state->shop[i] = 0;
 								break;
 							}
 						}
@@ -71,6 +73,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 						state->newState = STATE_INGAME;
 					}
 
+					// Clic sur le bouton de partage
 					if(state->state == STATE_SCORE) {
 						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
 											  state->textures[0].height +
@@ -83,6 +86,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 						   pos.y >= origin.y &&
 						   pos.x <= origin.x + size.width &&
 						   pos.y <= origin.y + size.height) {
+							// Envoie le score a l'API Facebook
 							PostMessage("score:%d", state->score);
 						}
 					}
@@ -93,6 +97,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 			}
 			break;
 		}
+		// Reception d'un message depuis le JS (item du shop)
 		case PSE_INSTANCE_HANDLEMESSAGE: {
 			PP_Var message = event->as_var;
 			if(message.type == PP_VARTYPE_ARRAY) {
@@ -101,6 +106,7 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 					PSGetInterface(PPB_VAR_ARRAY_INTERFACE);
 				// Longeur du message
 				uint32_t i, len = pVarArray->GetLength(message);
+				// Conversion de la liste des item en tableau
 				for(i = 0; i < len; i++) {
 					PP_Var item = pVarArray->Get(message, i);
 					if(item.type == PP_VARTYPE_INT32) {

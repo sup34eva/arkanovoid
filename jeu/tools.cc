@@ -1,6 +1,7 @@
 // Copyright 2014 Huns de Troyes
 #include "include/tools.h"
 
+// Printf dans un string alloué dynamiquement
 char* VprintfToNewString(const char* format, va_list args) {
 	va_list args_copy;
 	int length;
@@ -18,7 +19,7 @@ char* VprintfToNewString(const char* format, va_list args) {
 	return buffer;
 }
 
-// Fonctions de debug
+// Fonctions de debug, fonctionne comme un printf mais envoie un message au JS
 void PostMessage(const char *format, ...) {
 	char* string;
 	va_list args;

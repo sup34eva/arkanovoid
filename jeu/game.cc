@@ -7,7 +7,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 		// Initialisation de la fonction rand
 		srand(time(NULL));
 
-		// Chargement des textures
+		// Affichage de l'écran de chargement et hargement des textures
 		DrawLoadingScreen(ctx, state);
 		LoadGameTextures(state);
 
@@ -35,6 +35,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 			}
 		}
 
+		// Le jeu démarrer avec 5 vies et un score de 0
 		state->lives = 5;
 		NewLife(ctx, state);
 		state->score = 0;
@@ -64,6 +65,7 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 								state->paddle.surf.point.x += ctx->width / 50;
 								int i;
 								for (i = 0; i < MAXBALL; i++) {
+									// Mise a jour de la position des balles collées
 									if(state->ball[i].stuck == PP_TRUE)
 										state->ball[i].pos.x += ctx->width / 50;
 								}
@@ -119,6 +121,7 @@ void GameHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 			}
 			break;
 		}
+		// Perte du verrouillage du curseur
 		case PSE_MOUSELOCK_MOUSELOCKLOST: {
 			state->newState = STATE_PAUSED;
 			break;
@@ -136,13 +139,18 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 	state->paddle.surf.point.x = clamp(state->paddle.surf.point.x, 0,
 									   ctx->width - state->paddle.surf.size.width);
 
-    for (i = 0; i < MAXBALL; i++) {
-        if (state->ball[i].type != BALL_NONE) {
-            state->ball[i].pos.x += state->ball[i].velocity.x;
+    // Mise a jour des balles
+	for (i = 0; i < MAXBALL; i++) {
+        // Si la balle existe
+		if (state->ball[i].type != BALL_NONE) {
+            // Deplacement de la balle
+			state->ball[i].pos.x += state->ball[i].velocity.x;
             state->ball[i].pos.y += state->ball[i].velocity.y;
 
-            WallsCollision(ctx, state, i);
+            // Collision avec les murs
+			WallsCollision(ctx, state, i);
 
+			// Collision avec la paddle
 			if (state->ball[i].pos.y + state->ball[i].radius >
 			ctx->height - state->paddle.surf.size.height &&
 			state->ball[i].pos.x >= state->paddle.surf.point.x &&
@@ -158,7 +166,8 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				}
 			}
 
-            if (state->ball[i].pos.y > ctx->height) {
+            // Supression des balles perdues
+			if (state->ball[i].pos.y > ctx->height) {
                 state->ball[i].type = BALL_NONE;
                 state->ballCount--;
                 if (state->ballCount <= 0) {
@@ -170,28 +179,37 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 				}
             }
 
+			// Collisions avec les briques
 			if (w != 0 && h != 0) {
+				/// Pour chaque brique
 				for(j = 0; j < BRICKW; j++) {
 					for(k = 0; k < BRICKH; k++) {
+						// Position de la brique
 						int x = j * (ctx->width / BRICKW),
 							y = k * (ctx->height / BRICKH);
 						PP_Rect surf = PP_MakeRectFromXYWH(x, y, w, h);
+						// si la brique existe et qu'elle entre en collision avec la balle
 						if (state->bricks[j][k] != BRICK_NONE &&
 							collides(state->ball[i], surf)) {
+							// Si la balle est explosive
 							if(state->ball[i].type == BALL_EXPLODE) {
+								// Endommag aussi les briques voisines
 								int l, m;
 								for(l = j - 1; l <= j + 1; l++)
 									for(m = k - 1; m <= k + 1; m++)
 										HitBrick(ctx, state, l, m);
 							} else {
+								// Endommage la brique
 								HitBrick(ctx, state, j, k);
 							}
 
+							// Distances entre la balle et la brique sur les axes x et y
 							int xd = (surf.point.x + surf.size.width / 2) -
 								state->ball[i].pos.x;
 							int yd = (surf.point.y + surf.size.height / 2) -
 								state->ball[i].pos.y;
 
+							// Determination de l'axe de rebond
 							if (fabs(xd) > fabs(yd)) {
 								if (xd < 0) {
 									state->ball[i].velocity.x = fabs(state->ball[i].velocity.x);
@@ -212,15 +230,21 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 		}
 	}
 
+	// Mise a jour des drops
 	for (i = 0; i < MAXDROP; i++)
+		// Si le drop existe
 		if (state->drops[i].type != DROP_NONE) {
-			state->drops[i].pos.y++;
+			// Descend de 2 pixels
+			state->drops[i].pos.y += 2;
+			// Collision avec la paddle
 			if (state->drops[i].pos.y + 10 >=
 				ctx->height - state->paddle.surf.size.height) {
 				if (state->drops[i].pos.x >= state->paddle.surf.point.x &&
 					state->drops[i].pos.x <=
 					state->paddle.surf.point.x + state->paddle.surf.size.width) {
+					// Augmente le score
 					state->score++;
+					// Application de l'effet du drop
 					switch (state->drops[i].type) {
 						case DROP_PADDLE_PLUS:
 							state->paddle.surf.size.width =
@@ -274,6 +298,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 						default:
 							break;
 					}
+					// Suppression du drop
 					state->drops[i].type = DROP_NONE;
 				} else if (state->drops[i].pos.y >= ctx->height) {
 					state->drops[i].type = DROP_NONE;
@@ -286,6 +311,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 		state->newState = STATE_SCORE;
 }
 
+// Dessine l'écran de pause (le jeu assombri)
 void PauseDraw(PSContext2D_t* ctx, Jeu* state) {
 	GameDraw(ctx, state);
 	DrawRect(ctx, PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height),

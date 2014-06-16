@@ -41,6 +41,7 @@ void UnloadTexture(Texture tex) {
 	free(tex.pixel_data);
 }
 
+// Charge les texture de l'écran titre
 void LoadTitleTextures(Jeu* state) {
 	state->textures[8] = LoadTexture("/img/textures/lava.tex");
 	state->textures[0] = LoadTexture("/img/textures/logo.tex");
@@ -82,6 +83,7 @@ void LoadGameTextures(Jeu* state) {
 	state->textures[22] = LoadTexture("/img/textures/score.tex");
 }
 
+// Affiche l'écran d'accueil
 void DrawLoadingScreen(PSContext2D_t* ctx, Jeu* state) {
 	PSContext2DGetBuffer(ctx);
 	DrawRect(ctx,

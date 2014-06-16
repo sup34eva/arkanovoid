@@ -1,9 +1,11 @@
+# Recupère les item de l'utilisateur
 getPerson localStorage.username, (xml) ->
     console.log xml.root
     for i of xml.root
         item = xml.root[i]
         $("[data-item='#{item.item_id}']").parent().parent().attr 'data-amount', item.quantity
 
+# Ajoute un item
 $('form').submit (e) ->
     e.preventDefault()
     itemid = Number($(this).attr('data-item'))

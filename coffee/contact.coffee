@@ -1,3 +1,4 @@
+# Vérification du formulaire de contact
 $('input, textarea').on('input', (e) ->
 	if $(this).val() isnt ''
 
