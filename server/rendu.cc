@@ -45,6 +45,7 @@ void LoadTitleTextures(Jeu* state) {
 	state->textures[8] = LoadTexture("/img/textures/lava.tex");
 	state->textures[0] = LoadTexture("/img/textures/logo.tex");
 	state->textures[1] = LoadTexture("/img/textures/button.tex");
+	state->textures[2] = LoadTexture("/img/textures/share.tex");
 
 	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
 	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");
@@ -159,6 +160,14 @@ void ScoreDraw(PSContext2D_t* ctx, Jeu* state) {
 						  (state->textures[1].width / 2),
 						  state->textures[0].height + state->textures[21].height);
 	DrawTexture(ctx, origin, state->textures[1]);
+
+	// Affichage du bouton "partager"
+	origin = PP_MakePoint((ctx->width / 2) -
+						  (state->textures[1].width / 2),
+						  state->textures[0].height +
+						  state->textures[21].height +
+						  state->textures[1].height);
+	DrawTexture(ctx, origin, state->textures[2]);
 }
 
 void PauseDraw(PSContext2D_t* ctx, Jeu* state) {

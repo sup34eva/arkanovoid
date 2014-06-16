@@ -1,6 +1,10 @@
 container = document.getElementById('listener');
 container.addEventListener('message', (e) ->
-	console.log e.data
+	score = e.data.match /^score:([0-9]+)$/
+	if score isnt null
+		fbShare score[1]
+	else
+		console.log e.data
 , true)
 
 $('embed').on('progress', (e) ->

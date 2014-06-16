@@ -197,19 +197,55 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	// Interface de gestion des evenements
 	PPB_InputEvent* pInputEvent = (PPB_InputEvent*)
 		PSGetInterface(PPB_INPUT_EVENT_INTERFACE);
+	PPB_MouseInputEvent* pMouseInput = (PPB_MouseInputEvent*)
+		PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE);
 
 	switch(event->type) {
 		case PSE_INSTANCE_HANDLEINPUT: {
 			switch (pInputEvent->GetType(event->as_resource)) {
 				case PP_INPUTEVENT_TYPE_MOUSEUP: {  // Click de souris
-					// Interface de verrouillage du curseur
-					PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
-						PSGetInterface(PPB_MOUSELOCK_INTERFACE);
-					// Verrouille le curseur pour améliorer l'immersion / ergonomie
-					pMouseLock->LockMouse(PSGetInstanceId(),
-										 PP_MakeCompletionCallback(MouseLocked, state));
-					// Passe a l'état "en jeu"
-					state->newState = STATE_INGAME;
+					struct PP_Point pos = pMouseInput->GetPosition(event->as_resource),
+					origin;
+					struct PP_Size size = PP_MakeSize(state->textures[1].width,
+													  state->textures[1].height);
+
+					if(state->state == STATE_TITLE) {
+						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
+											  state->textures[0].height);
+					} else {
+						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
+											  state->textures[0].height + state->textures[21].height);
+					}
+
+					if(pos.x >= origin.x &&
+					   pos.y >= origin.y &&
+					   pos.x <= origin.x + size.width &&
+					   pos.y <= origin.y + size.height) {
+						// Interface de verrouillage du curseur
+						PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
+							PSGetInterface(PPB_MOUSELOCK_INTERFACE);
+						// Verrouille le curseur pour améliorer l'immersion / ergonomie
+						pMouseLock->LockMouse(PSGetInstanceId(),
+											  PP_MakeCompletionCallback(MouseLocked, state));
+						// Passe a l'état "en jeu"
+						state->newState = STATE_INGAME;
+					}
+
+					if(state->state == STATE_SCORE) {
+						origin = PP_MakePoint((ctx->width / 2) - (state->textures[1].width / 2),
+											  state->textures[0].height +
+											  state->textures[21].height +
+											  state->textures[1].height);
+						size = PP_MakeSize(state->textures[1].width,
+										   state->textures[1].height);
+
+						if(pos.x >= origin.x &&
+						   pos.y >= origin.y &&
+						   pos.x <= origin.x + size.width &&
+						   pos.y <= origin.y + size.height) {
+							PostMessage("score:%d", state->score);
+						}
+					}
 					break;
 				}
 				default:
