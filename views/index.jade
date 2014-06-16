@@ -8,7 +8,24 @@ block content
 			.inner.cover
 				img(src="img/arkanovoid_logo.png" alt="Arkanovoid logo")
 				p.lead
-					a.btn.btn-lg.btn-primary(href='/game')
-						i.fa.fa-lg.fa-play
-						| &nbsp&nbspLancer le jeu
-				p.lead Le but du jeu est de détruire toutes les briques en déviant la balle à l'aide de la paddle. La balle rebondit sur les murs et les briques. Certaines briques doivent être touchées plus d'une fois avant d'être détruites. D'autres briques sont incassables.
+				a.btn.btn-lg.btn-primary(href='/game')
+					i.fa.fa-lg.fa-play
+					| &nbsp&nbspLancer le jeu
+
+				p.lead Le but du jeu est de détruire toutes les briques cassables du niveau grâce à la paddle, vous pouvez contrôler la paddle sur l'axe horizontal avec les flèches gauche et droite ou avec la souris. Certaine briques doivent être touchées plusieurs fois avant de casser.
+				p.lead Pour lancer la balle appuyez sur la flèche du haut ou cliquez.
+				p.lead Selon la position de la balle sur la paddle, celle-ci prendra un angle différent. Si la balle tombe et qu’elle ne rebondit pas sur la paddle, vous perdez une vie. Vous disposez de 5 vies au début du jeu.
+				
+
+				p.lead Différents bonus/malus existent :
+				ul Bonus :
+					li La paddle s’agrandit
+					li La balle touche aussi les briques à côté de celle touchée
+					li La vitesse diminue
+					li La paddle devient collante
+					li Une balle supplémentaire apparait
+					li Malus :
+					li Rétrécissement de la paddle
+					li La balle accélère
+					li Vous perdez une vie
+				p.lead Les bonus peuvent également être achetés dans le shop.
