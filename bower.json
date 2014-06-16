@@ -1,21 +1,21 @@
 {
-  "name": "arkanoid",
-  "version": "0.1.0",
-  "authors": [
+	"name": "arkanoid",
+	"version": "0.1.0",
+	"authors": [
     "HdT"
   ],
-  "description": "Arkanoid in HTML5 and NaCl",
-  "main": "main.js",
-  "keywords": [
+	"description": "Arkanoid in HTML5 and NaCl",
+	"main": "main.js",
+	"keywords": [
     "arkanoid",
     "breakout",
     "html5",
     "nacl"
   ],
-  "license": "MIT",
-  "homepage": "leops.zapto.org",
-  "private": true,
-  "ignore": [
+	"license": "MIT",
+	"homepage": "leops.zapto.org",
+	"private": true,
+	"ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
@@ -23,12 +23,10 @@
     "tests",
     "dist"
   ],
-  "dependencies": {
-    "bootstrap": "~3.1.1",
-    "jquery": "~2.1.0",
-    "two": "~0.3.0",
-    "nacl_sdk": "http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip",
-    "stats.js": "*",
-    "font-awesome": "~4.1.0"
-  }
+	"dependencies": {
+		"bootstrap": "~3.1.1",
+		"jquery": "~2.1.0",
+		"nacl_sdk": "http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip",
+		"font-awesome": "~4.1.0"
+	}
 }

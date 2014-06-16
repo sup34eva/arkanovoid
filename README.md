@@ -1,37 +1,54 @@
 # Arkanoid [![Stories in Ready](https://badge.waffle.io/hunsdetroyes/arkanoid.png?label=ready&title=Ready)](https://waffle.io/hunsdetroyes/arkanoid) [![Version](https://badge.fury.io/gh/hunsdetroyes%2Farkanoid.png)](http://badge.fury.io/gh/hunsdetroyes%2Farkanoid) [![Dependencies](https://david-dm.org/hunsdetroyes/arkanoid.png?theme=shields.io)](https://david-dm.org/hunsdetroyes/arkanoid) [![Build](https://travis-ci.org/hunsdetroyes/arkanoid.png?branch=master)](https://travis-ci.org/hunsdetroyes/arkanoid) [![Status](http://statusbadge.herokuapp.com/http%3A%2F%2Farkanoid.herokuapp.com%2F)](http://arkanoid.herokuapp.com/)
-Remake en HTML5/NaCl du classique Arkanoid, remake japonais du classique Breakout, remake solo du classique Pong, remake vidéoludique du classique ping-pong.
+Remake en HTML5/NaCl du classique Arkanoid, remake japonais du classique Breakout, remake solo du classique Pong, remake vidéoludique du classique ping-pong, remake miniature du tennis.
+
+## Prérequis
+Pour pouvoir compiler et lancer le jeu, les programmes suivants doivent être installés et présents dans le PATH:
+
+ - Python 2.x (Utilisé par le SDK NaCl pour la compilation)
+ - Git (Utilisé par bower pour installer les dépendences)
+ - Node.JS / npm (Utilisé par le serveur et l'outil de compilation Grunt)
 
 ## Compilation
-Le jeu nécessite nodejs/npm pour lancer le serveur et effectuer la compilation. Une fois nodejs installé, installer les dépendances avec :
+Le fichier package.json contient une série de hooks éxécuant automatiquement l'installation avec la commande :
 > npm install
 
 Cette commande va installer les dépendances npm mais aussi bower et ses dépendances, grunt, coffeescript et le SDK NaCl
 
-Enfin, lancer la commande :
+Si toutefois une erreur survenait pendant l'installation, voici la liste des commandes a executer :
+
+- `npm i -g grunt-cli bower coffee-script`
+
+- `bower install`
+
+- `grunt --force install`
+
+Une fois l'installation terminée, lancer  :
 > grunt
 
-Celle-ci va executer la tache par défaut de grunt, qui compile le code puis lance un serveur.
+Cette commande va executer la tache par défaut de grunt, qui compile le code puis lance un serveur.
 
 ## Taches grunt
 
-Plusieurs alias sont définis dans `asliases.yaml` pour simplifier les taches que grunt peux executer. Les principales sont :
+Plusieurs alias sont définis dans `aliases.yaml` pour simplifier les taches que grunt peux executer. Les principales sont :
 > grunt build
 
-Compile le coffeescript, le C++, le stylus et compresse les images
+Compile le coffeescript, le C, le stylus, compresse les images et convertit les texture.
 > grunt server
 
 Lance un serveur, l'ouvre dans le navigateur pas défaut, et lance une tache watch pour actualiser automatiquement les pages quand le code est modifié.
 > grunt test
 
-Lance coffeelint, cpplint et jsonlint pour vérifier la validité et la qualité des différents fichiers (coffeescript, C++ et routes.json)
+Lance coffeelint, cpplint et jsonlint pour vérifier la validité et la qualité des différents fichiers (coffeescript, C et routes.json)
 
-La commande `grunt default` est un alias de `grunt build` et `grunt server`.
+La commande `grunt default` out `grunt` est un alias de `grunt build` et `grunt server`.
 
 ## Architecture du projet
 
-Le repo contient un certain nombre de fichiers et dossier, dont voici la descriptions.
+Le projet contient un certain nombre de fichiers et dossier, dont voici la descriptions.
 
 Tout d'abord, les fichiers qu'il vaut mieux ne pas toucher : `.gitignore`, `.travis.yml`, `Gruntfile.coffee`, `Procfile`, `bower.json`, `package.json` et le dossier `grunt`. Tous ces elements sont des fichiers de configuration, il n'y a normalement pas besoin de les modifier.
+
+Le dossier `bin` : Ce dossier contient les utilitaires binaires (l'outil png2tex pour convertir les images en fichiers de textures).
 
 Le dossier `coffee` : Comme son nom l'indique, ce dossier contient les fichiers coffeescript qui seront compilés en JavaScript.
 
@@ -39,9 +56,13 @@ Le dossier `styles`: Ici aussi le nom est explicite, ce dossier contient les fic
 
 Le dossier `img` : Encore une fois, tout est dans le nom. Ce dossier contient les images utilisées par le jeu.
 
-Le dossier `server` : Ce dossier contient le code du serveur en C++, mais aussi le Makefile qui définit la procédure de compilation, un fichier `server.nmf` qui définit l'application NaCl et un fichier `server.pexe` qui est le binaire compilé de l'application.
+Le dossier `img/textures`: Ce dossier contient les textures utilisées par le jeu.
 
-Le dossier `views` : Ce dossier contient les fichiers jade qui serotn servis aux clients
+Le dossier `jeu` : Ce dossier contient le code du serveur en C, mais aussi le Makefile qui définit la procédure de compilation. Une fois le code compilé, un dossier `newlib` devrait apparaitre, contenant les binaires.
+
+Le dossier `views` : Ce dossier contient les fichiers jade qui seront affichés au client par le serveur.
+
+Le dossier `tools` : Ce dossier contient diférents utilitaires, comme un hook pre-commit pour verifier le code avant un commit, ou le code source de png2tex.
 
 Les fichiers `main.coffee` et `error.coffee` : Ces fichiers contiennent le code du serveur web qui heberge le site.
 
@@ -50,3 +71,7 @@ Le fichier `routes.json` : Ce fichier contient les routes du projet, associés c
 Le fichier `LICENSE` : Une copie de la license MIT
 
 Le fichier `README.md` : Ce fichier.
+
+## Note sur png2tex
+
+L'antivirus Avast! detecte l'utilitaire png2tex comme un virus. Cependant, il s'agit d'un faux positif. Le code de l'utilitaire se trouve dans le dossier `tools` et peut être compilé manuellement si besoin est.

@@ -1,4 +1,5 @@
-﻿{
+
+{
 	"/": {
 		"template": "index",
 		"args": {
@@ -43,13 +44,13 @@
 			"items": [
 				[
 					{
-						"name": "Giant paddle",
-						"description": "La paddle est agrandie",
+						"name": "Raquette géante",
+						"description": "La raquette est agrandie",
 						"image": "giant.png",
 						"id": 3
 					},
 					{
-						"name": "Minimum Speed",
+						"name": "Vitesse minimale",
 						"description": "Reduit la vitesse de la balle",
 						"image": "frozen.png",
 						"id": 4
@@ -63,14 +64,14 @@
 				],
 				[
 					{
-						"name": "Paddle stick",
-						"description": "Paddle qui accroche la balle",
+						"name": "Raquette collante",
+						"description": "Les balles collent a la raquette",
 						"image": "stick.png",
 						"id": 5
 					},
 					{
 						"name": "Double balle",
-						"description": "Permet de lancer 2 balles",
+						"description": "Permet de commencer avec 2 balles",
 						"image": "double.png",
 						"id": 9
 					}
