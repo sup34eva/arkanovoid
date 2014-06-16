@@ -17,12 +17,12 @@ $('embed').on('progress', (e) ->
 )
 
 fbShare = (score) ->
-	FB.ui({
-		method: "share_open_graph",
-		action_type: "games.passes",
-		action_properties: JSON.stringify({
-			game: "http://arkanoid.herokuapp.com/",
-			score: score,
-			passed_users: localStorage.username
-		})
-	}, (response) -> console.log response)
+	FB.ui(
+		method: "share_open_graph"
+		action_type: "arkanovoid:score"
+		action_properties: JSON.stringify(
+			game: "http://arkanoid.herokuapp.com/"
+			score: score
+		)
+		, (response) -> console.log response
+	)
