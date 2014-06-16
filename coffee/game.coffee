@@ -1,8 +1,11 @@
 container = document.getElementById('listener');
 container.addEventListener('message', (e) ->
 	score = e.data.match /^score:([0-9]+)$/
+	del = e.data.match /^delete:([0-9]+)$/
 	if score isnt null
 		fbShare score[1]
+	else if delete isnt null
+			useItemForPerson localStorage.username, del[1], console.log
 	else
 		console.log e.data
 , true)

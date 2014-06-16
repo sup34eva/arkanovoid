@@ -1,4 +1,4 @@
-window.serverAddress = '192.168.1.27'
+window.serverAddress = '10.13.16.23'
 
 getXML = (url, method, callback) ->
     xhr = new XMLHttpRequest()
