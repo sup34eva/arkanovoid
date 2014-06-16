@@ -44,7 +44,7 @@
 				[
 					{
 						"name": "Giant paddle",
-						"description": "La paddle est agrandit",
+						"description": "La paddle est agrandie",
 						"image": "giant.png",
 						"id": 3
 					},
@@ -55,19 +55,13 @@
 						"id": 4
 					},
 					{
-						"name": "Rocket Paddle",
-						"description": "La paddle",
-						"image": "rocket.png",
-						"id": 11
-					}	
-				],
-				[
-					{
 						"name": "Balle explosive",
-						"description": "Balle qui explose en contact des briques",
+						"description": "Balle qui explose au contact des briques",
 						"image": "exp.png",
 						"id": 7
-					},
+					}
+				],
+				[
 					{
 						"name": "Paddle stick",
 						"description": "Paddle qui accroche la balle",
