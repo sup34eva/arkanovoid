@@ -2,7 +2,7 @@ node_modules/
 dist/css/
 dist/js/
 bower_components/
-server/newlib/
+jeu/newlib/
 .bower-cache/
 .bower-registry
 .bower-tmp/

@@ -26,4 +26,4 @@ module.exports =
 	server:
 		options:
 			title: 'NaCl compilé'
-			message: 'Le serveur a été compilé avec succès.'
+			message: 'Le jeu a été compilé avec succès.'

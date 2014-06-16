@@ -3,8 +3,8 @@ module.exports =
 		files: [
 			expand: true
 			flatten: true
-			src: ['server/newlib/Release/server_*.nexe', 'server/newlib/Release/server.nmf']
-			dest: 'dist/server/'
+			src: ['jeu/newlib/Release/jeu_*.nexe', 'jeu/newlib/Release/jeu.nmf']
+			dest: 'dist/jeu/'
 		]
 	img:
 		files: [

@@ -21,4 +21,4 @@ module.exports =
 			stderr: true
 			failOnError: false
 			execOptions:
-				cwd: 'server/'
+				cwd: 'jeu/'

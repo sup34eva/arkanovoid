@@ -1,6 +1,6 @@
 module.exports =
 	files: [
-		'server/**/*.{cc,c,h}'
+		'jeu/**/*.{cc,c,h}'
 	]
 	reporter: 'spec'
 	verbosity: 1
