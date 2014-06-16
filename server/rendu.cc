@@ -50,7 +50,6 @@ void LoadTitleTextures(Jeu* state) {
 
 	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
 	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");
-	state->textures[15] = LoadTexture("/img/textures/skull.tex");
 	state->textures[12] = LoadTexture("/img/textures/explode.tex");
 	state->textures[10] = LoadTexture("/img/textures/sticky.tex");
 	state->textures[11] = LoadTexture("/img/textures/clone.tex");
@@ -70,6 +69,7 @@ void LoadGameTextures(Jeu* state) {
 	state->textures[7] = LoadTexture("/img/textures/paddle_right.tex");
 
 	state->textures[14] = LoadTexture("/img/textures/paddle_less.tex");
+	state->textures[15] = LoadTexture("/img/textures/skull.tex");
 	state->textures[16] = LoadTexture("/img/textures/speed_plus.tex");
 
 	state->textures[17] = LoadTexture("/img/textures/glue_left.tex");
@@ -80,6 +80,17 @@ void LoadGameTextures(Jeu* state) {
 
 	state->textures[21] = LoadTexture("/img/textures/font.tex");
 	state->textures[22] = LoadTexture("/img/textures/score.tex");
+}
+
+void DrawLoadingScreen(PSContext2D_t* ctx, Jeu* state) {
+	PSContext2DGetBuffer(ctx);
+	DrawRect(ctx,
+			 PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height),
+			 RGBA(0, 0, 0, 128));
+	DrawTexture(ctx,
+				PP_MakePoint(ctx->width / 2, ctx->height / 2),
+				state->textures[3]);
+	PSContext2DSwapBuffer(ctx);
 }
 
 // Fonction appelée a chaque frame de l'écran titre pour dessiner l'image
@@ -97,43 +108,36 @@ void TitleDraw(PSContext2D_t* ctx, Jeu* state) {
 						  state->textures[0].height);
 	DrawTexture(ctx, origin, state->textures[1]);
 
+
+	// Interface de lecture des tableaux
 	int i;
 	for(i = 0; i < 9; i++) {
-		if(state->shop[i] == PP_TRUE) {
-			Texture tex;
-			PP_Point pos = PP_MakePoint(i * 20, ctx->height - 20);
-			switch(i) {
-				case 0:
-					tex = state->textures[9];
-					break;
-				case 1:
-					tex = state->textures[13];
-					break;
-				case 2:
-					tex = state->textures[15];
-					break;
-				case 3:
-					tex = state->textures[12];
-					break;
-				case 4:
-					tex = state->textures[12];
-					break;
-				case 5:
-					tex = state->textures[10];
-					break;
-				case 6:
-					tex = state->textures[10];
-					break;
-				case 7:
-					tex = state->textures[11];
-					break;
-				case 8:
-				default:
-					tex = state->textures[11];
-					break;
-			}
-			DrawTexture(ctx, pos, tex);
+		Texture tex;
+		PP_Point pos = PP_MakePoint(i * 20, ctx->height - 20);
+		switch(state->shop[i]) {
+			case 3:
+				tex = state->textures[9];
+				break;
+			case 4:
+				tex = state->textures[13];
+				break;
+			case 5:
+			case 6:
+				tex = state->textures[10];
+				break;
+			case 7:
+			case 8:
+				tex = state->textures[12];
+				break;
+			case 9:
+			case 10:
+				tex = state->textures[11];
+				break;
+			default:
+				tex = state->textures[4];
+				break;
 		}
+		DrawTexture(ctx, pos, tex);
 	}
 }
 

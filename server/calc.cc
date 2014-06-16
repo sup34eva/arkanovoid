@@ -13,10 +13,6 @@ void TitleInit(Jeu* state) {
 	// Chargement des textures
 	LoadTitleTextures(state);
 
-	int i;
-	for(i = 0; i < 9; i++)
-		state->shop[i] = PP_FALSE;
-
 	// Interface de verrouillage du curseur
 	PPB_MouseLock* pMouseLock = (PPB_MouseLock*)
 		PSGetInterface(PPB_MOUSELOCK_INTERFACE);
@@ -26,18 +22,27 @@ void TitleInit(Jeu* state) {
 
 void NewLife(PSContext2D_t* ctx, Jeu* state) {
 	// Mise a zero des drop (type = none)
-	int i;
+	int i, numBall;
 	for(i = 0; i < MAXDROP; i++) {
 		state->drops[i].pos = PP_MakeFloatPoint(0, 0);
 		state->drops[i].type = DROP_NONE;
 	}
 
+	if(state->bonus == 10 || (state->bonus == 9 && state->lives == 5))
+		numBall = 2;
+	else
+		numBall = 1;
+
 	// Position initiale de la balle
 	for(i = 0; i < MAXBALL; i++) {
         InitBall(state, i);
-        if (i == 0) {
-            state->ball[i].type = BALL_CLASSIC;
+        if (i < numBall) {
+            if (state->bonus == 8 || (state->bonus == 7 && state->lives == 5))
+				state->ball[i].type = BALL_EXPLODE;
+			else
+				state->ball[i].type = BALL_CLASSIC;
 			state->ball[i].stuck = PP_TRUE;
+			state->ball[i].speed = BALLSPEED;
 			state->ball[i].velocity = PP_MakeFloatPoint(0, 0);
 		} else {
             state->ball[i].type = BALL_NONE;
@@ -46,9 +51,16 @@ void NewLife(PSContext2D_t* ctx, Jeu* state) {
 	state->ballCount = 1;
 
 	// Position initiale de la paddle
-	state->paddle.surf = PP_MakeRectFromXYWH(1100/2 - 50, 0, 130,
-											 state->textures[6].height);
-	state->paddle.sticky = PP_FALSE;
+	if(state->bonus == 3)
+		state->paddle.surf = PP_MakeRectFromXYWH(1100/2 - 50, 0, MAXPADDLE,
+												 state->textures[6].height);
+	else
+		state->paddle.surf = PP_MakeRectFromXYWH(1100/2 - 50, 0, BASEPADDLE,
+												 state->textures[6].height);
+	if(state->bonus == 6 || (state->bonus == 5 && state->lives == 5))
+		state->paddle.sticky = PP_TRUE;
+	else
+		state->paddle.sticky = PP_FALSE;
 }
 
 // Initialise l'état de la partie en début de jeu
@@ -58,6 +70,7 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 		srand(time(NULL));
 
 		// Chargement des textures
+		DrawLoadingScreen(ctx, state);
 		LoadGameTextures(state);
 
 		// Initialisation des briques
@@ -84,8 +97,8 @@ void GameInit(PSContext2D_t* ctx, Jeu* state) {
 			}
 		}
 
-		NewLife(ctx, state);
 		state->lives = 5;
+		NewLife(ctx, state);
 		state->score = 0;
 	}
 }
@@ -192,17 +205,6 @@ void MouseLocked(void* data, int32_t result) {
 	}
 }
 
-void DrawLoadingScreen(PSContext2D_t* ctx, Jeu* state) {
-	PSContext2DGetBuffer(ctx);
-	DrawRect(ctx,
-			 PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height),
-			 RGBA(0, 0, 0, 128));
-	DrawTexture(ctx,
-				PP_MakePoint(ctx->width / 2, ctx->height / 2),
-				state->textures[3]);
-	PSContext2DSwapBuffer(ctx);
-}
-
 // Gestion des evenements sur l'écran titre
 void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	// Interface de gestion des evenements
@@ -241,16 +243,14 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 
 						// Active un item du shop
 						int i;
-						state->bonus = -1;
+						state->bonus = 0;
 						for(i = 0; i < 9; i++) {
-							if(state->shop[i] == PP_TRUE) {
-								state->bonus = i;
-								PostMessage("delete:%d", i);
+							if(state->shop[i] > 0) {
+								state->bonus = state->shop[i];
+								PostMessage("delete:%d", state->shop[i]);
+								break;
 							}
 						}
-
-						// Affiche l'écran de chargement
-						DrawLoadingScreen(ctx, state);
 
 						// Passe a l'état "en jeu"
 						state->newState = STATE_INGAME;
@@ -288,10 +288,10 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 				uint32_t i, len = pVarArray->GetLength(message);
 				for(i = 0; i < len; i++) {
 					PP_Var item = pVarArray->Get(message, i);
-					if(item.type == PP_VARTYPE_BOOL)
-						state->shop[i] = item.value.as_bool;
+					if(item.type == PP_VARTYPE_INT32) {
+						state->shop[i] = item.value.as_int;
+					}
 				}
-			} else if (message.type == PP_VARTYPE_INT32) {
 			}
 			break;
 		}
@@ -454,7 +454,7 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 					switch (state->drops[i].type) {
 						case DROP_PADDLE_PLUS:
 							state->paddle.surf.size.width =
-								clamp(state->paddle.surf.size.width + 50, 30, 330);
+								clamp(state->paddle.surf.size.width + 50, MINPADDLE, MAXPADDLE);
 							break;
 						case DROP_STICK:
 							state->paddle.sticky = PP_TRUE;
@@ -475,26 +475,31 @@ void GameCalc(PSContext2D_t* ctx, Jeu* state) {
 								NewLife(ctx, state);
 							break;
 						case DROP_PADDLE_LESS:
-							state->paddle.surf.size.width =
-							clamp(state->paddle.surf.size.width - 50, 30, 330);
+							if(state->bonus != 3)
+								state->paddle.surf.size.width =
+									clamp(state->paddle.surf.size.width - 50, MINPADDLE, MAXPADDLE);
 							break;
 						case DROP_SPEED_LESS:
-							for (j = 0; j < MAXBALL; j++) {
-								if (state->ball[j].type != BALL_NONE) {
-									state->ball[j].velocity.x /= 1.5;
-									state->ball[j].velocity.y /= 1.5;
-									state->ball[j].speed = clamp(state->ball[j].speed - 3, 2, 18);
+							if(state->bonus != 4)
+								for (j = 0; j < MAXBALL; j++) {
+									if (state->ball[j].type != BALL_NONE) {
+										state->ball[j].velocity.x /= 1.5;
+										state->ball[j].velocity.y /= 1.5;
+										state->ball[j].speed =
+											clamp(state->ball[j].speed - 3, MINSPEED, MAXSPEED);
+									}
 								}
-							}
 							break;
 						case DROP_SPEED_PLUS:
-							for (j = 0; j < MAXBALL; j++) {
-								if (state->ball[j].type != BALL_NONE) {
-									state->ball[j].velocity.x *= 1.5;
-									state->ball[j].velocity.y *= 1.5;
-									state->ball[j].speed = clamp(state->ball[j].speed + 3, 2, 18);
+							if(state->bonus != 4)
+								for (j = 0; j < MAXBALL; j++) {
+									if (state->ball[j].type != BALL_NONE) {
+										state->ball[j].velocity.x *= 1.5;
+										state->ball[j].velocity.y *= 1.5;
+										state->ball[j].speed =
+											clamp(state->ball[j].speed + 3, MINSPEED, MAXSPEED);
+									}
 								}
-							}
 							break;
 						default:
 							break;
@@ -552,7 +557,10 @@ void SpawnDrop(int x, int y, Jeu* state) {
 }
 
 void InitBall(Jeu* state, int i) {
-    state->ball[i].speed = BALLSPEED;
+    if (state->bonus == 4)
+		state->ball[i].speed = BALLSPEED;
+	else
+		state->ball[i].speed = BALLSPEED;
 	state->ball[i].velocity = PP_MakeFloatPoint(0, 0);
     state->ball[i].pos = PP_MakeFloatPoint(1100/2, 700 - 20);
     state->ball[i].radius = BALLRADIUS;

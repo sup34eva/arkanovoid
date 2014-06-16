@@ -7,6 +7,7 @@
 #include "ppapi/c/pp_point.h"
 #include "ppapi/c/pp_rect.h"
 #include "ppapi/c/pp_bool.h"
+#include "ppapi/c/pp_var.h"
 
 // Enum des types de briques / drops
 typedef enum {
@@ -79,7 +80,7 @@ typedef struct {
 	Texture textures[TEXSIZE];
 	int lives;
 	int ballCount;
-	PP_Bool shop[9];
+	int64_t shop[9];
 	State state;
 	State newState;
 	uint64_t score;

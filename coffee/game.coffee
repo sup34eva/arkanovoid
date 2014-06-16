@@ -6,8 +6,7 @@ container.addEventListener('message', (e) ->
 	if score isnt null
 		fbShare score[1]
 	else if del isnt null
-		console.log root["item#{del[1]}"].item_id
-		useItemForPerson localStorage.username, root["item#{del[1]}"].item_id, console.log
+		useItemForPerson localStorage.username, del[1], $.noop
 	else
 		console.log e.data
 , true)
@@ -20,8 +19,12 @@ $('embed').on('progress', (e) ->
 	$('#progressbar').hide()
 	getPerson localStorage.username, (xml, code) ->
 		root = xml.root
+		itemlist = for i of xml.root
+					if xml.root[i].quantity > 0
+						 Number(xml.root[i].item_id)
+		console.log itemlist
 		if code is 200
-			document.querySelector('embed').postMessage(xml.root[i].quantity > 0 for i of xml.root)
+			document.querySelector('embed').postMessage itemlist
 		else
 			console.warn "No item for this user"
 )

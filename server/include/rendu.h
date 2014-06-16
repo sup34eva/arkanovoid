@@ -17,6 +17,8 @@
 void LoadTitleTextures(Jeu* state);
 void LoadGameTextures(Jeu* state);
 Texture LoadTexture(const char* url);
+void DrawLoadingScreen(PSContext2D_t* ctx,
+					   Jeu* state);
 void TitleDraw(PSContext2D_t* ctx,
 			  Jeu* state);
 void GameDraw(PSContext2D_t* ctx,
