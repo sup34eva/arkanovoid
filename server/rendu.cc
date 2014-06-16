@@ -46,6 +46,7 @@ void LoadTitleTextures(Jeu* state) {
 	state->textures[0] = LoadTexture("/img/textures/logo.tex");
 	state->textures[1] = LoadTexture("/img/textures/button.tex");
 	state->textures[2] = LoadTexture("/img/textures/share.tex");
+	state->textures[3] = LoadTexture("/img/textures/loading.tex");
 
 	state->textures[9] = LoadTexture("/img/textures/paddle_plus.tex");
 	state->textures[13] = LoadTexture("/img/textures/speed_less.tex");

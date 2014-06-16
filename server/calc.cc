@@ -192,6 +192,17 @@ void MouseLocked(void* data, int32_t result) {
 	}
 }
 
+void DrawLoadingScreen(PSContext2D_t* ctx, Jeu* state) {
+	PSContext2DGetBuffer(ctx);
+	DrawRect(ctx,
+			 PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height),
+			 RGBA(0, 0, 0, 128));
+	DrawTexture(ctx,
+				PP_MakePoint(ctx->width / 2, ctx->height / 2),
+				state->textures[3]);
+	PSContext2DSwapBuffer(ctx);
+}
+
 // Gestion des evenements sur l'écran titre
 void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 	// Interface de gestion des evenements
@@ -227,6 +238,20 @@ void TitleHandleEvent(PSEvent* event, Jeu* state, PSContext2D_t* ctx) {
 						// Verrouille le curseur pour améliorer l'immersion / ergonomie
 						pMouseLock->LockMouse(PSGetInstanceId(),
 											  PP_MakeCompletionCallback(MouseLocked, state));
+
+						// Active un item du shop
+						int i;
+						state->bonus = -1;
+						for(i = 0; i < 9; i++) {
+							if(state->shop[i] == PP_TRUE) {
+								state->bonus = i;
+								PostMessage("delete:%d", i);
+							}
+						}
+
+						// Affiche l'écran de chargement
+						DrawLoadingScreen(ctx, state);
+
 						// Passe a l'état "en jeu"
 						state->newState = STATE_INGAME;
 					}

@@ -1,11 +1,13 @@
+root = {}
 container = document.getElementById('listener');
 container.addEventListener('message', (e) ->
 	score = e.data.match /^score:([0-9]+)$/
 	del = e.data.match /^delete:([0-9]+)$/
 	if score isnt null
 		fbShare score[1]
-	else if delete isnt null
-			useItemForPerson localStorage.username, del[1], console.log
+	else if del isnt null
+		console.log root["item#{del[1]}"].item_id
+		useItemForPerson localStorage.username, root["item#{del[1]}"].item_id, console.log
 	else
 		console.log e.data
 , true)
@@ -17,6 +19,7 @@ $('embed').on('progress', (e) ->
 ).on('load', (e) ->
 	$('#progressbar').hide()
 	getPerson localStorage.username, (xml, code) ->
+		root = xml.root
 		if code is 200
 			document.querySelector('embed').postMessage(xml.root[i].quantity > 0 for i of xml.root)
 		else

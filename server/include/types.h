@@ -83,6 +83,7 @@ typedef struct {
 	State state;
 	State newState;
 	uint64_t score;
+	int bonus;
 } Jeu;
 
 #endif  // SERVER_INCLUDE_TYPES_H_
