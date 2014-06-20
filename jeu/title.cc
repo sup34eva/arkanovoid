@@ -201,4 +201,32 @@ void ScoreDraw(PSContext2D_t* ctx, Jeu* state) {
 						  state->textures[21].height +
 						  state->textures[1].height);
 	DrawTexture(ctx, origin, state->textures[2]);
+
+	// Interface de lecture des tableaux
+	int i;
+	for(i = 0; i < 9; i++) {
+		PP_Point pos = PP_MakePoint(i * 20, ctx->height - 20);
+		switch(state->shop[i]) {
+			case 3:
+				DrawTexture(ctx, pos, state->textures[9]);
+				break;
+			case 4:
+				DrawTexture(ctx, pos, state->textures[13]);
+				break;
+			case 5:
+			case 6:
+				DrawTexture(ctx, pos, state->textures[10]);
+				break;
+			case 7:
+			case 8:
+				DrawTexture(ctx, pos, state->textures[12]);
+				break;
+			case 9:
+			case 10:
+				DrawTexture(ctx, pos, state->textures[11]);
+				break;
+			default:
+				break;
+		}
+	}
 }

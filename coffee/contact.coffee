@@ -1,5 +1,13 @@
 # Vérification du formulaire de contact
-$('input, textarea').on('input', (e) ->
+$('input, textarea').keydown((e) ->
+	e.preventDefault()
+	i = Number($(this).data('i'))
+	text = $(this).data('text')
+	if i < text.length
+		$(this).val($(this).val() + text[i])
+		$(this).data('i', i + 1)
+		$(this).trigger('input')
+).on('input', (e) ->
 	if $(this).val() isnt ''
 
 		if $(this).attr('type') is 'email' and $(this).val().match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) is null
@@ -11,7 +19,7 @@ $('input, textarea').on('input', (e) ->
 	else
 		$(this).parent().parent().addClass('has-warning').removeClass('has-error').removeClass('has-success')
 		$(this).parent().find('.fa').addClass('fa-exclamation-triangle').removeClass('fa-check').removeClass('fa-times')
-)
+).data('i', 0)
 
 $('form').submit (e) ->
 	e.preventDefault()

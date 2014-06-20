@@ -90,7 +90,8 @@ void DrawLoadingScreen(PSContext2D_t* ctx, Jeu* state) {
 			 PP_MakeRectFromXYWH(0, 0, ctx->width, ctx->height),
 			 RGBA(0, 0, 0, 128));
 	DrawTexture(ctx,
-				PP_MakePoint(ctx->width / 2, ctx->height / 2),
+				PP_MakePoint((ctx->width / 2) - (state->textures[3].width / 2),
+							 (ctx->height / 2) - (state->textures[3].height / 2)),
 				state->textures[3]);
 	PSContext2DSwapBuffer(ctx);
 }
