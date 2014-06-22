@@ -8,8 +8,8 @@ container.addEventListener('message', (e) ->
 	if score isnt null
 		fbShare score[1]
 	# Si c'est un item, le supprimer
-	else if del isnt null
-		useItemForPerson localStorage.username, del[1], $.noop
+	else if del isnt null and window.user
+		useItemForPerson window.user, del[1], $.noop
 	# sinon, affiche le message
 	else
 		console.log e.data
@@ -24,7 +24,7 @@ $('embed').on('progress', (e) ->
 	$('#progressbar').hide()
 	# Récupère les items de l'utilisateur
 	if window.user
-		getPerson localStorage.username, (xml, code) ->
+		getPerson window.user, (xml, code) ->
 			# Conversion en tableau
 			root = xml.root
 			itemlist = for i of xml.root
