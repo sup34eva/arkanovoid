@@ -5,7 +5,7 @@ block styles
 	link(href="/css/connexion.css", rel="stylesheet")
 
 block content
-		form.form-horizontal.col-md-12.well#connexion(method="post" action="/connexion")
+		form.form-horizontal.col-md-12.well#connexion(method="post" action="/auth/supinfo")
 			.col-md-6.col-md-offset-3
 				.form-group
 					input.form-control#username(type="number" name="username" required="required" placeholder="Nom d'utilisateur")
@@ -13,7 +13,3 @@ block content
 					.btn-group.col-md-12
 						button.col-md-6.btn.btn-primary(type="submit") Se connecter
 						button.col-md-6.btn.btn-danger(type="button") Créer un compte
-
-
-block scripts
-	script(src="js/connexion.js")

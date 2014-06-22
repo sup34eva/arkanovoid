@@ -31,9 +31,14 @@ html(lang="fr")
 							i.fa.fa-lg.fa-fw.fa-gamepad
 							| Jeu
 					li
-						a(href="/connexion")
-							i.fa.fa-lg.fa-fw.fa-power-off
-							| Connexion
+						if user
+							a(href="/logout")
+								i.fa.fa-lg.fa-fw.fa-power-off
+								| #{user.fullname}
+						else
+							a(href="/connexion")
+								i.fa.fa-lg.fa-fw.fa-power-off
+								| Connexion
 					li
 						a(href="/shop")
 							i.fa.fa-lg.fa-fw.fa-shopping-cart

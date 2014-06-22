@@ -1,5 +1,5 @@
 # Recupère les item de l'utilisateur
-getPerson localStorage.username, (xml) ->
+getPerson window.user, (xml) ->
     console.log xml.root
     for i of xml.root
         item = xml.root[i]
@@ -14,5 +14,5 @@ $('form').submit (e) ->
     if not Number.isNaN alltime
         itemid += alltime
     for i in [0...$(this).find('input[type="number"]').val()]
-        addItemForPerson localStorage.username, itemid, (code) ->
+        addItemForPerson window.user, itemid, (code) ->
             form.parent().parent().attr('data-amount', Number(form.parent().parent().attr('data-amount')) + 1) unless code isnt 201

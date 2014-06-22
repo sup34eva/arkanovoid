@@ -23,18 +23,19 @@ $('embed').on('progress', (e) ->
 ).on('load', (e) ->
 	$('#progressbar').hide()
 	# Récupère les items de l'utilisateur
-	getPerson localStorage.username, (xml, code) ->
-		# Conversion en tableau
-		root = xml.root
-		itemlist = for i of xml.root
-					if xml.root[i].quantity > 0
-						 Number(xml.root[i].item_id)
-		console.log itemlist
-		if code is 200
-			# Envoie du tableau au C
-			document.querySelector('embed').postMessage itemlist
-		else
-			console.warn "No item for this user"
+	if window.user
+		getPerson localStorage.username, (xml, code) ->
+			# Conversion en tableau
+			root = xml.root
+			itemlist = for i of xml.root
+						if xml.root[i].quantity > 0
+							 Number(xml.root[i].item_id)
+			console.log itemlist
+			if code is 200
+				# Envoie du tableau au C
+				document.querySelector('embed').postMessage itemlist
+			else
+				console.warn "No item for this user"
 )
 
 # Partage un score sur facebook

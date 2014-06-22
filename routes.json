@@ -1,4 +1,3 @@
-
 {
 	"/": {
 		"template": "index",
@@ -39,6 +38,7 @@
 	},
 	"/shop": {
 		"template": "shop",
+		"auth": true,
 		"args": {
 			"title": "Shop",
 			"items": [
