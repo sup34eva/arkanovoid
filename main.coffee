@@ -16,11 +16,12 @@ app.set 'view engine', 'jade'
 app.use require('compression')()
 app.use require('morgan')('tiny')
 app.use cookieParser()
-app.use bodyParser.urlencoded()
+app.use bodyParser.urlencoded(extended: true)
 app.use bodyParser.json()
-app.use require('connect-livereload')(
-	port: 35729
-)
+
+if process.env.NODE_ENV isnt 'production'
+	app.use require('connect-livereload')(port: 35729)
+
 app.use flash()
 app.use session(
 	secret: 'nsa is watching you'
@@ -28,11 +29,18 @@ app.use session(
 app.use passport.initialize()
 app.use passport.session()
 
-passport.use new SupinfoStrategy({
+if process.env.NODE_ENV isnt 'production'
+	options =
 		returnURL: 'http://localhost:3000/auth/supinfo/return'
 		realm: 'http://localhost:3000/'
 		identifierField: 'username'
-	},
+else
+	options =
+		returnURL: 'http://arkanoid.herokuapp.com/auth/supinfo/return'
+		realm: 'http://arkanoid.herokuapp.com/'
+		identifierField: 'username'
+
+passport.use new SupinfoStrategy(options,
 	(identifier, profile, done) ->
 		process.nextTick ->
 			done null, profile

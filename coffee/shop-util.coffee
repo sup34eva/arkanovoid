@@ -1,6 +1,7 @@
 # API du shop en Js
 # L'adresse est a remplacer par celle de la VM
-window.serverAddress = '10.13.16.23'
+#window.serverAddress = '10.13.16.23'
+window.serverAddress = '192.168.1.42'
 
 getXML = (url, method, callback) ->
     xhr = new XMLHttpRequest()
