@@ -13,7 +13,7 @@
     "nacl"
   ],
 	"license": "MIT",
-	"homepage": "leops.zapto.org",
+	"homepage": "arkanovoid.leops.me",
 	"private": true,
 	"ignore": [
     "**/.*",

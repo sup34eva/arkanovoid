@@ -1,5 +1,5 @@
 {
-	"name": "arkanoid",
+	"name": "arkanovoid",
 	"version": "0.1.0",
 	"description": "Arkanoid remake in HTML5 and NaCl",
 	"main": "main.js",
@@ -12,10 +12,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hunsdetroyes/arkanoid/"
+		"url": "https://github.com/sup3asc2/arkanovoid/"
 	},
 	"bugs": {
-		"url": "http://github.com/hunsdetroyes/arkanoid/issues",
+		"url": "http://github.com/sup3asc2/arkanovoid/issues",
 		"email": "leopaul3@gmail.com"
 	},
 	"keywords": [
@@ -26,20 +26,20 @@
   ],
 	"author": "HdT",
 	"license": "MIT",
-	"homepage": "http://arkanoid.herokuapp.com/",
+	"homepage": "http://arkanovoid.herokuapp.com/",
 	"readmeFilename": "README.md",
 	"devDependencies": {
 		"coffeelint-stylish": "^0.1.0",
 		"grunt": "^0.4.5",
 		"grunt-bump": "^0.0.14",
-		"grunt-coffeelint": "https://github.com/hunsdetroyes/grunt-coffeelint/tarball/master",
+		"grunt-coffeelint": "https://github.com/sup3asc2/grunt-coffeelint/tarball/master",
 		"grunt-concurrent": "^0.5.0",
-		"grunt-contrib-coffee": "https://github.com/hunsdetroyes/grunt-contrib-coffee/tarball/master",
+		"grunt-contrib-coffee": "https://github.com/sup3asc2/grunt-contrib-coffee/tarball/master",
 		"grunt-contrib-copy": "^0.5.0",
 		"grunt-contrib-imagemin": "^0.7.0",
 		"grunt-contrib-stylus": "^0.17.0",
 		"grunt-contrib-watch": "^0.6.1",
-		"grunt-express-server": "https://github.com/hunsdetroyes/grunt-express-server/tarball/master",
+		"grunt-express-server": "https://github.com/sup3asc2/grunt-express-server/tarball/master",
 		"grunt-forever": "^0.4.2",
 		"grunt-jsonlint": "^1.0.4",
 		"grunt-notify": "^0.3.0",
@@ -62,7 +62,7 @@
 		"cookie-parser": "^1.3.1",
 		"passport": "^0.2.0",
 		"express-session": "^1.5.1",
-		"passport-supinfo": "https://github.com/hunsdetroyes/passport-supinfo/tarball/master",
+		"passport-supinfo": "https://github.com/sup3asc2/passport-supinfo/tarball/master",
 		"body-parser": "^1.4.3"
 	}
 }
