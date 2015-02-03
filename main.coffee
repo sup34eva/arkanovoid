@@ -29,16 +29,10 @@ app.use session(
 app.use passport.initialize()
 app.use passport.session()
 
-if process.env.NODE_ENV isnt 'production'
-	options =
-		returnURL: 'http://localhost:3000/auth/supinfo/return'
-		realm: 'http://localhost:3000/'
-		identifierField: 'username'
-else
-	options =
-		returnURL: 'http://arkanoid.herokuapp.com/auth/supinfo/return'
-		realm: 'http://arkanoid.herokuapp.com/'
-		identifierField: 'username'
+options =
+	returnURL: 'http://arkanovoid.leops.me/auth/supinfo/return'
+	realm: 'http://arkanovoid.leops.me/'
+	identifierField: 'username'
 
 passport.use new SupinfoStrategy(options,
 	(identifier, profile, done) ->
