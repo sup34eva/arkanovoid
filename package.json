@@ -39,7 +39,7 @@
 		"grunt-contrib-imagemin": "^0.7.0",
 		"grunt-contrib-stylus": "^0.17.0",
 		"grunt-contrib-watch": "^0.6.1",
-		"grunt-express-server": "https://github.com/sup3asc2/grunt-express-server/tarball/master",
+		"grunt-express-server": "^0.5.1",
 		"grunt-forever": "^0.4.2",
 		"grunt-jsonlint": "^1.0.4",
 		"grunt-notify": "^0.3.0",
